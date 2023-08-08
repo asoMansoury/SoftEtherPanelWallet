@@ -1,0 +1,16 @@
+import { getTariffs } from "src/databse/tariff/getTariff";
+import { GenerateNewAccountTest } from "src/databse/testaccounts/GenerateNewAccountTest";
+
+
+
+export default async function handler(req,res){
+    if(req.method === "GET"){
+        const {email,password,type } = req.query;
+        const currentDomain =  req.headers.host;
+        var tariffs = await GenerateNewAccountTest(email,type,currentDomain,password);
+
+
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.status(200).json({name:tariffs});
+    }
+}

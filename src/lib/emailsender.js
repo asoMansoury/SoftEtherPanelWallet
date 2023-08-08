@@ -1,0 +1,137 @@
+import nodemailer from 'nodemailer';
+import { ConvertToPersianDateTime } from './utils';;
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: 'aso.mansoury@gmail.com', // Replace with your Gmail email address
+    pass: 'dfjoqpzndpqtpjis' // Replace with your Gmail password or an app-specific password
+  }
+});
+
+export async function sendEmail(to,users,subject) {
+    try {
+
+      const tableRows = users.map((user, index) => 
+      `
+      <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : '#ffffff'};">
+        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${user.username}</td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${user.password}</td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555; font-weight: bold; color: #5b2121;">${ConvertToPersianDateTime(user.expires)}</td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">
+          <a href="${user.ovpnurl}">دانلود فایل کانفیگ</a>
+        </td>
+      </tr>
+    `).join('');
+
+
+      const table = `
+      <div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <thead style="background-color: #f1f1f1;">
+            <tr>
+              <th style="padding: 10px; border: 1px solid #ddd;">نام کاربری</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">کلمه عبور</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">تاریخ انقضا</th>
+              <th style="padding: 10px; border: 1px solid #ddd;">دانلود فایل کانفیگ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+          <a href="http://${currentDomain}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+          <a href="${currentDomain}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+          <a href="${currentDomain}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>
+        </div>
+      </div>
+      `;
+
+
+      const mailOptions = {
+        from: 'rahman.mansoury@gmail.com',
+        to: to, // Replace with the recipient's email address
+        subject: subject,
+        html: table
+      };
+  
+      const info = await transporter.sendMail(mailOptions);
+  
+      console.log('Email sent:', info.response);
+    } catch (err) {
+      console.error('Error sending email:', err);
+    }
+  }
+
+
+
+  export async function sendEmailCiscoClient(to,users,server,subject,currentDomain,customer) {
+    try {
+      const tableRows = users.map((user, index) => 
+      `
+      <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : '#ffffff'};">
+        <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${user.username}</td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${user.password}</td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555; font-weight: bold; color: #5b2121;">${ConvertToPersianDateTime(user.expires)}</td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${server.ciscourl+":"+server.ciscoPort}</td>
+      </tr>
+    `).join('');
+
+      var domainUrl = currentDomain;
+      
+      const table = `
+        <div>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead style="background-color: #f1f1f1;">
+              <tr>
+                <th style="padding: 10px; border: 1px solid #ddd;">نام کاربری</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">کلمه عبور</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">تاریخ انقضا</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">آدرس سرور</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+          <div>
+          <div dir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+            <p style="margin-bottom: 8px; font-size: 16px;">اطلاعات شما برای ورود به سایت (لطفاً نام کاربری و کلمه عبور خود را به هیچ عنوان به کسی ندهید.)</p>
+            <span style="font-size: 14px; color: #007bff;">نام کاربری: ${customer.username}</span><br>
+            <span style="font-size: 14px; color: #007bff;">کلمه عبور: ${customer.password}</span>
+          </div>
+            <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+              <a href="${domainUrl}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
+            </div>
+            <div dir="rtl" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+              <a href="${domainUrl}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
+            </div>
+            <div dir="rtl" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+              <a href="${domainUrl}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>
+            </div>
+          </div>
+
+        </div>
+      `;
+
+
+      const mailOptions = {
+        from: 'aso.mansoury@gmail.com',
+        to: to, // Replace with the recipient's email address
+        subject: subject,
+        html: table
+      };
+  
+      const info = await transporter.sendMail(mailOptions);
+  
+      console.log('Email sent:', info.response);
+    } catch (err) {
+      console.error('Error sending email:', err);
+    }
+  }
+
+  

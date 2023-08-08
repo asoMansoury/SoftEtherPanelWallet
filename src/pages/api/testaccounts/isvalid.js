@@ -1,0 +1,16 @@
+import { getSession } from "next-auth/react";
+import { getTariffs } from "src/databse/tariff/getTariff";
+import {  IsValidForCreatingNewTestAccount } from "src/databse/testaccounts/GenerateNewAccountTest";
+
+
+
+export default async function handler(req,res){
+    if(req.method === "GET"){
+        const {email,type } = req.query;
+        const session = await getSession({ req });
+        var tariffs = await IsValidForCreatingNewTestAccount(session.user.email,type );
+
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.status(200).json({name:tariffs});
+    }
+}
