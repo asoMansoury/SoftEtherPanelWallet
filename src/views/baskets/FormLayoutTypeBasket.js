@@ -358,7 +358,7 @@ async function finishHandler(e){
   };
 
   await axios.post(apiUrls.localUrl.calculateTotalPrice,{body:obj}).then((response)=>{
-    if(response.data.isValid==false){
+    if(response.data.name.isValid==false){
       setError({
         ...error,
         isUserValid:false,
