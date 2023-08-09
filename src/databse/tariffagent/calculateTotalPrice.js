@@ -85,4 +85,30 @@ export async function CalculateTotalPrice(agentInformation,selectedClientPlans,t
 
 
 
+export async function CalculateTotalPriceModifed(agentCode,selectedClientPlans,type){
+    if(type=='' || type ==undefined || type == null)
+        type = apiUrls.types.SoftEther;
+    try{
+        const connectionState =  await client.connect();
+        const documents = await getAgentPlans(agentCode,type);
+        console.log("ss------",{agentCode})
+        if(documents.length > 0){
+            const result = ExtractPlansPriceForAgent(selectedClientPlans,documents,agentCode);  
+            return result;
+        }else{
+            const db = client.db('SoftEther');
+            const collection = db.collection('TariffPrice');
+            const tariffPriceCollection = await collection.find({}).toArray();
+            const result = ExtractPlansPriceForOwner(selectedClientPlans,tariffPriceCollection,'nobody');
+
+            return result;
+        }
+
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
 

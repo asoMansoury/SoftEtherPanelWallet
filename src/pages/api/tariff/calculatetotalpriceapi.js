@@ -1,8 +1,8 @@
 
 import { getSession } from "next-auth/react";
-import { CalculateTotalPrice } from "src/databse/tariffagent/calculateTotalPrice";
+import { CalculateTotalPrice, CalculateTotalPriceModifed } from "src/databse/tariffagent/calculateTotalPrice";
 import { getToken } from "next-auth/jwt"
-import { IsAgentValid } from "src/databse/agent/getagentinformation";
+import { GetAgentByUserCode, IsAgentValid } from "src/databse/agent/getagentinformation";
 
 
 export default async function handler(req, res) {
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       if(token ==null ){
           res.status(200).json({ name: {
             isValid:false,
-            message:"شماره دسترسی به خرید اکانت ندارید."
+            message:"شما دسترسی  خرید اکانت ندارید."
           } });
           return;
       }
@@ -31,12 +31,12 @@ export default async function handler(req, res) {
       if(isAgent.isAgent==false){
         res.status(200).json({ name: {
           isValid:false,
-          message:"شماره دسترسی به خرید اکانت ندارید."
+          message:"شما دسترسی  خرید اکانت ندارید."
         } });
         return;
       }
 
-      var result =await CalculateTotalPrice(body.agentInformation,body.tariffPlans,body.type);
+      var result =await CalculateTotalPriceModifed(isAgent.agentCode,body.tariffPlans,body.type);
               // Process the data or perform any necessary operations
       res.status(200).json({ name: result });
  

@@ -90,11 +90,11 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
 
   useEffect(()=>{
     if(agent=="nobody"){
-      setIsFromAgent(false);
+      //setIsFromAgent(false);
     }else{
       if(agentData!=undefined){
         setAgentInformation(agentData.agentInformation);
-        setIsFromAgent(true);
+        //setIsFromAgent(true);
       }else{
       }
     }
@@ -285,39 +285,6 @@ const addToCart = (e) =>{
   validatePlans();
 }
 
-async function checkLoggedInUser(userLogin,email,password){
-  if(userLogin.error==null){
-    var url = apiUrls.agentUrl.isAgentUrl+email;
-    var result = await axios.get(url);
-
-    //درصورتی که کلمه کاربری و پسورد برای ایجنت نباشد اجازه ادامه نمی دهد. ذ
-    if(result.data.name.isAgent==false){
-      signOut();
-      setError({
-        ...error,
-        isUserValid:false,
-        userMsg:"نام کاربری یا کلمه عبور اشتباه می باشد."
-      });
-      return false;
-    }
-
-
-    setProfileSelector({
-      isLoggedIn:true,
-      email:email,
-      isAgent:true
-    })
-    return true;
-  }else{
-    setError({
-      ...error,
-      isUserValid:false,
-      userMsg:"نام کاربری یا کلمه عبور اشتباه می باشد."
-    });
-
-    return false;
-  }
-}
 async function finishHandler(e){
   e.preventDefault();
   const uuid = uuidv4();
@@ -362,7 +329,7 @@ async function finishHandler(e){
       setError({
         ...error,
         isUserValid:false,
-        userMsg:"شما دسترسی خرید اکانت ندارید لطفا با مدیریت در تماس باشید."
+        userMsg:response.data.name.message
       });
       return;
     }

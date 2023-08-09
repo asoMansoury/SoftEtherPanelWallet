@@ -9,7 +9,8 @@ import { CreateUserOnCisco } from "src/lib/Cisco/createuser";
 import { UpdateUsersBasket } from "src/databse/usersbasket/insertusersbasket";
 import { sendEmail, sendEmailCiscoClient } from "src/lib/emailsender";
 import { PAID_CUSTOMER_STATUS } from "src/databse/usersbasket/PaidEnum";
-import { GetAgentByUserCode } from "src/databse/agent/getagentinformation";
+import { GetAgentByUserCode, IsAgentValid } from "src/databse/agent/getagentinformation";
+import { getToken } from "next-auth/jwt";
 
 
 
@@ -25,6 +26,23 @@ export default async function handler(req, res) {
         return;
       }
     if (req.method === 'POST') {
+      const token = await getToken({ req });
+      if(token ==null ){
+          res.status(200).json({ name: {
+            isValid:false,
+            message:"شما دسترسی  خرید اکانت ندارید."
+          } });
+          return;
+      }
+      var isAgent =await IsAgentValid(token.email);
+      if(isAgent.isAgent==false){
+        res.status(200).json({ name: {
+          isValid:false,
+          message:"شما دسترسی  خرید اکانت ندارید."
+        } });
+        return;
+      }
+      //validation that just agents has access to buy products
       
       // Handle the POST request here
       const { UUID } = req.body;

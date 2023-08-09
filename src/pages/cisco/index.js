@@ -20,19 +20,15 @@ const Cisco = () => {
   
   useEffect(async()=>{
     //var session =await getSession();
+    await axios.get(apiUrls.localUrl.getTariffsUrl+apiUrls.types.Cisco).then(data =>{
+      setTariffs(data.data)
+    });
     if(status ==="authenticated"){
       setProfileSelector({
         email:session.user.email,
         isLoggedIn:true
       });
-    }
-  },[status])
 
-  useEffect(async ()=>{
-    await axios.get(apiUrls.localUrl.getTariffsUrl+apiUrls.types.Cisco).then(data =>{
-      setTariffs(data.data)
-    });
-    if(profileSelector.isLoggedIn==true){
       await axios.get(apiUrls.agentUrl.isAgentUrl+profileSelector.email).then(response=>{
         if(response.data.name.isAgent==true){
           getAgentInformation(response.data.name.agentcode);
@@ -42,7 +38,7 @@ const Cisco = () => {
         }
       });
     }
-  },[]);
+  },[status])
 
   async function getIntroducerAgent(){
     await axios.get(apiUrls.userUrl.getUserInformationByEmail+profileSelector.email)
