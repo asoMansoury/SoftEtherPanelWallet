@@ -25,7 +25,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { isEmail } from 'validator';
 import { useDispatch, useSelector } from 'react-redux';
 import Profilestatus from 'src/redux/actions/profileActions';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
   const [tariffTypes,setTariffTypes] = useState([]);
@@ -288,14 +288,25 @@ const addToCart = (e) =>{
 async function checkLoggedInUser(userLogin,email,password){
   if(userLogin.error==null){
     var url = apiUrls.agentUrl.isAgentUrl+email;
-    await axios.get(url).then(data =>{
-      setProfileSelector({
-        isLoggedIn:true,
-        email:email,
-        isAgent:data.data.name.isAgent
-      })
-    });
+    var result = await axios.get(url);
 
+    //درصورتی که کلمه کاربری و پسورد برای ایجنت نباشد اجازه ادامه نمی دهد.
+    if(result.data.name.isAgent==false){
+      signOut();
+      setError({
+        ...error,
+        isUserValid:false,
+        userMsg:"نام کاربری یا کلمه عبور اشتباه می باشد."
+      });
+      return false;
+    }
+
+
+    setProfileSelector({
+      isLoggedIn:true,
+      email:email,
+      isAgent:true
+    })
     return true;
   }else{
     setError({
@@ -324,22 +335,16 @@ async function finishHandler(e){
       var password = formData['password'];
       var email = formData['email'];
       var userIsExists = await axios.post(apiUrls.customerUrls.checkCustomerExistsApi,{email:email});
-
       if(userIsExists.data.name.isvalid==true){
         const payload = {email:email,password:password};
         const result =await signIn("credentials",{...payload,redirect:false});
         if(!checkLoggedInUser(result,email,password))
           return;
       }else{
-        setProfileSelector({
-          isLoggedIn:true,
-          email:email,
-          isAgent:false
-        })
+        return;
       }
-  }else{
-
   }
+
 
   var obj = {
     tariffPlans:selectedTariffPlans,

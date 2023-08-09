@@ -1,11 +1,9 @@
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
 import FormLayoutTypeBasket from 'src/views/baskets/FormLayoutTypeBasket'
 import { useRouter } from 'next/router';
 
 // ** Demo Components Imports
-import FormLayoutsSeparator from 'src/views/form-layouts/FormLayoutsSeparator'
 import { useState } from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
@@ -20,9 +18,10 @@ const Basket = () => {
     const {isLoggedIn,userEmail} = useUserState();
     
     useEffect(()=>{
+      router.push('/openvpn');
       var agentCode = router.query['agent'];
       if(isLoggedIn==true)
-        router.push('/basket');
+        router.push('/openvpn');
       
       if(router.query['agent']!= undefined ){
         setAgent(agentCode);
@@ -30,7 +29,7 @@ const Basket = () => {
         axios.get(url).then(data =>{
           var result = data.data.name.agentInformation;
           if(result==null){
-            router.push('/basket');
+            router.push('/openvpn');
           }else{
             setAgentInformation(data.data.name);
             var tariffsTmp = data.data.name.tariff;

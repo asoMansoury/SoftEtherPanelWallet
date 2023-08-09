@@ -26,7 +26,7 @@ const Cisco = () => {
     });
     
     useEffect(async()=>{
-
+      router.push("/cisco/");
       if(status ==="authenticated"){
         setProfileSelector({
           email:session.user.email,

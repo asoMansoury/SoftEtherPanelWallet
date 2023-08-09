@@ -68,6 +68,7 @@ export default async function handler(req, res) {
           servers.map((server,index)=>{
             if(server.isactive){
                 userItem.username = userItem.username;
+                userItem.ciscourl = server.ciscourl+":"+server.ciscoPort;
                 activedUserForSendingEmail.push(userItem);
             }  
          });
