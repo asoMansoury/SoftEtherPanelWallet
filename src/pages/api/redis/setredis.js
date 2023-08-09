@@ -1,3 +1,6 @@
+import { getToken } from "next-auth/jwt";
+import { IsAgentValid } from "src/databse/agent/getagentinformation";
+import { CalculateTotalPriceModifed } from "src/databse/tariffagent/calculateTotalPrice";
 import { Redis_Set_Data } from "src/redis/redisconnection";
 
 export default async function handler(req,res){
@@ -14,6 +17,16 @@ export default async function handler(req,res){
     }
     if(req.method === "POST"){
         const { data } = req.body;
+
+        const token = await getToken({ req });
+        var isAgent =await IsAgentValid(token.email);
+
+        var result =await CalculateTotalPriceModifed(isAgent.agentcode,data.tariffPlans,data.type);
+        data.price=result.ownerPrice;
+        data.agentPrice = result.agentPrice;
+        data.debitToAgent = result.agentPrice - result.ownerPrice;
+
+
         var objJson = JSON.stringify(data);
         await Redis_Set_Data(data.uuid, objJson);
         res.setHeader('Access-Control-Allow-Origin', '*');

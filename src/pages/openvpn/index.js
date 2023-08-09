@@ -20,25 +20,15 @@ const Basket = () => {
   const [agentInformation,setAgentInformation]=useState();
 
   useEffect(async()=>{
-    
+    await axios.get(apiUrls.localUrl.getTariffsUrl+apiUrls.types.SoftEther).then(data =>{
+      setTariffs(data.data)
+    });
     if(status ==="authenticated"){
       setProfileSelector({
         email:session.user.email,
         isLoggedIn:true
       });
-    }
-  },[status])
 
-  useEffect(async ()=>{
-    await axios.get(apiUrls.localUrl.getTariffsUrl+apiUrls.types.SoftEther).then(data =>{
-      setTariffs(data.data)
-    });
-
-
-  },[]);
-
-  useEffect(async ()=>{
-    if(profileSelector.isLoggedIn==true){
       await axios.get(apiUrls.agentUrl.isAgentUrl+profileSelector.email).then(response=>{
         if(response.data.name.isAgent==true){
           setAgent(response.data.name.agentcode);
@@ -55,7 +45,14 @@ const Basket = () => {
         }
       });
     }
-  },[profileSelector])
+  },[status])
+
+  useEffect(async ()=>{
+
+
+
+  },[]);
+
 
   async function getIntroducerAgent(){
     await axios.get(apiUrls.userUrl.getUserInformationByEmail+profileSelector.email)
@@ -95,13 +92,13 @@ const Basket = () => {
   return (
     <Grid container spacing={6}>
         <Grid item xs={12}>
-          
+
           {
-            (agentInformation&& agent!='nobody')&&
+            (agentInformation&& agent!='nobody')&&status=="authenticated"&&
               <FormLayoutTypeBasket typeVpn = {apiUrls.types.SoftEther} agentData={agentInformation} tariffs={tariffs} agent={agent} />
           }
                     {
-            (agent=='nobody')&&
+            (agent=='nobody')&&status=="authenticated"&&
               <FormLayoutTypeBasket typeVpn = {apiUrls.types.SoftEther} agentData={agentInformation} tariffs={tariffs} agent={agent} />
           }
         </Grid>

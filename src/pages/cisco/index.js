@@ -78,13 +78,13 @@ const Cisco = () => {
     <Grid container spacing={6}>
         <Grid item xs={12}>
           {
-            agentInformation&&(agent!='nobody')&&
+            agentInformation&&(agent!='nobody')&&status=="authenticated"&&
             <FormLayoutTypeBasket typeVpn = {apiUrls.types.Cisco} agentData={agentInformation} tariffs={tariffs} agent={agent} />
 
           }
 
           {
-            (agent=='nobody')&&
+            (agent=='nobody')&&status=="authenticated"&&
             <FormLayoutTypeBasket typeVpn = {apiUrls.types.Cisco} agentData={agentInformation} tariffs={tariffs} agent={agent} />
 
           }

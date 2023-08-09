@@ -45,8 +45,8 @@ export default async function handler(req, res) {
         return;
       }
 
-      var result =await CalculateTotalPriceModifed(isAgent.agentCode,body.tariffPlans,body.type);
-      console.log(result.ownerPrice,agentWallet.cashAmount);
+      var result =await CalculateTotalPriceModifed(isAgent.agentcode,body.tariffPlans,body.type);
+      
       if(result.ownerPrice>agentWallet.cashAmount){
         res.status(200).json({ name: {
           isValid:false,

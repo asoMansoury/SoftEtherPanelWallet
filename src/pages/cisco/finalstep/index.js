@@ -38,12 +38,16 @@ const FinalStep = ()=>{
         try {
           var url =apiUrls.userUrl.createNewCiscoUserUrl;
           const response = await axios.post(url, { UUID: objPlan.uuid });
+          if(response.data.name.isValid==false){
 
-          setBasket(response.data.name.basket);
-          setUsers(response.data.name.users);
-          setCustomer(response.data.name.customer); 
-          setServers(response.data.name.servers);
-          setShowLoadingProgress(false);
+          }else{
+            setBasket(response.data.name.basket);
+            setUsers(response.data.name.users);
+            setCustomer(response.data.name.customer); 
+            setServers(response.data.name.servers);
+            setShowLoadingProgress(false);
+          }
+
         } catch (error) {
           console.error(error);
         }

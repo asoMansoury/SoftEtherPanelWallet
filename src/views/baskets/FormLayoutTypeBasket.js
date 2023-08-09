@@ -336,6 +336,8 @@ async function finishHandler(e){
     obj.price=response.data.name.ownerPrice;
     obj.agentPrice = response.data.name.agentPrice;
     obj.debitToAgent = isFromAgent?(obj.agentPrice - obj.price): 0;
+
+
      axios.post(apiUrls.redisUrl.setRedisApi,{data:obj}).then((redisResponse)=>{
       var finalPath = "/finalstep";
       if(typeVpn == apiUrls.types.Cisco)
