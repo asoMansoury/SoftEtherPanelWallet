@@ -23,10 +23,8 @@ import { useRouter } from 'next/router';
 import { ConvertMonthFromAgentFormat, ConvertPriceFromAgentFormat } from './basketUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { isEmail } from 'validator';
-import { useDispatch, useSelector } from 'react-redux';
-import Profilestatus from 'src/redux/actions/profileActions';
 import { signIn, signOut, useSession } from 'next-auth/react';
-
+import CircularProgress from '@mui/material/CircularProgress';
 const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
   const [tariffTypes,setTariffTypes] = useState([]);
   const [months, setMonths] = useState([]);
@@ -62,7 +60,8 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
   const emailRef = useRef();
   const router = useRouter();
   // const dispatch = useDispatch();
-
+  const [showLoadingProgress,setShowLoadingProgress]= useState(false)
+  const [isEnableBtnBuy,setIsEnableBtnBuy]= useState(false)
 
   useEffect(async()=>{
     
@@ -287,18 +286,34 @@ const addToCart = (e) =>{
 
 async function finishHandler(e){
   e.preventDefault();
+  setShowLoadingProgress(true);
+  setError({
+    ...error,
+    isUserValid:false,
+    userMsg:""
+  });
+
   const uuid = uuidv4();
   
-  if(!validateEmail()&&profileSelector.isLoggedIn==false) 
+  if(!validateEmail()&&profileSelector.isLoggedIn==false){
+    setShowLoadingProgress(false);
     return;
+  }
+
   
-  if(!validatePassowrd()&&profileSelector.isLoggedIn==false) 
+  if(!validatePassowrd()&&profileSelector.isLoggedIn==false){
+    setShowLoadingProgress(false);
     return;
+  }
   
-  if(!validatePlans()) 
+  if(!validatePlans()) {
+    setShowLoadingProgress(false);
     return;
+  }
+    
 
   if(profileSelector.isLoggedIn==false){
+    setShowLoadingProgress(false);
     setError({
       ...error,
       isUserValid:false,
@@ -331,6 +346,7 @@ async function finishHandler(e){
         isUserValid:false,
         userMsg:response.data.name.message
       });
+      setShowLoadingProgress(false);
       return;
     }
     obj.price=response.data.name.ownerPrice;
@@ -453,7 +469,13 @@ async function finishHandler(e){
                     error.userMsg!=""&&<Alert severity="error">{error.userMsg}</Alert>
         }
         <CardActions>
-          <Button size='large' onClick={finishHandler} type='submit' sx={{ mr: 2 }} variant='contained'>
+            {
+              showLoadingProgress&&
+              <div style={{display:'flex', justifyContent:'center'}}>
+                  <CircularProgress></CircularProgress>
+              </div>
+            }
+          <Button size='large' disabled={showLoadingProgress} onClick={finishHandler} type='submit' sx={{ mr: 2 }} variant='contained'>
             نهایی کردن خرید
           </Button>
         </CardActions>
