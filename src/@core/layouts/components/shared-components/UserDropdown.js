@@ -18,6 +18,7 @@ import { useUserState } from 'src/configs/useUserState '
 import { useDispatch, useSelector } from 'react-redux';
 import Profilestatus from 'src/redux/actions/profileActions';
 import { signOut, useSession } from 'next-auth/react'
+import { addCommas, digitsEnToFa } from '@persian-tools/persian-tools'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -101,9 +102,16 @@ const UserDropdown = (props) => {
                 {status=="authenticated"?session.user.email:'کاربر مهمان'}
               </Typography>
             </Box>
+
           </Box>
         </Box>
-
+        <Divider />
+        <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
+              <Typography sx={{ fontWeight: 600 }}>موجود حساب</Typography>
+              <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
+                {status=="authenticated"?addCommas(digitsEnToFa(session.user.cashAmount)):'0 '} تومان
+              </Typography>
+            </Box>
 
         <Divider />
         {status=="authenticated" &&

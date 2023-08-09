@@ -1,5 +1,7 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
+import { GetWalletUser } from "src/databse/Wallet/getWalletUser";
+import GetCustomerByEmailAndPassword from "src/databse/customers/getcustomer";
 import Login from "src/databse/user/login";
 
 export const authOptions = {
@@ -25,7 +27,9 @@ export const authOptions = {
             if(!userDoc){
                 throw new Error("Something went wrong");
             }
+            var UserWallet = await GetWalletUser(credentials.email)
             delete userDoc.password;
+            userDoc.cashAmount= UserWallet.cashAmount;
             return userDoc;
         }
         })
@@ -45,6 +49,7 @@ export const authOptions = {
             session.user.agentcode = token.agentcode; 
             session.user.isLoggedIn = true;
             session.user.isAdmin = token.isAdmin;
+            session.user.cashAmount = token.cashAmount;
           return session;
         },
 
@@ -57,6 +62,7 @@ export const authOptions = {
                 token.agentcode = user.agentcode; 
                 token.isLoggedIn = true;
                 token.isAdmin = user.isAdmin;
+                token.cashAmount = user.cashAmount;
             }
           return token
       },
