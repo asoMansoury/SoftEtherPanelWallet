@@ -70,5 +70,8 @@ export const apiUrls = {
     "userfreeUrls":{
         "GetUsersByUsername":`/api/userfree/getusersbyusername/?username=`,
         "ChangeUserFreeServer":`/api/userfree/changeuserserver`
+    },
+    "WalletUrls":{
+        "GetUserWalletApi":`/api/wallet/getUserWallet/?email=`
     }
 }

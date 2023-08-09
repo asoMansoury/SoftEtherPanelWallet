@@ -1,6 +1,5 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
-import { GenerateOneMonthExpiration, GenerateRandomPassword, GenerateThreeMonthExpiration, MONGO_URI } from 'src/lib/utils';
-import { PAID_CUSTOMER_STATUS } from './PaidEnum';
+import { MONGO_URI } from 'src/lib/utils';
 import GetUsersBasketByUUID from './getusersbasket';
 
 

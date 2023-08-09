@@ -19,6 +19,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Profilestatus from 'src/redux/actions/profileActions';
 import { signOut, useSession } from 'next-auth/react'
 import { addCommas, digitsEnToFa } from '@persian-tools/persian-tools'
+import axios from 'axios'
+import { apiUrls } from 'src/configs/apiurls'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -31,7 +33,8 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 
 const UserDropdown = (props) => {
   const {  data:session,status } = useSession();
-
+  const [wallet,setWallet] = useState();
+  const [cashAmount,setCashAmount] = useState(0);
 
   // ** States
   const [anchorEl, setAnchorEl] = useState(null)
@@ -49,17 +52,20 @@ const UserDropdown = (props) => {
     }
     setAnchorEl(null)
   }
+  
+  useEffect(async ()=>{
+    if(status == 'authenticated'){
+      var wallet = (await axios.get(apiUrls.WalletUrls.GetUserWalletApi+session.user.email));
+      setWallet(wallet);
+      setCashAmount(wallet.data.name.cashAmount);
+    }
+  },[status])
 
   const logoutHandler =()=>{
     signOut({
       callbackUrl:"/pages/login"
     });
-    // dispatch(Profilestatus({
-    //   email:'',
-    //   isLoggedIn:false,
-    //   isAgent:false
-    // }));
-    
+
     handleDropdownClose('/pages/login')
   }
   
@@ -109,7 +115,7 @@ const UserDropdown = (props) => {
         <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>موجود حساب</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
-                {status=="authenticated"?addCommas(digitsEnToFa(session.user.cashAmount)):'0 '} تومان
+                {status=="authenticated"?addCommas(digitsEnToFa(cashAmount.toString())):'0 '} تومان
               </Typography>
             </Box>
 
