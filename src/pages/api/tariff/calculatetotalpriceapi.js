@@ -3,6 +3,7 @@ import { getSession } from "next-auth/react";
 import { CalculateTotalPrice, CalculateTotalPriceModifed } from "src/databse/tariffagent/calculateTotalPrice";
 import { getToken } from "next-auth/jwt"
 import { GetAgentByUserCode, IsAgentValid } from "src/databse/agent/getagentinformation";
+import { GetWalletUser } from "src/databse/Wallet/getWalletUser";
 
 
 export default async function handler(req, res) {
@@ -35,8 +36,24 @@ export default async function handler(req, res) {
         } });
         return;
       }
+      var agentWallet =await GetWalletUser(token.email,"");
+      if(agentWallet.isValid==false){
+        res.status(200).json({ name: {
+          isValid:false,
+          message:"برای شما کیف پول تعریف نشده است لطفا با مدیریت در تماس باشید."
+        } });
+        return;
+      }
 
       var result =await CalculateTotalPriceModifed(isAgent.agentCode,body.tariffPlans,body.type);
+      console.log(result.ownerPrice,agentWallet.cashAmount);
+      if(result.ownerPrice>agentWallet.cashAmount){
+        res.status(200).json({ name: {
+          isValid:false,
+          message:"موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
+        } });
+        return;
+      }
               // Process the data or perform any necessary operations
       res.status(200).json({ name: result });
  

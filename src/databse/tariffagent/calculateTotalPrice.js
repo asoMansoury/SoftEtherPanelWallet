@@ -91,7 +91,6 @@ export async function CalculateTotalPriceModifed(agentCode,selectedClientPlans,t
     try{
         const connectionState =  await client.connect();
         const documents = await getAgentPlans(agentCode,type);
-        console.log("ss------",{agentCode})
         if(documents.length > 0){
             const result = ExtractPlansPriceForAgent(selectedClientPlans,documents,agentCode);  
             return result;
