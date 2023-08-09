@@ -290,7 +290,7 @@ async function checkLoggedInUser(userLogin,email,password){
     var url = apiUrls.agentUrl.isAgentUrl+email;
     var result = await axios.get(url);
 
-    //درصورتی که کلمه کاربری و پسورد برای ایجنت نباشد اجازه ادامه نمی دهد.
+    //درصورتی که کلمه کاربری و پسورد برای ایجنت نباشد اجازه ادامه نمی دهد. ذ
     if(result.data.name.isAgent==false){
       signOut();
       setError({

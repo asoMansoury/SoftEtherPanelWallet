@@ -85,18 +85,9 @@ export function calculateEndDate(startDate, duration) {
     const adjustedMonth = newDateObj.getMonth();
     const adjustedYear = newDateObj.getFullYear();
   
-    const newDate = new Date(adjustedYear, adjustedMonth, startDateObj.getDate(), startDateObj.getHours(), startDateObj.getMinutes(), startDateObj.getSeconds())
-      .toLocaleString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      }).format('YYYY/MM/DD HH:mm:ss');
-  
-    return newDate;
+    const newDate = new Date(adjustedYear, adjustedMonth, startDateObj.getDate(), startDateObj.getHours(), startDateObj.getMinutes(), startDateObj.getSeconds());
+    const formattedDate = newDate.toISOString().replace(/T/, ' ').replace(/\.\d+Z$/, '').replace(/-/g, '/');
+    return formattedDate;
   }
 
   export const GenerateTestExpiration = (durationDay) => {
