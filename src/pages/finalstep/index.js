@@ -40,11 +40,13 @@ const FinalStep = ()=>{
         try {
           var url =apiUrls.userUrl.createNewUserUrl;
           const response = await axios.post(url, { UUID: objPlan.uuid });
-          setBasket(response.data.name.basket);
-          setUsers(response.data.name.users);
-          setCustomer(response.data.name.customer); 
-          setServers(response.data.name.servers);
-          setShowLoadingProgress(false);
+          if(response.data.name.isValid==true){
+            setBasket(response.data.name.basket);
+            setUsers(response.data.name.users);
+            setCustomer(response.data.name.customer); 
+            setServers(response.data.name.servers);
+            setShowLoadingProgress(false);
+          }
         } catch (error) {
           console.error(error);
         }

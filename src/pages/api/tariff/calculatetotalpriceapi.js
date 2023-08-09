@@ -47,7 +47,8 @@ export default async function handler(req, res) {
 
       var result =await CalculateTotalPriceModifed(isAgent.agentcode,body.tariffPlans,body.type);
       
-      if(result.ownerPrice>agentWallet.cashAmount){
+      var checkHasCash = agentWallet.cashAmount - result.ownerPrice
+      if(checkHasCash<0){
         res.status(200).json({ name: {
           isValid:false,
           message:"موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."

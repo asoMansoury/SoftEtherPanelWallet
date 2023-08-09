@@ -11,6 +11,9 @@ import { SendMailToCustomers } from "./SenMail";
 import { UpdateUsersBasket } from "src/databse/usersbasket/insertusersbasket";
 import { PAID_CUSTOMER_STATUS } from "src/databse/usersbasket/PaidEnum";
 import { apiUrls } from "src/configs/apiurls";
+import { getToken } from "next-auth/jwt";
+import { IsAgentValid } from "src/databse/agent/getagentinformation";
+import { CalculateWallet } from "src/databse/Wallet/UpdateWallet";
 
 
 const SettinOvpnUrlForUsers = (servers,users)=>{
@@ -42,6 +45,24 @@ export default async function handler(req, res) {
         return;
       }
     if (req.method === 'POST') {
+
+      const token = await getToken({ req });
+      if(token ==null ){
+          res.status(200).json({ name: {
+            isValid:false,
+            message:"شما دسترسی  خرید اکانت ندارید."
+          } });
+          return;
+      }
+      var isAgent =await IsAgentValid(token.email);
+      if(isAgent.isAgent==false){
+        res.status(200).json({ name: {
+          isValid:false,
+          message:"شما دسترسی  خرید اکانت ندارید."
+        } });
+        return;
+      }
+
       // Handle the POST request here
       const { UUID } = req.body;
 
@@ -59,6 +80,7 @@ export default async function handler(req, res) {
          var newUsers =await CreateUser(usersBasketObj);
 
         //put the new user into the database
+        await CalculateWallet(registerCustomer.email,apiUrls.types.SoftEther,usersBasketObj.price);
 
         var userRegistered = [];
         await Promise.all(newUsers.map(async (userNew) => {
@@ -98,7 +120,8 @@ export default async function handler(req, res) {
           basket:usersBasketObj,
           users: wrappedUsers,
           customer:registerCustomer,
-          servers:servers
+          servers:servers,
+          isValid:true
       }});
    }
    else{

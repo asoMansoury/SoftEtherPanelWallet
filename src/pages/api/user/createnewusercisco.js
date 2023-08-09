@@ -11,6 +11,7 @@ import { sendEmail, sendEmailCiscoClient } from "src/lib/emailsender";
 import { PAID_CUSTOMER_STATUS } from "src/databse/usersbasket/PaidEnum";
 import { GetAgentByUserCode, IsAgentValid } from "src/databse/agent/getagentinformation";
 import { getToken } from "next-auth/jwt";
+import { CalculateWallet } from "src/databse/Wallet/UpdateWallet";
 
 
 
@@ -63,6 +64,7 @@ export default async function handler(req, res) {
          
          var newUsers =await CreateUser(usersBasketObj);
 
+        await CalculateWallet(registerCustomer.email,apiUrls.types.Cisco,usersBasketObj.price);
         //put the new user into the database
         var userRegistered = [];
         await Promise.all(newUsers.map(async (userNew) => {
@@ -101,7 +103,8 @@ export default async function handler(req, res) {
         basket:usersBasketObj,
         users: activedUserForSendingEmail,
         customer:registerCustomer,
-        servers:servers
+        servers:servers,
+        isValid:true
       }});
    }
    else{
