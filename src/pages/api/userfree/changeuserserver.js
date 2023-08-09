@@ -1,6 +1,4 @@
-import { getToken } from "next-auth/jwt";
-import { IsAgentValid } from "src/databse/agent/getagentinformation";
-import ChangeUserServer from "src/databse/user/changeUserServer";
+import ChangeUserServer, { ChangeUserFreeServer } from "src/databse/user/changeUserServer";
 
 
 
@@ -16,25 +14,17 @@ export default async function handler(req, res) {
         return;
       }
     if (req.method === 'POST') {
-        const token = await getToken({ req });
-        if(token ==null ){
-          res.status(200).json({ name:"شما دسترسی  خرید اکانت ندارید."});
-            return;
-        }
-        var isAgent =await IsAgentValid(token.email);
-        if(isAgent.isAgent==false){
-          res.status(200).json({ name:"شما دسترسی  خرید اکانت ندارید."});
-          return;
-        }
+
       // Handle the POST request here
       const { body } = req.body;
 
-      var result =await ChangeUserServer(body);
+      var result =await ChangeUserFreeServer(body);
       if(result==null){
         res.status(200).json({ name: "عملیات با شکست مواجه شد، لطفا با پشتیبانی تماس بگیرید."});
         return;
       }
-    
+
+
 
 
       var users = [];

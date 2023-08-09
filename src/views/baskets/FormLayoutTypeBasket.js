@@ -23,7 +23,7 @@ import { useRouter } from 'next/router';
 import { ConvertMonthFromAgentFormat, ConvertPriceFromAgentFormat } from './basketUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { isEmail } from 'validator';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import {  useSession } from 'next-auth/react';
 import CircularProgress from '@mui/material/CircularProgress';
 const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
   const [tariffTypes,setTariffTypes] = useState([]);

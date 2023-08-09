@@ -19,25 +19,14 @@ const ChangeServer = () => {
   const [userServer,setUserServers] = useState([]);
   const [isShowServerComponent,setShowServerComponent] = useState(false);
   const [selectedUser,setSelectedUser]=useState();
-  const {  data:session,status } = useSession();
-  const [profileSelector,setProfileSelector] = useState({
-    isLoggedIn:false
-  });
+  
 
   const [erros,setErros] = useState({
     hasErros:false,
     erroMsg:''
   });
 
-  useEffect(async()=>{
 
-    if(status ==="authenticated"){
-      setProfileSelector({
-        email:session.user.email,
-        isLoggedIn:true
-      });
-    }
-  },[status])
 
   async function getUsersServerHandler(item){
     setErros({
@@ -48,17 +37,18 @@ const ChangeServer = () => {
     var getUsersServer =await axios.get(apiUrls.server.getUsersServerApi+item.username);
     setUserServers(getUsersServer.data.name);
     setShowServerComponent(true);
-    setSelectedUser(item.username);
+    setSelectedUser(item);
   }
 
   async function changeServerHandler(item){
     var obj = {
       servercode:item.servercode,
-      username:selectedUser
+      username:selectedUser.username,
+      password:selectedUser.password
     }
     
     setShowServerComponent(false);
-    var result =await axios.post(apiUrls.userUrl.changeUserServerUrl,{body:obj});
+    var result =await axios.post(apiUrls.userfreeUrls.ChangeUserFreeServer,{body:obj});
     setErros({
       hasErros:true,
       erroMsg:result.data.name
@@ -76,7 +66,7 @@ const ChangeServer = () => {
                   isShowServerComponent && (
                     <>
                        <div style={{paddingRight:'30px', paddingTop:'30px',paddingBottom: '30px'}}>
-                          <Alert severity="success">از سرورهای زیر یکی از سرورها را انتخاب نمایید.</Alert>
+                          <Alert severity="success">از بین سرورهای زیر یکی از سرورها را انتخاب نمایید.</Alert>
                       </div>
                       <LoadinServerForChange changeServerHandler={changeServerHandler} servers={userServer}></LoadinServerForChange>
                     </>

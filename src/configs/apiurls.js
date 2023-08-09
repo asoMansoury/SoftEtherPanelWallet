@@ -66,5 +66,9 @@ export const apiUrls = {
     },
     "TutorialUrls":{
         "GetTutorial":`/api/tutorial/gettutorial`
+    },
+    "userfreeUrls":{
+        "GetUsersByUsername":`/api/userfree/getusersbyusername/?username=`,
+        "ChangeUserFreeServer":`/api/userfree/changeuserserver`
     }
 }

@@ -14,39 +14,31 @@ import TableCell from '@mui/material/TableCell'
 import TableFooter from '@mui/material/TableFooter'
 import TableContainer from '@mui/material/TableContainer'
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { Profilestatus } from 'src/redux/actions/profileActions';
+import CardActions from '@mui/material/CardActions'
 import { ConvertToPersianDateTime } from 'src/lib/utils';
 import EditIcon from 'src/views/iconImages/editicon';
 import TextField from '@mui/material/TextField'
 import { useSession } from 'next-auth/react';
-
-const createData = (username, expires,userwithhub,type,typeTitle) => {
-    return { username, expires ,userwithhub,type,typeTitle}
+import CircularProgress from '@mui/material/CircularProgress';
+const createData = (username, expires,userwithhub,type,typeTitle,password) => {
+    return { username, expires ,userwithhub,type,typeTitle,password}
   }
 
   
 const ChanginServerTable = (props) => {
 
-  const {  data:session,status } = useSession();
-  const [usernameForSearch,setUserNameForSearch] = useState("");
-  const [email,setEmail] = useState();
   const [rows,setRows] = useState([]);
   const [mainRows,setMainRows] = useState([]);
-  const [profileSelector,setProfileSelector] = useState({
-    isLoggedIn:false
+  const [showLoadingProgress,setShowLoadingProgress]= useState(false)
+  const [error,setError] = useState({
+    isUserValid:true,
+    userMsg:""
   });
+  const [form,setForm]= useState({
+    username:"",
+    password:""
+  })
 
-  useEffect(async()=>{
-    
-    if(status ==="authenticated"){
-      setProfileSelector({
-        email:session.user.email,
-        isLoggedIn:true
-      });
-      await GetUsersData();
-    }
-  },[status])
 
   const [errors,setErrors]= useState({
     hasError:false,
@@ -57,33 +49,22 @@ const ChanginServerTable = (props) => {
     
   },[]);
 
-  async function GetUsersData(){
-    var tmp = [];
-    var usersAccounts =await axios.get(apiUrls.userUrl.getpurchasedUrl+session.user.email);
-
-    usersAccounts.data.name.map((item,index)=>{
-        tmp.push(createData(item.username,item.expires,item.userwithhub,item.type,item.typeTitle));
-    });
-
-    setRows(tmp);
-    setMainRows(tmp);
-    setEmail(session.user.email)
-  }
-
-  const searchByUserNameHandler =(e)=>{
-    e.preventDefault();
-    setUserNameForSearch(e.target.value);
-    var tmp = [];
-    var findedElements = mainRows.filter(item => item.username.toLowerCase().includes(e.target.value.toLowerCase()));
-    setRows(findedElements);
-    
-  }
-
   async function ChangeServerHandler(e){
     e.preventDefault();
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
     props.getUsersServerHandler(row);
-    await GetUsersData();
+  }
+
+  async function FetchUserHandler(e){
+    e.preventDefault();
+    var tmp = [];
+    var usersAccounts =await axios.get(apiUrls.userfreeUrls.GetUsersByUsername+form.username+"&password="+form.password);
+    usersAccounts.data.name.map((item,index)=>{
+        tmp.push(createData(item.username,item.expires,item.userwithhub,item.type,item.typeTitle,item.password));
+    });
+
+    setRows(tmp);
+    setMainRows(tmp);
   }
   
   return (
@@ -92,15 +73,48 @@ const ChanginServerTable = (props) => {
     <Grid item xs={12}>
 
         <Grid container spacing={6}>
-          <Grid item xs={3}></Grid>
-          <Grid item xs={6}>
+          <Grid item sm={6}>
             <TextField name="username" 
               type='input'
-              value={usernameForSearch}
-              onChange={searchByUserNameHandler}  
-              fullWidth label='نام کاربر' placeholder='جسجتو اکانت بر اساس نام کاربری' />
+              onChange={(e)=>{setForm({
+                ...form,
+                username:e.target.value
+              })}}  
+              fullWidth label='نام کاربر' placeholder='نام کاربر را وارد نمایید.' />
+          </Grid>
+          <Grid item  sm={6}>
+            <TextField name="username" 
+              type='input'
+              onChange={(e)=>{setForm({
+                ...form,
+                password:e.target.value
+              })}}  
+              fullWidth label='کلمه عبور' placeholder='کلمه عبور را وارد کنید' />
           </Grid>
         </Grid>
+
+        <Grid container spacing={6}>
+          <Grid item xs={3}></Grid>
+          <Grid item xs={6}>
+          {
+          
+            !(error.isUserValid) &&
+                    error.userMsg!=""&&<Alert severity="error">{error.userMsg}</Alert>
+          }
+          <CardActions>
+          {
+              showLoadingProgress&&
+              <div style={{display:'flex', justifyContent:'center'}}>
+                  <CircularProgress></CircularProgress>
+              </div>
+            }
+          <Button size='large' disabled={showLoadingProgress} onClick={FetchUserHandler} type='submit' sx={{ mr: 2 }} variant='contained'>
+            دریافت اطلاعات
+          </Button>
+        </CardActions>
+          </Grid>
+        </Grid>
+
     </Grid>
     <Table sx={{ minWidth: 650 }} aria-label='simple table'>
       <TableHead stickyHeader>
