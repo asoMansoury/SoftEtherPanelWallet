@@ -319,6 +319,7 @@ async function checkLoggedInUser(userLogin,email,password){
   }
 }
 async function finishHandler(e){
+  e.preventDefault();
   const uuid = uuidv4();
   
   if(!validateEmail()&&profileSelector.isLoggedIn==false) 
@@ -331,18 +332,12 @@ async function finishHandler(e){
     return;
 
   if(profileSelector.isLoggedIn==false){
-
-      var password = formData['password'];
-      var email = formData['email'];
-      var userIsExists = await axios.post(apiUrls.customerUrls.checkCustomerExistsApi,{email:email});
-      if(userIsExists.data.name.isvalid==true){
-        const payload = {email:email,password:password};
-        const result =await signIn("credentials",{...payload,redirect:false});
-        if(!checkLoggedInUser(result,email,password))
-          return;
-      }else{
-        return;
-      }
+    setError({
+      ...error,
+      isUserValid:false,
+      userMsg:"شما دسترسی خرید اکانت ندارید لطفا با مدیریت در تماس باشید."
+    });
+    return;
   }
 
 
@@ -363,6 +358,14 @@ async function finishHandler(e){
   };
 
   await axios.post(apiUrls.localUrl.calculateTotalPrice,{body:obj}).then((response)=>{
+    if(response.data.isValid==false){
+      setError({
+        ...error,
+        isUserValid:false,
+        userMsg:"شما دسترسی خرید اکانت ندارید لطفا با مدیریت در تماس باشید."
+      });
+      return;
+    }
     obj.price=response.data.name.ownerPrice;
     obj.agentPrice = response.data.name.agentPrice;
     obj.debitToAgent = isFromAgent?(obj.agentPrice - obj.price): 0;

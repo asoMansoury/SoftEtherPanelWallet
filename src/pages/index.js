@@ -16,9 +16,8 @@ const Dashboard = () => {
 
 
   useEffect(async()=>{
-    var session =await getSession();
-    router.push('/');
-  },[status])
+    router.push('/cisco');
+  })
 
   return (
     <ApexChartWrapper dir='rtl'>

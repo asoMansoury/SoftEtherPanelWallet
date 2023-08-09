@@ -1,6 +1,7 @@
 
+import { getSession } from "next-auth/react";
 import { CalculateTotalPrice } from "src/databse/tariffagent/calculateTotalPrice";
-
+import { getToken } from "next-auth/jwt"
 
 
 export default async function handler(req, res) {
@@ -17,10 +18,24 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       // Handle the POST request here
       const { body } = req.body;
-      var result =await CalculateTotalPrice(body.agentInformation,body.tariffPlans,body.type)
-      
-      // Process the data or perform any necessary operations
+      const token = await getToken({ req })
+      res.status(200).json({ name: {
+        isValid:false,
+        message:"شماره دسترسی به خرید اکانت ندارید."
+      } });
+      return;
+      if(token!=null){
+        var result =await CalculateTotalPrice(body.agentInformation,body.tariffPlans,body.type);
+              // Process the data or perform any necessary operations
       res.status(200).json({ name: result });
+      }else{
+        res.status(200).json({ name: {
+          isValid:false,
+          message:"شماره دسترسی به خرید اکانت ندارید."
+        } });
+      }
+      
+
     } else {
         console.log("method not allow")
       res.status(405).json({ message: 'Method Not Allowed' });

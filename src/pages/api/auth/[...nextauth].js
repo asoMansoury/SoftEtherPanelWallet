@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import Login from "src/databse/user/login";
 
 export const authOptions = {
+  
   secret: process.env.NEXTAUTH_SECRET,
   // Configure one or more authentication providers
     providers: [
@@ -33,8 +34,9 @@ export const authOptions = {
       signIn: "/pages/api/auth"
     },
     session: {
-      strategy: 'jwt',
-  },
+      strategy: "jwt",
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+    },
     callbacks:{
         async session({ session, user, token }) {
             session.user.id = token.id;
@@ -65,14 +67,7 @@ export const authOptions = {
       rememberMe: true,
     },
 
-    //   async session({session,token,user}){
-    //     console.log("session is equal to : ",{session , token});
-    //     session.user.username = session.user.name.split(' ').join('').toLocaleLowerCase();
-    //     session.user.uid = token.sub;
-        
-    //     return session;
-    //   }
-    // },
+
     
 }
 
