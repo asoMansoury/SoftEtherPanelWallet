@@ -115,7 +115,7 @@ const UserDropdown = (props) => {
         <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>موجود حساب</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
-                {status=="authenticated"?addCommas(digitsEnToFa(cashAmount.toString())):'0 '} تومان
+                {status=="authenticated"&&cashAmount!=undefined?addCommas(digitsEnToFa(cashAmount.toString())):'0 '} تومان
               </Typography>
             </Box>
 

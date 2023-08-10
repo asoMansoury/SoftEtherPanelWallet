@@ -1,28 +1,14 @@
-// ** MUI Imports
-import Grid from '@mui/material/Grid'
-import FormLayoutTypeBasket from 'src/views/baskets/FormLayoutTypeBasket'
-import { apiUrls } from 'src/configs/apiurls';
 
 // ** Demo Components Imports
 import { useEffect,useState } from 'react';
 import Paper from '@mui/material/Paper'
-import {Button,Alert} from '@mui/material/'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
 import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
-import TableFooter from '@mui/material/TableFooter'
 import TableContainer from '@mui/material/TableContainer'
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { Profilestatus } from 'src/redux/actions/profileActions';
-import { ConvertToPersianDateTime } from 'src/lib/utils';
-import { addCommas ,digitsEnToFa} from '@persian-tools/persian-tools';
-
-const createData = (username, expires) => {
-    return { username, expires }
-  }
+import { useSelector } from 'react-redux';
 
   
 const DetailsComponent = (props) => {

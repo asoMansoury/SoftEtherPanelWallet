@@ -442,21 +442,21 @@ async function finishHandler(e){
 
         <Divider sx={{ margin: 0 }} />
         <Grid container spacing={5} style={{marginTop:'10px', paddingRight:'px'}}>
-        <Grid item xs={12} sm={6} >
-              <TextField name="email" 
-              disabled={isEnableEmail}
-              type='email'
-              ref={emailRef}
-              value={formData.email}
-              onChange={emailHandler}  
-              fullWidth label='ایمیل' placeholder='وارد کردن ایمیل اجباری است' />
-        </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField name="password" 
-            disabled={isEnablePass}
-            type='password'
-            onChange={passwordHandler}   fullWidth label="پسورد اکانت" placeholder="پسورد اکانت " />
-          </Grid>
+            <Grid item xs={12} sm={6} >
+                  <TextField name="email" 
+                  disabled={isEnableEmail}
+                  type='email'
+                  ref={emailRef}
+                  value={formData.email}
+                  onChange={emailHandler}  
+                  fullWidth label='ایمیل' placeholder='وارد کردن ایمیل اجباری است' />
+            </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField name="password" 
+                disabled={isEnablePass}
+                type='password'
+                onChange={passwordHandler}   fullWidth label="پسورد اکانت" placeholder="پسورد اکانت " />
+              </Grid>
         </Grid>
         {
           
