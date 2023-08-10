@@ -1,5 +1,5 @@
 import { Redis } from "ioredis";
-import RegisterCustomers from "src/databse/customers/registercustomers";
+import RegisterCustomers, { RegisterCustomersForOthers } from "src/databse/customers/registercustomers";
 import GetServers from "src/databse/server/getservers";
 import CreateUser from "src/databse/user/createuser";
 import RegisterUsersInDB from "src/databse/user/registerusers";
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         return;
       }
     if (req.method === 'POST') {
-
+      const currentDomain = req.headers.host;
       const token = await getToken({ req });
       if(token ==null ){
           res.status(200).json({ name: {
@@ -94,7 +94,7 @@ export default async function handler(req, res) {
           var expireDate = userItem.expires;
           servers.map((server,index)=>{
             var groupPolicy = server.isactive?userItem.policy:server.policy;
-            CreateUserOnSoftEther(server,userItem,groupPolicy,expireDate);
+            //CreateUserOnSoftEther(server,userItem,groupPolicy,expireDate);
          });
         })
 
@@ -114,8 +114,13 @@ export default async function handler(req, res) {
 
         var wrappedUsers = SettinOvpnUrlForUsers(servers,activedUserForSendingEmail)
         
-        sendEmail(usersBasketObj.email,wrappedUsers,"لطفا پاسخ ندهید. رسید اکانت خریداری شده");
-        
+        sendEmail(registerCustomer.email,wrappedUsers,"لطفا پاسخ ندهید. رسید اکانت خریداری شده",currentDomain,registerCustomer);
+        if(usersBasketObj.isSendToOtherEmail==true){
+          var otherObj = usersBasketObj.sendEmailToOther;
+          var otherToEmailCustomer = await  RegisterCustomersForOthers(otherObj,apiUrls.types.Cisco);
+          sendEmail(otherToEmailCustomer.email,wrappedUsers,"لطفا پاسخ ندهید. رسید اکانت خریداری شده" , currentDomain,otherToEmailCustomer);
+          
+      }
         res.status(200).json({ name: {
           basket:usersBasketObj,
           users: wrappedUsers,

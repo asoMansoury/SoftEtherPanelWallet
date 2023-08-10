@@ -70,8 +70,7 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
   const [showLoadingProgress,setShowLoadingProgress]= useState(false)
   const [emailToUser,setEmailToUser]= useState({
     checked:false,
-    email:"",
-    password:""
+    email:""
   })
 
   useEffect(async()=>{
@@ -270,22 +269,6 @@ function validateSendToOther(){
           mesg:""
         });
       }
-
-      if(emailToUser.password==undefined||!emailToUser.password!='') {
-        setError({
-          ...error,
-          isPasswordValid:false,
-          mesg:"فرمت پسورد صحیح نمی باشد."
-        });
-
-        return false;
-      }else{
-        setError({
-          ...error,
-          isPasswordValid:true,
-          mesg:""
-        });
-      }
       return true;
     }
   return true;
@@ -413,6 +396,7 @@ async function finishHandler(e){
     password:formData['password'],
     isLoggedIn:profileSelector.isLoggedIn,
     type:typeVpn,
+    isSendToOtherEmail:emailToUser.checked,
     sendEmailToOther:emailToUser
   };
 
@@ -432,6 +416,7 @@ async function finishHandler(e){
 
 
      axios.post(apiUrls.redisUrl.setRedisApi,{data:obj}).then((redisResponse)=>{
+      planSelectedNummber = 1;
       var finalPath = "/finalstep";
       if(typeVpn == apiUrls.types.Cisco)
         finalPath ="/cisco//finalstep"
@@ -560,16 +545,6 @@ async function finishHandler(e){
                           email:e.target.value
                         })}  
                         fullWidth label='ایمیل' placeholder='ایمیل پنل کاربر' />
-                  </Grid>
-                  <Grid item xs={12} sm={5}>
-                      <TextField name="userPassword" 
-                      type='password'
-                      value={emailToUser.password}
-                      onChange={(e)=>setEmailToUser({
-                        ...emailToUser,
-                        password:e.target.value
-                      })}     
-                      fullWidth label="پسورد پنل کاربر" placeholder="پسورد پنل کاربر " />
                   </Grid>
                 </>
               )

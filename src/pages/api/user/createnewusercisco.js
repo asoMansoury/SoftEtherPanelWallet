@@ -1,4 +1,4 @@
-import RegisterCustomers from "src/databse/customers/registercustomers";
+import RegisterCustomers, { RegisterCustomersForOthers } from "src/databse/customers/registercustomers";
 import GetServers from "src/databse/server/getservers";
 import CreateUser from "src/databse/user/createuser";
 import  { RegisterUsersInDBForCisco } from "src/databse/user/registerusers";
@@ -16,6 +16,7 @@ import { CalculateWallet } from "src/databse/Wallet/UpdateWallet";
 
 
 export default async function handler(req, res) {
+  
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -27,6 +28,7 @@ export default async function handler(req, res) {
         return;
       }
     if (req.method === 'POST') {
+      const currentDomain = req.headers.host;
       const token = await getToken({ req });
       if(token ==null ){
           res.status(200).json({ name: {
@@ -54,7 +56,7 @@ export default async function handler(req, res) {
 
       // Process the data or perform any necessary operations;
        if(usersBasketObj != null){
-          var registerCustomer =  await RegisterCustomers(usersBasketObj,apiUrls.types.Cisco);
+        var registerCustomer  =  await RegisterCustomers(usersBasketObj,apiUrls.types.Cisco);
         
          
         //get all servers to make a user
@@ -97,8 +99,12 @@ export default async function handler(req, res) {
       UpdateUsersBasket(UUID,PAID_CUSTOMER_STATUS.PAID,true,userRegistered,usersBasketObj);
 
       
-      sendEmailCiscoClient(usersBasketObj.email,newUsers,selectedServer,"لطفا پاسخ ندهید. رسید اکانت خریداری شده");
-      
+      sendEmailCiscoClient(registerCustomer.email,newUsers,selectedServer,"لطفا پاسخ ندهید. رسید اکانت خریداری شده",currentDomain,registerCustomer);
+      if(usersBasketObj.isSendToOtherEmail==true){
+          var otherObj = usersBasketObj.sendEmailToOther;
+          var otherToEmailCustomer = await  RegisterCustomersForOthers(otherObj,apiUrls.types.Cisco);
+        sendEmailCiscoClient(otherToEmailCustomer.email,newUsers,selectedServer,"لطفا پاسخ ندهید. رسید اکانت خریداری شده",currentDomain,otherToEmailCustomer);
+      }
       res.status(200).json({ name: {
         basket:usersBasketObj,
         users: activedUserForSendingEmail,

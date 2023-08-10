@@ -1,6 +1,6 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
-import { MONGO_URI } from 'src/lib/utils';
+import { MONGO_URI, generateRandomNumberPassword } from 'src/lib/utils';
 import { GetAgentByUserCode } from '../agent/getagentinformation';
 
 const client = new MongoClient(MONGO_URI,{
@@ -40,6 +40,48 @@ async function RegisterCustomers(user,type){
             }
             
             return result;
+        }
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
+export async function RegisterCustomersForOthers(user,type){
+    if(type=='' || type == undefined|| type ==null) return
+    type= apiUrls.types.SoftEther;
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Customers');
+        
+        var documents =await collection.find({email:{ $regex: `^${user.email}$`, $options: "i" }}).toArray();
+
+        if(documents[0]){
+            var doc = documents[0];
+
+            return doc;
+        }
+        else{
+
+            const result = await collection.insertOne({
+                email:user.email,
+                password:generateRandomNumberPassword(5),
+                isfromagent:false, 
+                isAdmin:false,
+                agentIntoducer:false
+            });
+            const insertedObjectId = result.insertedId;
+            const registeredRecord = await collection.findOne({ _id: insertedObjectId });
+            var obj ={
+                isfromagent:false, 
+                isAdmin:false,
+                agentIntoducer:false,
+                email:user.email,
+                password:registeredRecord.password
+            }
+            return registeredRecord;
         }
     }catch(erros){
         return Promise.reject(erros);
