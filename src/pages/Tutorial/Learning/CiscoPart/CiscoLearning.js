@@ -37,6 +37,14 @@ const CiscoLearning = (props) => {
                           </Typography>
                         </div>
                     </a>
+                    <a className="download-img-con btn-for-select" target="_blank" href={ciscoTutorial.windows} rel="noreferrer"  >
+                        <DownloadIcon></DownloadIcon>
+                        <div>
+                          <Typography variant='h6' sx={{ marginBottom: 2 }}>
+                            مشاهده آموزش راه اندازی ویندوز
+                          </Typography>
+                        </div>
+                    </a>
                 </div>
               </Grid>
             </Grid>

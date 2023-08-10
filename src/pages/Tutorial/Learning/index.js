@@ -41,11 +41,11 @@ export default function index() {
                     <Tab value='2' label='سیسکو' />
                     </TabList>
                     <CardContent sx={{ textAlign: 'center' }}>
-                        <TabPanel value='1' sx={{ p: 0 }}>
-                            <CiscoLearning ciscoTutorial = {ciscoTutorial}></CiscoLearning>
+                    <TabPanel value='1' sx={{ p: 0 }}>
+                            <SoftEtherLearning softEtherTutorial = {softEtherTutorial}></SoftEtherLearning>
                         </TabPanel>
                         <TabPanel value='2' sx={{ p: 0 }}>
-                            <SoftEtherLearning ciscoTutorial = {ciscoTutorial}></SoftEtherLearning>
+                            <CiscoLearning ciscoTutorial = {ciscoTutorial}></CiscoLearning>
                         </TabPanel>
                     </CardContent>
                 </TabContext>

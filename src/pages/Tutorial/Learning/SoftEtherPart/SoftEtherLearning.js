@@ -29,11 +29,19 @@ const SoftEtherLearning = (props) => {
                         </Typography>
                       </div>
                   </a>
-                  <a className="download-img-con btn-for-select" target="_blank" href={softEtherTutorial.iphone} rel="noreferrer"  >
+                  <a  className="download-img-con btn-for-select" target="_blank" href={softEtherTutorial.iphone} rel="noreferrer"  >
                       <DownloadIcon></DownloadIcon>
                       <div>
                         <Typography variant='h6' sx={{ marginBottom: 2 }}>
                           مشاهده آموزش راه اندازی آیفون
+                        </Typography>
+                      </div>
+                  </a>
+                  <a  className="download-img-con btn-for-select" target="_blank" href={softEtherTutorial.windows} rel="noreferrer"  >
+                      <DownloadIcon></DownloadIcon>
+                      <div>
+                        <Typography variant='h6' sx={{ marginBottom: 2 }}>
+                          مشاهده آموزش راه اندازی ویندوز
                         </Typography>
                       </div>
                   </a>
