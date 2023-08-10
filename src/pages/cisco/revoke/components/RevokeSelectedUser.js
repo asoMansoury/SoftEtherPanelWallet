@@ -127,6 +127,9 @@ const RevokeSelectedUser = (props) => {
       type:selectedUser.type,
       uuid:uuid
     });
+    if(resul.data.isValid==false){
+      console.log(result.data.message);
+    }
   }
   
 

@@ -34,7 +34,6 @@ export async function GetAgentByUserCode(code,type){
 
         const TariffAgentCollection = db.collection('TariffAgent');
         const agentTariffs = await TariffAgentCollection.find({agentcode:agentCode,type:type}).toArray();
-
         const result ={
             agentInformation:documents,
             isAgentValid:true,

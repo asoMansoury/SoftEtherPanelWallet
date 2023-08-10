@@ -59,4 +59,30 @@ export async function GetCustomerByEmail(email){
     }
 }
 
+
+export async function GetCustomerAgentCode(agentCode){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Customers');
+        const customer = await collection.findOne({ agentcode:agentCode });
+        if (customer==null){
+            
+            var obj = {
+                isvalid:false,
+            }
+
+            return obj;
+        }else{
+            customer.isvalid = true;
+
+            return customer;
+        }
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
 export default GetCustomerByEmailAndPassword;

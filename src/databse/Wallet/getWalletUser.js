@@ -41,6 +41,36 @@ export async function GetWalletUser(email,type){
     }
 }
 
+export async function GetWalletUserByCode(agentCode,type){
+    if(type=='' || type == undefined)
+        type= "SF1";
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+
+        const collection = db.collection('Wallet');
+        const wallet = await collection.findOne({agentcode:agentCode});
+        if(wallet==null)
+            return {
+                isValid:false
+            };
+
+            const result ={
+                email:wallet.email,
+                isAgent:wallet.isAgent,
+                cashAmount:wallet.cashAmount,
+                debitAmount:wallet.debitAmount,
+                debitToAgent:wallet.debitToAgent,
+                agentcode : wallet.agentcode
+            }
+
+        return result;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
 
 export async function CheckAgentWalet(email,type){
     var agentCode = code.toString();
