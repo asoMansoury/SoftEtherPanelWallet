@@ -25,6 +25,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { isEmail } from 'validator';
 import {  useSession } from 'next-auth/react';
 import CircularProgress from '@mui/material/CircularProgress';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+
+const planSelectedNummber = 1;
 const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
   const [tariffTypes,setTariffTypes] = useState([]);
   const [months, setMonths] = useState([]);
@@ -37,7 +42,9 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
     isPlansValid:true,
     mesg:"",
     isUserValid:true,
-    userMsg:""
+    userMsg:"",
+    isAddToCartValid:true,
+    addToCartMsg:""
   });
 
   const [isEnableEmail,setIsEnableEmail] = useState(false);
@@ -61,7 +68,11 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
   const router = useRouter();
   // const dispatch = useDispatch();
   const [showLoadingProgress,setShowLoadingProgress]= useState(false)
-  const [isEnableBtnBuy,setIsEnableBtnBuy]= useState(false)
+  const [emailToUser,setEmailToUser]= useState({
+    checked:false,
+    email:"",
+    password:""
+  })
 
   useEffect(async()=>{
     
@@ -153,6 +164,12 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
     tmp.splice(indexOfItem, 1);
     setSelectedTariffPlans(tmp);
     validatePlans();
+    planSelectedNummber = planSelectedNummber -1;
+    setError({
+      ...error,
+      isAddToCartValid:true,
+      addToCartMsg:""
+    })
   }
   
   
@@ -236,6 +253,44 @@ function validatePassowrd(){
   return true;
 }
 
+function validateSendToOther(){
+  if(emailToUser.checked==true){
+      if(emailToUser.email==undefined||!isEmail(emailToUser.email)) {
+        setError({
+          ...error,
+          isEmailValid:false,
+          mesg:"فرمت ایمیل صحیح نمی باشد."
+        });
+
+        return false;
+      }else{
+        setError({
+          ...error,
+          isEmailValid:true,
+          mesg:""
+        });
+      }
+
+      if(emailToUser.password==undefined||!emailToUser.password!='') {
+        setError({
+          ...error,
+          isPasswordValid:false,
+          mesg:"فرمت پسورد صحیح نمی باشد."
+        });
+
+        return false;
+      }else{
+        setError({
+          ...error,
+          isPasswordValid:true,
+          mesg:""
+        });
+      }
+      return true;
+    }
+  return true;
+}
+
 function validatePlans(){
   if(selectedTariffPlans==undefined||selectedTariffPlans.length==0) {
     setError({
@@ -256,11 +311,29 @@ function validatePlans(){
   return true;
 }
 
+function emailToUserHandler(e){
+  e.preventDefault();
+  setEmailToUser({...emailToUser,checked:!emailToUser.checked});
+
+}
+
 const addToCart = (e) =>{
   e.preventDefault();
-
+  setError({
+    ...error,
+    isAddToCartValid:true,
+    addToCartMsg:""
+  })
+  if(planSelectedNummber>1){
+    setError({
+      ...error,
+      isAddToCartValid:false,
+      addToCartMsg:"در حال حاضر امکان انتخاب بیش از یک پلن وجود ندارد."
+    })
+    return;
+  }
   var rowNum = planRow+1;
-
+  planSelectedNummber= planSelectedNummber+1;
   var obj = {
     rowNum:0
   };
@@ -294,7 +367,10 @@ async function finishHandler(e){
   });
 
   const uuid = uuidv4();
-  
+  if(validateSendToOther()==false){
+    setShowLoadingProgress(false);
+    return;
+  }
   if(!validateEmail()&&profileSelector.isLoggedIn==false){
     setShowLoadingProgress(false);
     return;
@@ -336,7 +412,8 @@ async function finishHandler(e){
     email:formData['email'],
     password:formData['password'],
     isLoggedIn:profileSelector.isLoggedIn,
-    type:typeVpn
+    type:typeVpn,
+    sendEmailToOther:emailToUser
   };
 
   await axios.post(apiUrls.localUrl.calculateTotalPrice,{body:obj}).then((response)=>{
@@ -430,6 +507,11 @@ async function finishHandler(e){
           </Grid>
         </CardContent>
         <Divider sx={{ margin: 0 }} />
+        {
+          
+          !(error.isAddToCartValid) &&
+                    error.addToCartMsg!=""&&<Alert severity="error">{error.addToCartMsg}</Alert>
+        }
         <CardActions>
           <Button disabled={!isCalculated&&months!=undefined} size='large' type='submit' onClick={addToCart} sx={{ mr: 2 }} variant='contained'>
             اضافه کردن اکانت
@@ -457,6 +539,42 @@ async function finishHandler(e){
                 type='password'
                 onChange={passwordHandler}   fullWidth label="پسورد اکانت" placeholder="پسورد اکانت " />
               </Grid>
+        </Grid>
+        <Grid container spacing={5} style={{marginTop:'10px', paddingRight:'px'}}>
+            <Grid item xs={12} sm={2} >
+              <FormGroup>
+                <FormControlLabel control={<Checkbox  checked={emailToUser.checked}
+                                                      onChange={emailToUserHandler}/>} label="ارسال اکانت به ایمیل دیگران" />
+              </FormGroup>
+            </Grid>
+            {
+              emailToUser.checked==true &&(
+                <>
+                  <Grid item xs={12} sm={5} >
+                    <TextField name="userEmail" 
+                        type='email'
+                        ref={emailRef}
+                        value={emailToUser.email}
+                        onChange={(e)=>setEmailToUser({
+                          ...emailToUser,
+                          email:e.target.value
+                        })}  
+                        fullWidth label='ایمیل' placeholder='ایمیل پنل کاربر' />
+                  </Grid>
+                  <Grid item xs={12} sm={5}>
+                      <TextField name="userPassword" 
+                      type='password'
+                      value={emailToUser.password}
+                      onChange={(e)=>setEmailToUser({
+                        ...emailToUser,
+                        password:e.target.value
+                      })}     
+                      fullWidth label="پسورد پنل کاربر" placeholder="پسورد پنل کاربر " />
+                  </Grid>
+                </>
+              )
+            }
+
         </Grid>
         {
           

@@ -73,7 +73,7 @@ const ChanginServerTable = (props) => {
     <Grid item xs={12}>
 
         <Grid container spacing={6}>
-          <Grid item sm={6}>
+          <Grid item xs={12} sm={6}>
             <TextField name="username" 
               type='input'
               onChange={(e)=>{setForm({
@@ -82,7 +82,7 @@ const ChanginServerTable = (props) => {
               })}}  
               fullWidth label='نام کاربر' placeholder='نام کاربر را وارد نمایید.' />
           </Grid>
-          <Grid item  sm={6}>
+          <Grid item  xs={12} sm={6}>
             <TextField name="username" 
               type='input'
               onChange={(e)=>{setForm({
