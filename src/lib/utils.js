@@ -158,7 +158,7 @@ export function ConvertToPersianDateTime(georgianDateTime) {
   }
 
 // export const MONGO_URI = "mongodb+srv://asomansoury:lasoA45Egg99@cluster0.luuqh0d.mongodb.net/?retryWrites=true&w=majority"
-export const MONGO_URI =process.env.NODE_ENV == 'development'?process.env.MONGODB_LOCAL_URL:process.env.MONGODB_PROD_URL;
+export const MONGO_URI =process.env.MONGODB_URL;
 
 export const LOCAL_URL = "http://127.0.0.1:3000";
 

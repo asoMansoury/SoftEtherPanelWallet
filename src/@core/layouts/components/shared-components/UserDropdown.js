@@ -14,9 +14,6 @@ import MenuItem from '@mui/material/MenuItem'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
-import { useUserState } from 'src/configs/useUserState '
-import { useDispatch, useSelector } from 'react-redux';
-import Profilestatus from 'src/redux/actions/profileActions';
 import { signOut, useSession } from 'next-auth/react'
 import { addCommas, digitsEnToFa } from '@persian-tools/persian-tools'
 import axios from 'axios'

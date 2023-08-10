@@ -8,12 +8,11 @@ import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
-import { useSelector } from 'react-redux';
 
   
 const DetailsComponent = (props) => {
 
-  const profileSelector = useSelector(state => state.Profile.ProfileData);
+
   const [rows,setRows] = useState([]);
 
   useEffect(async ()=>{
