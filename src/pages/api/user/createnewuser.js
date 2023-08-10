@@ -94,7 +94,7 @@ export default async function handler(req, res) {
           var expireDate = userItem.expires;
           servers.map((server,index)=>{
             var groupPolicy = server.isactive?userItem.policy:server.policy;
-            //CreateUserOnSoftEther(server,userItem,groupPolicy,expireDate);
+            CreateUserOnSoftEther(server,userItem,groupPolicy,expireDate);
          });
         })
 
