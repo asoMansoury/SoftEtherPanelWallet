@@ -137,8 +137,6 @@ const index = () => {
     if(profileSelector.isLoggedIn==false){
         if(validateEmail(email)==false)
             return ;
-        if(validatePassowrd(password)==false)
-            return ;
     }
 
     setIsEnabledConfirm(true);
@@ -165,10 +163,13 @@ const index = () => {
     <Grid container spacing={6}>
             <Grid item xs={12} sm={12} >
                 <Card>
-                    <CardHeader title='دریافت اکانت تست' titleTypographyProps={{ variant: 'h6' }} >   
+                    <CardHeader title='دریافت اکانت تست سیسکو' titleTypographyProps={{ variant: 'h6' }} >   
                     </CardHeader>
                     <CardContent>
                     <Grid container spacing={5}>
+                    <Grid item xs={12} sm={12}>
+                        <Alert severity="error">اطلاعات اکانت تست به ایمیل شخصی شما تنها برای یکبار ارسال میگردد. لطفا ایمیل معتبر و شخصی خود را وارد نمایید.</Alert>
+                      </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField name="email" 
                                disabled={isEnableEmail}
@@ -177,13 +178,13 @@ const index = () => {
                                onChange={(e)=>setEmail(e.target.value)}  
                             fullWidth label='ایمیل' placeholder='وارد کردن ایمیل اجباری است' />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        {/* <Grid item xs={12} sm={6}>
                             <TextField name="password" 
                                  disabled={isEnablePassword}
                                  type='password'
                                 onChange={(e)=>setPassword(e.target.value)}   
                                 fullWidth label="پسورد اکانت" placeholder="پسورد اکانت " />
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12} sm={12}>
                             {
                                 (error.isValid==false) &&
