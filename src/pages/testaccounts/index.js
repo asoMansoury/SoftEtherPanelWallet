@@ -145,32 +145,6 @@ const index = () => {
     var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid+email+"&type="+apiUrls.types.Cisco)).data;
 
     if(isUserValid.name.isValid==true){
-        if(profileSelector.isLoggedIn==false){
-            var userIsExists = await axios.post(apiUrls.customerUrls.checkCustomerExistsApi
-                ,{email:email});
-                
-            if(userIsExists.data.name.isvalid==true){
-                const payload = {email:email,password:password};
-                const result =await signIn("credentials",{...payload,redirect:false});
-                if(!checkLoggedInUser(result,email,password)){
-                  setIsEnabledConfirm(false);
-                  return;
-                }
-                }else{
-                  //زمانی که کاربر ما لاگین نشده است ولی قبلا اکانت تستی هم دریافت نکرده است و میخوام ایمیل و کلمه عبور را درون سیستم ثبت نماییم.
-                  await axios.post(apiUrls.customerUrls.createcustomerApi,{
-                    email:email,
-                    password:password,
-                    type:apiUrls.types.Cisco
-                  }).then((response)=>{
-                    setProfileSelector({
-                      email:email,
-                      isLoggedIn:true,
-                      isAgent:false
-                    });
-                  });
-                }
-
             //بعد از اعتبارسنجی هایه بالا برای کاربر یک اکانت تستی درست می کنیم و به ایمیل او ارسال می کنیم.
             var generateAccount = (await axios.get(apiUrls.testAccountsUrls.gettestaccount+email+"&type="+apiUrls.types.Cisco));
             setError({
@@ -178,8 +152,6 @@ const index = () => {
                 isValidShow:generateAccount.data.name.isValid,
                 errosMsg:generateAccount.data.name.message
               });
-        }
-
     }else{
         setError({
             isValid:false,

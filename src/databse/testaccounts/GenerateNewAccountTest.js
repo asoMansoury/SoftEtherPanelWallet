@@ -1,6 +1,6 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
-import {  sendEmailCiscoClient } from 'src/lib/emailsender';
+import {  sendEmailCiscoClient, sendEmailCiscoClientTest } from 'src/lib/emailsender';
 import { GenerateOneMonthExpiration, GenerateRandomPassword, GenerateTestExpiration, MONGO_URI, formatDate } from 'src/lib/utils';
 import GetServerByCode from '../server/getServerByCode';
 import GetServers, { GetServersForTest } from '../server/getservers';
@@ -67,7 +67,7 @@ export async function GenerateNewAccountTest(email,type,currentDomain,password){
                 username:email,
                 password:password,
             };
-            sendEmailCiscoClient(email,tmpUsers,selectedServer,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount);
+            sendEmailCiscoClientTest(email,tmpUsers,selectedServer,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount);
             
             return {
                 isValid:true,

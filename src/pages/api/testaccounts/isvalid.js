@@ -8,7 +8,7 @@ export default async function handler(req,res){
     if(req.method === "GET"){
         const {email,type } = req.query;
         const session = await getSession({ req });
-        var tariffs = await IsValidForCreatingNewTestAccount(session.user.email,type );
+        var tariffs = await IsValidForCreatingNewTestAccount(email,type );
 
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(200).json({name:tariffs});
