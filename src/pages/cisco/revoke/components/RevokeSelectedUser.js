@@ -40,6 +40,8 @@ const RevokeSelectedUser = (props) => {
   const [selectedUserBasket,setSelectedUserBasket] = useState();
   const [selectedPlanType,setSelectedPlanType]= useState();
   const [showLoadingProgress,setShowLoadingProgress]= useState(false)
+  const [showLoadingProgressForRevoke,setShowLoadingProgressForRevoke]= useState(false)
+  const [revokeMessage,setRevokeMessage] = useState("");
   const [userName,setUserName] = useState("");
   const [expireUser,setExpireUser]= useState("2020/01/01");
   useEffect(async ()=>{
@@ -107,9 +109,10 @@ const RevokeSelectedUser = (props) => {
 
  async function ReovkeBtnHandler(e){
     e.preventDefault();
-
+    setShowLoadingProgressForRevoke(true);
     const uuid = uuidv4();
-
+    setRevokeMessage("");
+    
     const calculatedPrice = await axios.post(apiUrls.UserBasketUrls.insertusersbasketForRevokingApi,{
       username:userName,
       tariffplancode:selectedTariffPlanCode,
@@ -127,9 +130,12 @@ const RevokeSelectedUser = (props) => {
       type:selectedUser.type,
       uuid:uuid
     });
-    if(resul.data.isValid==false){
-      console.log(result.data.message);
+    setShowLoadingProgressForRevoke(false);
+    if(result.data.result.isValid==false){
+      setRevokeMessage(result.data.result.message);
+      return;
     }
+    GetUserInformation(userName);
   }
   
 
@@ -209,16 +215,38 @@ const RevokeSelectedUser = (props) => {
                 </Select>
               </FormControl>
             </Grid>
+            {
+              selectedPlanType&&
+              <Grid>
+                <div style={{marginTop:'16px'}}>
+                    <Alert severity="success"> مبلغ قابل پرداخت:  {addCommas(digitsEnToFa(selectedPlanType.price))} تومان</Alert>
+                </div>
+              </Grid>
+            }
+
             </Grid>
             )
           }
           {
           selectedPlanType&&
             <CardActions>
-                  <div>
-                      <Alert severity="success"> مبلغ قابل پرداخت:  {addCommas(digitsEnToFa(selectedPlanType.price))} تومان</Alert>
-                  </div>
-              <Button onClick={ReovkeBtnHandler}>تمدید اکانت</Button>
+
+             {
+              showLoadingProgressForRevoke&&
+              <div style={{display:'flex', justifyContent:'center'}}>
+                  <CircularProgress></CircularProgress>
+              </div> 
+            }
+            {
+              !showLoadingProgressForRevoke &&<>
+                  <Button type='submit' sx={{ mr: 2 }} variant='contained' size='large' onClick={ReovkeBtnHandler}>تمدید اکانت</Button>
+                  {
+                    revokeMessage!="" &&<div>
+                      <Alert severity="error">{revokeMessage}</Alert>
+                    </div>
+                  }
+              </>
+            }
             </CardActions>
           }
         </Card>

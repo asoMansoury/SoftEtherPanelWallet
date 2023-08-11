@@ -55,11 +55,10 @@ async function RevokeUser(username,tariffplancode,tariffcode,type,uuid){
             var agentWallet =await GetWalletUserByCode(foundedUser.agentcode,foundedUser.type);
             var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice
             if(checkHasCash<0){
-              res.status(200).json({ name: {
+              return{
                 isValid:false,
                 message:"موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
-              } });
-              return;
+              };
             }
 
             const walletCollection = db.collection('Wallet');
@@ -85,7 +84,7 @@ async function RevokeUser(username,tariffplancode,tariffcode,type,uuid){
         )
         if(foundedUser.type==apiUrls.types.SoftEther)
             UpdateSoftEtherUserExpiration(foundedUser,nextExpirationDate);
-
+        foundedUser.isValid = true;
         return foundedUser;
     }catch(erros){
         return Promise.reject(erros);
