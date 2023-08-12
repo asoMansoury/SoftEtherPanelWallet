@@ -69,7 +69,7 @@ const Basket = () => {
 
   async function getAgentInformation(agentCode){
     setAgent(agentCode);
-    var url = apiUrls.agentUrl.getAgentInformation+agentCode+`&type=${apiUrls.types.Cisco}`;
+    var url = apiUrls.agentUrl.getAgentInformation+agentCode+`&type=${apiUrls.types.SoftEther}`;
     axios.get(url).then(data =>{
       setAgentInformation(data.data.name);
       var tariffsTmp = data.data.name.tariff;
