@@ -77,8 +77,6 @@ export async function GetUserInformationByEmail(email){
         const data = (await collection.findOne({email:{ $regex: `^${email}$`, $options: "i" }}));
 
         return{
-            email:{ $regex: `^${data.email}$`, $options: "i" },
-            username:{ $regex: `^${data.username}$`, $options: "i" },
             expires:data.expires,
             type:data.type,
             agentcode:data.agentcode,
