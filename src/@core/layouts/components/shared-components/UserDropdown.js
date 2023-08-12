@@ -99,14 +99,15 @@ const UserDropdown = (props) => {
             >
               <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
-            <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
+            <Box sx={{ display: 'flex', marginLeft: 30, alignItems: 'flex-end', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>پنل</Typography>
+            </Box>
+          </Box>
+          <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 {status=="authenticated"?session.user.email:'کاربر مهمان'}
               </Typography>
             </Box>
-
-          </Box>
         </Box>
         <Divider />
         <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>

@@ -5,8 +5,7 @@ export function ConvertPriceFromAgentFormat(agentInformation,tariffPlans,tariffC
     var i=0;
     for(var item in agentInformation.agentTariffs){
 
-        agentInformation.agentTariffs[i].oldPrice = agentInformation.agentTariffs[i].price;
-        agentInformation.agentTariffs[i].price = agentInformation.agentTariffs[i].agentprice;
+
         tmpData.push(agentInformation.agentTariffs[i]);
         i++;
 

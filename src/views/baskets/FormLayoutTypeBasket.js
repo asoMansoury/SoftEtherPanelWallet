@@ -85,7 +85,8 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
     if(status ==="authenticated"){
       setProfileSelector({
         email:session.user.email,
-        isLoggedIn:true
+        isLoggedIn:true,
+        isAgent:session.user.isAgent
       });
 
       setFormData({
@@ -197,7 +198,6 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
     if(isCalculated&&planPrice!=undefined){
       var selectedPlanPrice =findElement(formData.tariffCode,formData.tariffPlanCode);
       setSelectedPlan(selectedPlanPrice);
-
     }
   }
   
@@ -504,8 +504,25 @@ async function finishHandler(e){
             {
               (isCalculated && selectedPlan && selectedPlan.price!= undefined) &&
               <Grid item xs={12} sm={6} style={{display:'flex'}}>
-                    <Alert severity="success">مبلغ اکانت انتخاب شده : </Alert>
-                    <Alert severity="error">{addCommas(digitsEnToFa(selectedPlan.price.toString()))} تومان</Alert>
+                    {
+                      profileSelector.isAgent==true? (<div style={{display: 'flex',justifyContent: 'space-around',gap: '20px',minWidth:'250px',alignItems: 'center'}}>
+                        <div>
+                          <Alert severity="success">مبلغ اکانت(محاسبه شده برای شما) : </Alert>
+                          <Alert severity="error">{addCommas(digitsEnToFa(selectedPlan.price.toString()))} تومان</Alert>
+                        </div>
+                        <div>
+                          <Alert severity="success">مبلغ اکانت(مبلغی که مشتریان شما در پنل خود خواهند دید) : </Alert>
+                          <Alert severity="error">{addCommas(digitsEnToFa(selectedPlan.agentprice.toString()))} تومان</Alert>
+                        </div>
+                      </div>
+                      ):(
+                        <>
+                        <Alert severity="success">مبلغ اکانت : </Alert>
+                        <Alert severity="error">{addCommas(digitsEnToFa(selectedPlan.agentprice.toString()))} تومان</Alert>
+
+                        </>
+                      )
+                    }
               </Grid>
             }
           </Grid>
