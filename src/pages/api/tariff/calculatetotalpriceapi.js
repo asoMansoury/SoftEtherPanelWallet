@@ -46,7 +46,6 @@ export default async function handler(req, res) {
       }
 
       var result =await CalculateTotalPriceModifed(isAgent.agentcode,body.tariffPlans,body.type);
-      
       var checkHasCash = agentWallet.cashAmount - result.ownerPrice
       if(checkHasCash<0){
         res.status(200).json({ name: {

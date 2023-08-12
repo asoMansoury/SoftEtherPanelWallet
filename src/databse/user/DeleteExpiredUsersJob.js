@@ -46,7 +46,7 @@ export async function DeleteExpiredUsersJob(date){
             }
         }
 
-        return null;
+        return allExpiredUsers;
     }catch(erros){
         return Promise.reject(erros);
     }finally{

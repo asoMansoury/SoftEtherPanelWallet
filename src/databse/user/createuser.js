@@ -27,7 +27,8 @@ const createUserFunction = (userObj,duration) => {
         email:userObj.email,
         agentcode:"",
         isfromagent:userObj.isfromagent,
-        expires:GenerateOneMonthExpiration(duration)
+        expires:GenerateOneMonthExpiration(duration),
+        isSendToOtherEmail:userObj.isSendToOtherEmail
     }
 }
 
@@ -75,19 +76,19 @@ async function CreateUser(userBasketObj){
                 var obj = {
                     usercounter:usercounter+1,
                     usernumber:usernumber+1,
-                    email:userBasketObj.email,
                     userprefix:generateUserPrefix(userBasketObj),
                     uuid:userBasketObj.uuid,
                     policy:planItem.tarrifcode,
                     tariffplancode:planItem.tariffplancode,
                     type:userBasketObj.type,
-                    isfromagent:isFromAgent
+                    isfromagent:isFromAgent,
+                    email:userBasketObj.isSendToOtherEmail?userBasketObj.sendEmailToOther:userBasketObj.email,
+                    isSendToOtherEmail:userBasketObj.isSendToOtherEmail
                 }
                 var generatedUser = createUserFunction(obj,selectedTarifPlan.duration)
                 userCreated.push(generatedUser);
             }else{
                 var userPrefix = generateUserPrefix(userBasketObj);
-
                 var obj = {
                     usercounter:usercounter,
                     usernumber:usernumber,
@@ -95,9 +96,10 @@ async function CreateUser(userBasketObj){
                     uuid:userBasketObj.uuid,
                     policy:planItem.tarrifcode,
                     tariffplancode:planItem.tariffplancode,
-                    email:userBasketObj.email,
+                    email:userBasketObj.isSendToOtherEmail?userBasketObj.sendEmailToOther:userBasketObj.email,
                     type:userBasketObj.type,
-                    isfromagent:isFromAgent
+                    isfromagent:isFromAgent,
+                    isSendToOtherEmail:userBasketObj.isSendToOtherEmail
                 }
                 userCreated.push(createUserFunction(obj,selectedTarifPlan.duration));
             }

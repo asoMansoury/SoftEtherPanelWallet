@@ -397,7 +397,7 @@ async function finishHandler(e){
     isLoggedIn:profileSelector.isLoggedIn,
     type:typeVpn,
     isSendToOtherEmail:emailToUser.checked,
-    sendEmailToOther:emailToUser
+    sendEmailToOther:emailToUser.checked==true?emailToUser.email:formData['email']
   };
 
   await axios.post(apiUrls.localUrl.calculateTotalPrice,{body:obj}).then((response)=>{

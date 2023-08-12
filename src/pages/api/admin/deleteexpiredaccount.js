@@ -9,6 +9,9 @@ export default async function handler(req,res){
         var deleteExpiredTestedUsersJob = await DeleteExpiredTestedUsersJob();
 
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.status(200).json({name:null});
-    }
+        res.status(200).json({
+            users:deleteExpiredUsersJob,
+            tests:deleteExpiredTestedUsersJob
+        });
+    } 
 }

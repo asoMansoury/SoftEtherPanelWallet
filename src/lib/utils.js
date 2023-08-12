@@ -21,7 +21,6 @@ export function generateRandomNumberPassword(length) {
 export const GenerateOneMonthExpiration = (durationMonth)=>{
         // Create the current date
     const currentDate = new Date();
-
     // Get the current month and year
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
@@ -37,7 +36,6 @@ export const GenerateOneMonthExpiration = (durationMonth)=>{
 
     // Format the date
     const formattedDate = `${oneMonthLater.getFullYear()}/${(oneMonthLater.getMonth() + 1).toString().padStart(2, '0')}/${oneMonthLater.getDate().toString().padStart(2, '0')} ${oneMonthLater.getHours().toString().padStart(2, '0')}:${oneMonthLater.getMinutes().toString().padStart(2, '0')}:${oneMonthLater.getSeconds().toString().padStart(2, '0')}`;
-
 
     return formattedDate;
 }
@@ -91,30 +89,31 @@ export function calculateEndDate(startDate, duration) {
   }
 
   export const GenerateTestExpiration = (durationDay) => {
-    // Create the current date
-    const today = new Date();
-  
-    // Calculate the expiration date
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + durationDay);
-  
-    // Get the date components
-    const year = tomorrow.getFullYear().toString().padStart(4, '0');
-    const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
-    const day = tomorrow.getDate().toString().padStart(2, '0');
-    const hours = tomorrow.getHours().toString().padStart(2, '0');
-    const minutes = tomorrow.getMinutes().toString().padStart(2, '0');
-    const seconds = tomorrow.getSeconds().toString().padStart(2, '0');
-    // Format the date
-    const formattedDate = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
-  
-    return formattedDate;
+        // Create the current date
+        const today = new Date();
+        // Calculate the expiration date
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + durationDay);
+
+        // Get the date components
+        const year = tomorrow.getFullYear().toString().padStart(4, '0');
+        const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
+        const day = tomorrow.getDate().toString().padStart(2, '0');
+        console.log(day)
+        const hours = tomorrow.getHours().toString().padStart(2, '0');
+        const minutes = tomorrow.getMinutes().toString().padStart(2, '0');
+        const seconds = tomorrow.getSeconds().toString().padStart(2, '0');
+        
+        // Format the date
+        const formattedDate = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+
+        return formattedDate;
   };
 
 
- export function formatDate(dateString) {
+  export function formatDate(dateString) {
     const date = new Date(dateString);
-    
+  
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -123,9 +122,10 @@ export function calculateEndDate(startDate, duration) {
     const seconds = String(date.getSeconds()).padStart(2, '0');
   
     const formattedDate = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
-    
+  
     return formattedDate;
   }
+
 
 export const GenerateThreeMonthExpiration = ()=>{
     // Create the current date

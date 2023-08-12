@@ -48,7 +48,7 @@ async function RegisterCustomers(user,type){
     }
 }
 
-export async function RegisterCustomersForOthers(user,type){
+export async function RegisterCustomersForOthers(user,type,agentIntroducerCode){
     if(type=='' || type == undefined|| type ==null) return
     type= apiUrls.types.SoftEther;
     try{
@@ -68,9 +68,9 @@ export async function RegisterCustomersForOthers(user,type){
             const result = await collection.insertOne({
                 email:user.email,
                 password:generateRandomNumberPassword(5),
-                isfromagent:false, 
+                isfromagent:true, 
                 isAdmin:false,
-                agentIntoducer:false
+                agentIntoducer:agentIntroducerCode
             });
             const insertedObjectId = result.insertedId;
             const registeredRecord = await collection.findOne({ _id: insertedObjectId });

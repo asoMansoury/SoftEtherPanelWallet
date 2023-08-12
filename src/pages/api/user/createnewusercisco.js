@@ -101,8 +101,10 @@ export default async function handler(req, res) {
       
       sendEmailCiscoClient(registerCustomer.email,newUsers,selectedServer,"لطفا پاسخ ندهید. رسید اکانت خریداری شده",currentDomain,registerCustomer);
       if(usersBasketObj.isSendToOtherEmail==true){
-          var otherObj = usersBasketObj.sendEmailToOther;
-          var otherToEmailCustomer = await  RegisterCustomersForOthers(otherObj,apiUrls.types.Cisco);
+          var otherObj = {
+            email:usersBasketObj.sendEmailToOther
+          };
+          var otherToEmailCustomer = await  RegisterCustomersForOthers(otherObj,apiUrls.types.Cisco,token.agentcode);
         sendEmailCiscoClient(otherToEmailCustomer.email,newUsers,selectedServer,"لطفا پاسخ ندهید. رسید اکانت خریداری شده",currentDomain,otherToEmailCustomer);
       }
       res.status(200).json({ name: {
