@@ -4,6 +4,7 @@ import { CalculateTotalPrice, CalculateTotalPriceModifed } from "src/databse/tar
 import { getToken } from "next-auth/jwt"
 import { GetAgentByUserCode, IsAgentValid } from "src/databse/agent/getagentinformation";
 import { GetWalletUser } from "src/databse/Wallet/getWalletUser";
+import { GetCustomerByEmail } from "src/databse/customers/getcustomer";
 
 
 export default async function handler(req, res) {
@@ -29,13 +30,16 @@ export default async function handler(req, res) {
           return;
       }
       var isAgent =await IsAgentValid(token.email);
+      var agentCode = "";
       if(isAgent.isAgent==false){
-        res.status(200).json({ name: {
-          isValid:false,
-          message:"شما دسترسی  خرید اکانت ندارید."
-        } });
-        return;
+        var customer = await GetCustomerByEmail(token.email);
+        if(customer.isfromagent==true){
+          agentCode = customer.agentIntoducer
+        }
+      }else{
+        agentCode = isAgent.agentcode;
       }
+
       var agentWallet =await GetWalletUser(token.email,"");
       if(agentWallet.isValid==false){
         res.status(200).json({ name: {
@@ -45,8 +49,12 @@ export default async function handler(req, res) {
         return;
       }
 
-      var result =await CalculateTotalPriceModifed(isAgent.agentcode,body.tariffPlans,body.type);
-      var checkHasCash = agentWallet.cashAmount - result.ownerPrice
+      var result =await CalculateTotalPriceModifed(agentCode,body.tariffPlans,body.type);
+      var checkHasCash = 0
+      if(isAgent.isAgent==true)
+         checkHasCash = agentWallet.cashAmount - result.ownerPrice;
+      else
+        checkHasCash = agentWallet.cashAmount - result.agentPrice;
       if(checkHasCash<0){
         res.status(200).json({ name: {
           isValid:false,

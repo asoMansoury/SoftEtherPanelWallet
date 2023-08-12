@@ -14,6 +14,7 @@ import { apiUrls } from "src/configs/apiurls";
 import { getToken } from "next-auth/jwt";
 import { IsAgentValid } from "src/databse/agent/getagentinformation";
 import { CalculateWallet } from "src/databse/Wallet/UpdateWallet";
+import { GetCustomerByEmail } from "src/databse/customers/getcustomer";
 
 
 const SettinOvpnUrlForUsers = (servers,users)=>{
@@ -55,14 +56,21 @@ export default async function handler(req, res) {
           return;
       }
       var isAgent =await IsAgentValid(token.email);
+      var agentCode = "";
       if(isAgent.isAgent==false){
-        res.status(200).json({ name: {
-          isValid:false,
-          message:"شما دسترسی  خرید اکانت ندارید."
-        } });
-        return;
+        var customer = await GetCustomerByEmail(token.email);
+        if(customer.isfromagent==true && customer.agentIntoducer!=''){
+          agentCode = customer.agentIntoducer
+        }else{
+          res.status(200).json({ name: {
+            isValid:false,
+            message:"شما دسترسی  خرید اکانت ندارید."
+          } });
+          return;
+        }
+      }else{
+        agentCode = isAgent.agentcode;
       }
-
       // Handle the POST request here
       const { UUID } = req.body;
 
@@ -86,7 +94,7 @@ export default async function handler(req, res) {
 
         var userRegistered = [];
         await Promise.all(newUsers.map(async (userNew) => {
-        var insertedUser = await RegisterUsersInDB(servers, userNew,apiUrls.types.SoftEther,selectedServer);
+        var insertedUser = await RegisterUsersInDB(servers, userNew,apiUrls.types.SoftEther,selectedServer,agentCode);
           userRegistered.push(insertedUser);
         }));
         

@@ -74,7 +74,11 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
   const [emailToUser,setEmailToUser]= useState({
     checked:false,
     email:""
-  })
+  });
+
+  useEffect(()=>{
+    planSelectedNummber = 1;
+  },[])
 
   useEffect(async()=>{
     
@@ -92,7 +96,7 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
       setIsEnablePass(true);
       setIsEnableEmail(true);
     }
-  },[status])
+  },[status]);
 
 
   useEffect(()=>{
@@ -429,7 +433,6 @@ async function finishHandler(e){
     obj.price=response.data.name.ownerPrice;
     obj.agentPrice = response.data.name.agentPrice;
     obj.debitToAgent = isFromAgent?(obj.agentPrice - obj.price): 0;
-
 
      axios.post(apiUrls.redisUrl.setRedisApi,{data:obj}).then((redisResponse)=>{
       planSelectedNummber = 1;
