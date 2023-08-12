@@ -77,6 +77,8 @@ export default async function handler(req, res) {
         //get all servers to make a user
          var servers = await GetServers(apiUrls.types.SoftEther);
 
+         var selectedServer = servers.filter((item)=> item.servercode == usersBasketObj.servercode?item:null)[0];
+
          var newUsers =await CreateUser(usersBasketObj);
 
         //put the new user into the database
@@ -84,7 +86,7 @@ export default async function handler(req, res) {
 
         var userRegistered = [];
         await Promise.all(newUsers.map(async (userNew) => {
-        var insertedUser = await RegisterUsersInDB(servers, userNew);
+        var insertedUser = await RegisterUsersInDB(servers, userNew,apiUrls.types.SoftEther,selectedServer);
           userRegistered.push(insertedUser);
         }));
         
@@ -93,7 +95,7 @@ export default async function handler(req, res) {
         userRegistered.map((userItem,userIndex)=>{
           var expireDate = userItem.expires;
           servers.map((server,index)=>{
-            var groupPolicy = server.isactive?userItem.policy:server.policy;
+            var groupPolicy = server.servercode == selectedServer.servercode ?userItem.policy : server.policy;
             CreateUserOnSoftEther(server,userItem,groupPolicy,expireDate);
          });
         })
@@ -105,7 +107,7 @@ export default async function handler(req, res) {
           userItem.expires = ConvertToPersianDateTime(userItem.expires);
 
           servers.map((server,index)=>{
-            if(server.isactive){
+            if(server.servercode == selectedServer.servercode){
                 userItem.username = userItem.username + '@' + server.HubName;
                 activedUserForSendingEmail.push(userItem);
             }  

@@ -10,7 +10,7 @@ const client = new MongoClient(MONGO_URI,{
     }
 });
 
-async function RegisterUsersInDB(servers,user,type){
+async function RegisterUsersInDB(servers,user,type,selectedServer){
     if(type=='' || type ==null || type == undefined) 
         type = apiUrls.types.SoftEther;
     try{
@@ -22,14 +22,14 @@ async function RegisterUsersInDB(servers,user,type){
         servers.map((item,index) =>{
             let serverIdObj ={}
             serverIdObj.servercode = item['servercode'];
-            if(item.isactive){
+            if(item['servercode']==selectedServer.servercode){
                 serverIdObj.policy = user.policy;
             }else{
                 serverIdObj.policy = item.policy;
             }
             serverIdArray.push(serverIdObj);
 
-            if(item.isactive){
+            if(item['servercode']==selectedServer.servercode){
                 user.userwithhub = user.username + '@' + item.HubName;
                 user.currentservercode= item['servercode'];
                 user.currenthubname = item.HubName;
@@ -57,7 +57,7 @@ async function RegisterUsersInDB(servers,user,type){
 }
 
 
-export async function RegisterUsersInDBForCisco(servers,user,type,agentInformation){
+export async function RegisterUsersInDBForCisco(servers,user,type,agentInformation,selectedServer){
     if(type=='' || type ==null || type == undefined) 
         type = apiUrls.types.SoftEther;
     try{
@@ -69,7 +69,7 @@ export async function RegisterUsersInDBForCisco(servers,user,type,agentInformati
         servers.map((item,index) =>{
             let serverIdObj ={}
             serverIdObj.servercode = item['servercode'];
-            if(item.isactive){
+            if(item['servercode'] == selectedServer.servercode){
                 serverIdObj.policy = user.policy;
                 user.currentservercode= item['servercode'];
                 user.agentcode = agentInformation.agentcode;

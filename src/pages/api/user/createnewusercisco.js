@@ -62,25 +62,27 @@ export default async function handler(req, res) {
         //get all servers to make a user
          var servers = await GetServers(apiUrls.types.Cisco);
 
-         var selectedServer = servers.filter((item)=> item.isactive==true?item:null)[0];
-         
+         var selectedServer = servers.filter((item)=> item.servercode == usersBasketObj.servercode?item:null)[0];
+         if(selectedServer==null)
+          throw new Error("سروری برای انتخاب وجود ندارد با مدیرییت تماس بگیرید.");
+
          var newUsers =await CreateUser(usersBasketObj);
 
         await CalculateWallet(registerCustomer.email,apiUrls.types.Cisco,usersBasketObj.price);
         //put the new user into the database
         var userRegistered = [];
         await Promise.all(newUsers.map(async (userNew) => {
-        var insertedUser = await RegisterUsersInDBForCisco(servers, userNew,apiUrls.types.Cisco,usersBasketObj.agentInformation);
+        var insertedUser = await RegisterUsersInDBForCisco(servers, 
+                                                            userNew,
+                                                            apiUrls.types.Cisco,
+                                                            usersBasketObj.agentInformation,
+                                                            selectedServer);
           userRegistered.push(insertedUser);
         }));
 
 
         userRegistered.map((userItem,userIndex)=>{
-          servers.map((server,index)=>{
-            if(server.isactive==true){
-              CreateUserOnCisco(server,userItem.username,userItem.password);
-            }
-         });
+              CreateUserOnCisco(selectedServer,userItem.username,userItem.password);
         })
 
         let activedUserForSendingEmail  = [];

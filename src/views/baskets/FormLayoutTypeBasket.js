@@ -66,6 +66,9 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
   });
   const emailRef = useRef();
   const router = useRouter();
+
+  const [servers,setServers] = useState([]);
+  const [selectedServer,setSelectedServer]= useState("");
   // const dispatch = useDispatch();
   const [showLoadingProgress,setShowLoadingProgress]= useState(false)
   const [emailToUser,setEmailToUser]= useState({
@@ -96,6 +99,18 @@ const FormLayoutTypeBasket = ({tariffs,agent,agentData,typeVpn}) => {
     setTariffTypes(tariffs.name);
   },[tariffs]);
 
+  useEffect(async ()=>{
+    if(typeVpn!=undefined){
+      var servers =await axios.get(apiUrls.server.getServersByTypeApi+typeVpn);
+
+      var tmp = [];
+      servers.data.name.map((item)=>{
+        tmp.push(item);
+      });
+      setSelectedServer(tmp[0].servercode);
+      setServers(tmp);
+    }
+  },[typeVpn])
 
   useEffect(()=>{
     if(agent=="nobody"){
@@ -397,9 +412,10 @@ async function finishHandler(e){
     isLoggedIn:profileSelector.isLoggedIn,
     type:typeVpn,
     isSendToOtherEmail:emailToUser.checked,
-    sendEmailToOther:emailToUser.checked==true?emailToUser.email:formData['email']
+    sendEmailToOther:emailToUser.checked==true?emailToUser.email:formData['email'],
+    servercode:selectedServer
   };
-
+  
   await axios.post(apiUrls.localUrl.calculateTotalPrice,{body:obj}).then((response)=>{
     if(response.data.name.isValid==false){
       setError({
@@ -507,6 +523,37 @@ async function finishHandler(e){
         <Divider sx={{ margin: 0 }} />
         <BasketTable removeItem={removeItem} parentData={selectedTariffPlans}></BasketTable>
 
+        <Divider></Divider>
+        <Grid container spacing={5}>
+            <Grid item xs={12}>
+              <Typography variant='body2' sx={{ fontWeight: 600,fontFamily:'PersianFont' }}>
+                1. انتخاب سرور
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+              <InputLabel id='form-layouts-separator-select-label'>سرور مورد نظر</InputLabel>
+                {
+                  servers.length>0&&
+                  <Select
+                    name="plantType"
+                    label='انتخاب سرور'
+                    defaultValue={selectedServer}
+                    onChange={(e)=>{setSelectedServer(e.target.value)}}
+                    id='form-layouts-separator-select'
+                    labelId='form-layouts-separator-select-label'
+                  >
+                    {
+                      servers.map((item,index)=>(
+                        <MenuItem key={index} value={item.servercode}>{item.title}</MenuItem>
+                      ))
+                    }
+                  </Select>
+                }
+
+              </FormControl>
+            </Grid>
+          </Grid>
         <Divider sx={{ margin: 0 }} />
         <Grid container spacing={5} style={{marginTop:'10px', paddingRight:'px'}}>
             <Grid item xs={12} sm={6} >

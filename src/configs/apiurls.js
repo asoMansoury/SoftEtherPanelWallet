@@ -38,6 +38,7 @@ export const apiUrls = {
     },
     "server": {
         "getServersApi":`/api/server/getservers`,
+        "getServersByTypeApi":`/api/server/getserversbytype?type=`,
         "changeServerApi":`/api/server/changeserver`,
         "getUsersServerApi":`/api/server/getuserserver?username=`
     },
