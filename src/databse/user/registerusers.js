@@ -10,7 +10,7 @@ const client = new MongoClient(MONGO_URI,{
     }
 });
 
-async function RegisterUsersInDB(servers,user,type,selectedServer){
+async function RegisterUsersInDB(servers,user,type,selectedServer,agentcode){
     if(type=='' || type ==null || type == undefined) 
         type = apiUrls.types.SoftEther;
     try{
@@ -35,6 +35,7 @@ async function RegisterUsersInDB(servers,user,type,selectedServer){
                 user.currenthubname = item.HubName;
             }
         });
+        user.agentcode = agentcode;
         user['serverId']= serverIdArray;
         user.type = type;
         user.isfromagent = user.isfromagent;

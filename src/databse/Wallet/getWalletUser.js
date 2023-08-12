@@ -19,6 +19,7 @@ export async function GetWalletUser(email,type){
 
         const collection = db.collection('Wallet');
         const wallet = await collection.findOne({email:{ $regex: `^${email}$`, $options: "i" }});
+        console.log(wallet)
         if(wallet==null)
             return {
                 isValid:false
