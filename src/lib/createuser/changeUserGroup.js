@@ -1,5 +1,4 @@
 export const ChangeUserGroupOnSoftEther = async (config,createdUser)=>{
-    return;
     var serverConfig = {
         host:         config.host,
         userName:     config.username,

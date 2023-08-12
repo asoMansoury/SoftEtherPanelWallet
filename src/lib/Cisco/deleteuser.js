@@ -1,5 +1,4 @@
 export const DeleteUserCisco = async (config,username)=>{
-    return;
     var serverConfig = {
         host:         config.host,
         userName:     config.username,
