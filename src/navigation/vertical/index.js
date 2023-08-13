@@ -61,12 +61,16 @@ const navigation = () => {
   })
 
     if(profileSelector.isLoggedIn&&profileSelector.isAgent==true){
-
       tmpMenues.push({
-        title: 'مشاهده صورت حساب',
+        title: 'عضو گیری',
         icon: CreditCardOutline,
-        path: '/agent/billagent'
+        path: '/agentmembership'
       });
+      // tmpMenues.push({
+      //   title: 'مشاهده صورت حساب',
+      //   icon: CreditCardOutline,
+      //   path: '/agent/billagent'
+      // });
     }
 
   }

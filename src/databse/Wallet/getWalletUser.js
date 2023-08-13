@@ -19,7 +19,6 @@ export async function GetWalletUser(email,type){
 
         const collection = db.collection('Wallet');
         const wallet = await collection.findOne({email:{ $regex: `^${email}$`, $options: "i" }});
-        console.log(wallet)
         if(wallet==null)
             return {
                 isValid:false
@@ -98,6 +97,27 @@ export async function CheckAgentWalet(email,type){
         }
 
         return result;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
+
+export async function TransferMoneyToOtherAccount(email,otherEmail,amount){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+
+        const collection = db.collection('Wallet');
+        const wallet = await collection.findOne({email:{ $regex: `^${email}$`, $options: "i" }});
+        if(wallet==null)
+            return {
+                isValid:false
+            };
+
+        return null;
     }catch(erros){
         return Promise.reject(erros);
     }finally{

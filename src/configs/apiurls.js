@@ -73,6 +73,8 @@ export const apiUrls = {
         "ChangeUserFreeServer":`/api/userfree/changeuserserver`
     },
     "WalletUrls":{
-        "GetUserWalletApi":`/api/wallet/getUserWallet/?email=`
+        "GetUserWalletApi":`/api/wallet/getUserWallet/?email=`,
+        "GetUserWalletUsersApi":`/api/wallet/getUserWalletUsers/?email=`,
+        "TransferMoneyToOther":`/api/wallet/transferMoneyToOther/`
     }
 }

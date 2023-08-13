@@ -52,9 +52,9 @@ const UserDropdown = (props) => {
   
   useEffect(async ()=>{
     if(status == 'authenticated'){
-      var wallet = (await axios.get(apiUrls.WalletUrls.GetUserWalletApi+session.user.email));
-      setWallet(wallet);
-      setCashAmount(wallet.data.name.cashAmount);
+      // var wallet = (await axios.get(apiUrls.WalletUrls.GetUserWalletApi+session.user.email));
+      // setWallet(wallet);
+      // setCashAmount(wallet.data.name.cashAmount);
     }
   },[status])
 

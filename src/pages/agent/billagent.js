@@ -10,6 +10,7 @@ import CardHeader from '@mui/material/CardHeader'
 import Card from '@mui/material/Card'
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import AgentUsers from './components/AgentUsers';
 
 const BillAgent = () => {
 
@@ -30,7 +31,6 @@ const BillAgent = () => {
 
       await axios.get(apiUrls.agentUrl.isAgentUrl+session.user.email).then((response)=>{
         if(response.data.name.isAgent==true){
-          console.log(response.data.name.agentcode)
             axios.post(apiUrls.agentUrl.getAgentBill,{body:{email:session.user.email}}).then((agentResponse)=>{
                 setUsers(agentResponse.data.name);
             });
