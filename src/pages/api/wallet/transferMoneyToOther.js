@@ -1,6 +1,7 @@
 
 import { getToken } from "next-auth/jwt";
 import { GetWalletUser, TransferMoneyToOtherAccount } from "src/databse/Wallet/getWalletUser";
+import { IsAgentValid } from "src/databse/agent/getagentinformation";
 import CheckIsUserExists from "src/databse/customers/checkuserexists";
 import RegisterCustomers from "src/databse/customers/registercustomers";
 
@@ -46,6 +47,14 @@ async function handler(req, res) {
               errorMessage: "نمی توانید به ایمیل شخصی خودتان پول واریز کنید"
             });
             return;
+        }
+        var isAgent =await IsAgentValid(token.email);
+        if(isAgent.isAgent==false){
+            setError({
+                isValid: false,
+                errorMessage: "دسترسی به عملیات مورد نظر ندارید"
+              });
+              return;
         }
 
         var userWallet =await GetWalletUser(token.email);
