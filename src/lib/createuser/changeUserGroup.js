@@ -3,7 +3,8 @@ export const ChangeUserGroupOnSoftEther = async (config,createdUser)=>{
         host:         config.host,
         userName:     config.username,
         password:   config.password,
-        port: config.port
+        port: config.port,
+        readyTimeout: 60000
       }
     var Vpncmd = `/opt/softether/vpncmd -SERVER 127.0.0.1 -PASSWORD:${config.vpncmdpassword}`
     var HubName = `Hub ${config.HubName}`;

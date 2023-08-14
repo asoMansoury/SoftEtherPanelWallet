@@ -5,7 +5,8 @@ export const CreateUserOnOpenVpn = async (config,createdUser,groupPolicy,expireD
         host:         "135.181.107.1",
         userName:     "root",
         password:   "AdminAso",
-        port: "22"
+        port: "22",
+        readyTimeout: 60000
       }
     var RunScript = `/root/./openvpn.sh`
 
