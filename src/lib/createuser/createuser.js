@@ -1,5 +1,4 @@
 export const CreateUserOnSoftEther = async (config,createdUser,groupPolicy,expireDate)=>{
-    return;
     var serverConfig = {
         host:         config.host,
         userName:     config.username,

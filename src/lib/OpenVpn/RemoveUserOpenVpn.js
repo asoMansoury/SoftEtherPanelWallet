@@ -1,7 +1,6 @@
 let isWriting = false;
 
 export const RemoveUserOpenVpn = async (config,createdUser,groupPolicy,expireDate)=>{
-    return;
     var serverConfig = {
         host:         "135.181.107.1",
         userName:     "root",

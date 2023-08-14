@@ -52,9 +52,9 @@ const UserDropdown = (props) => {
   
   useEffect(async ()=>{
     if(status == 'authenticated'){
-      // var wallet = (await axios.get(apiUrls.WalletUrls.GetUserWalletApi+session.user.email));
-      // setWallet(wallet);
-      // setCashAmount(wallet.data.name.cashAmount);
+      var wallet = (await axios.get(apiUrls.WalletUrls.GetUserWalletApi+session.user.email));
+      setWallet(wallet);
+      setCashAmount(wallet.data.name.cashAmount);
     }
   },[status])
 
@@ -111,7 +111,7 @@ const UserDropdown = (props) => {
         </Box>
         <Divider />
         <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>موجود حساب</Typography>
+              <Typography sx={{ fontWeight: 600 }}>موجودی حساب</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 {status=="authenticated"&&cashAmount!=undefined?addCommas(digitsEnToFa(cashAmount.toString())):'0 '} تومان
               </Typography>

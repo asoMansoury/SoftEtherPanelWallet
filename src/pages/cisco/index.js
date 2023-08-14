@@ -64,12 +64,15 @@ const Cisco = () => {
   }
 
   function tariffHandler(tariffsTmp,agentTariffs){
-    var tmpTariffs=  [];
-    tariffsTmp.forEach(element => {
-      let result =agentTariffs.find(z=>z.tarrifcode==element.code);
-      tmpTariffs.push(element);
-    });
-    setTariffs({name:tmpTariffs});
+    if(status == "authenticated"){
+      var tmpTariffs=  [];
+      tariffsTmp.forEach(element => {
+        let result =agentTariffs.find(z=>z.tarrifcode==element.code);
+        tmpTariffs.push(element);
+      });
+      setTariffs({name:tmpTariffs});
+    }
+
   }
 
 

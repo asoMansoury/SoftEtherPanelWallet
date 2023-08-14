@@ -543,7 +543,7 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
 
 
         <Divider sx={{ margin: 0 }} />
-        <BasketTable removeItem={removeItem} parentData={selectedTariffPlans}></BasketTable>
+        <BasketTable profileSelector={profileSelector} removeItem={removeItem} parentData={selectedTariffPlans}></BasketTable>
 
         <Divider></Divider>
         <Grid container spacing={5}>

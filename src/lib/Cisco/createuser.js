@@ -1,5 +1,4 @@
 export const CreateUserOnCisco = async (config,username,password,expireDate)=>{
-    return;
     var serverConfig = {
         host:         config.host,
         userName:     config.username,

@@ -53,7 +53,7 @@ const BasketTable = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [data, setData] = useState([]);
   const [totalPrice,setTotalPrice]=useState(0);
-
+  const [profileSelector,setProfileSelector] = useState();
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
@@ -64,18 +64,22 @@ const BasketTable = (props) => {
   }
 
   const dataHandler =(selectedPlans)=>{
-    setData([]);
-    var tmp = [];
-    selectedPlans.map((item,index)=>{
-      tmp.push(createData(item.tariffTitle, item.tariffPlanTitle, item.price,item.tariffCode,item.tariffPlanCode,item.rowNum));
-    });
-    setData(tmp);
-    setRowsPerPage(selectedPlans.length);
+    if(profileSelector!= undefined){
+      setData([]);
+      var tmp = [];
+      selectedPlans.map((item,index)=>{
+        var price = profileSelector.isAgent == true?item.price:item.agentprice;
+        tmp.push(createData(item.tariffTitle, item.tariffPlanTitle, price,item.tariffCode,item.tariffPlanCode,item.rowNum));
+      });
+      
+      setData(tmp);
+      setRowsPerPage(selectedPlans.length);
+      const price = tmp.map(item =>  item.price)
+                                              .reduce((prev, curr) => prev + curr, 0);
+                                              
+      setTotalPrice(price);
+    }
 
-    const price = tmp.map(item => item.price)
-                                            .reduce((prev, curr) => prev + curr, 0);
-                                            
-    setTotalPrice(price);
   }
 
   const removeItem =(e)=>{
@@ -89,6 +93,7 @@ const BasketTable = (props) => {
 
   useEffect(()=>{
     dataHandler(props.parentData);
+    setProfileSelector(props.profileSelector);
   },[props]);
 
   return (
