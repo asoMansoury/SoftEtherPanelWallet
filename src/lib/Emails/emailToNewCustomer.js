@@ -1,10 +1,13 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // Set to true for SSL
   service: 'Gmail',
   auth: {
-    user: 'aso.mansoury@gmail.com', // Replace with your Gmail email address
-    pass: 'dfjoqpzndpqtpjis' // Replace with your Gmail password or an app-specific password
+    user: process.env.EMAIL_SENDER, // Replace with your Gmail email address
+    pass: process.env.EMAIL_SENDER_AUTH// Replace with your Gmail password or an app-specific password
   }
 });
 
