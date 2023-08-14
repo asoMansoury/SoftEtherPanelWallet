@@ -50,29 +50,30 @@ async function handler(req, res) {
         }
         var isAgent =await IsAgentValid(token.email);
         if(isAgent.isAgent==false){
-            setError({
-                isValid: false,
-                errorMessage: "دسترسی به عملیات مورد نظر ندارید"
-              });
-              return;
+            res.status(200).json({
+                name: {
+                    isValid: false,
+                    message: "دسترسی به عملیات مورد نظر ندارید"
+                }
+            });
+            return;
         }
 
         var userWallet =await GetWalletUser(token.email);
         if (parseInt(amount) > parseInt(userWallet.cashAmount)) {
-            setError({
-              isValid: false,
-              errorMessage: "مبلغ انتقالی نباید از موجودی حساب شما بیشتر باشد."
+            res.status(200).json({
+                name: {
+                    isValid: false,
+                    message: "مبلغ انتقالی نباید از موجودی حساب شما بیشتر باشد."
+                }
             });
             return;
         }
 
         var transferResult= await TransferMoneyToOtherAccount(token.email,email,amount);
-
-
-
         res.status(200).json({ name: {
-            isValid: false,
-            message: "دسترسی نامعتبر."
+            isValid: transferResult.isValid,
+            message: "عملیات با موفقیت انجام گردید."
         } });
     } else {
         console.log("method not allow", req.method)

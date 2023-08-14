@@ -12,18 +12,16 @@ const client = new MongoClient(MONGO_URI,{
 });
 
 async function RegisterCustomers(user,type){
-    if(type=='' || type == undefined|| type ==null) return
-    type= apiUrls.types.SoftEther;
+
+    if(type=='' || type == undefined|| type ==null) 
+        type= apiUrls.types.SoftEther;
     try{
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('Customers');
-        
         var documents =await collection.find({email:{ $regex: `^${user.email}$`, $options: "i" }}).toArray();
-
         if(documents[0]){
             var doc = documents[0];
-
             return doc;
         }
         else{
@@ -38,7 +36,6 @@ async function RegisterCustomers(user,type){
             if(user.isFromAgent){
                 result.agentIntroducerDetail = await GetAgentByUserCode(user.agentInformation.agentcode,type) 
             }
-            
             return result;
         }
     }catch(erros){

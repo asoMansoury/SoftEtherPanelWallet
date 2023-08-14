@@ -44,6 +44,7 @@ const index = () => {
     isValid: true,
     errorMessage: ""
   });
+  const [isSucceed,setIsSucceed] = useState(false);
 
   useEffect(async () => {
 
@@ -53,16 +54,21 @@ const index = () => {
         isLoggedIn: true
       });
 
-      var wallet = await axios.get(apiUrls.WalletUrls.GetUserWalletUsersApi + session.user.email);
-      setMemberShip({
-        ...memberShip,
-        cash: wallet.data.name.cashAmount
-      })
+      UpdateCash();
     }
-  }, [status])
+  }, [status]);
+
+  async function UpdateCash(){
+    var wallet = await axios.get(apiUrls.WalletUrls.GetUserWalletUsersApi + session.user.email);
+    setMemberShip({
+      ...memberShip,
+      cash: wallet.data.name.cashAmount
+    })
+  }
 
   const transfertHandler = async (e) => {
     e.preventDefault();
+    setIsSucceed(false);
     setError({
       isValid: true,
       errorMessage: ""
@@ -81,7 +87,6 @@ const index = () => {
       });
       return;
     }
-
     if (parseInt(memberShip.amount) > parseInt(memberShip.cash)) {
       setError({
         isValid: false,
@@ -89,17 +94,33 @@ const index = () => {
       });
       return;
     }
-
+    setMemberShip({
+      ...memberShip,
+      isAccecpted:false
+    })
 
     var obj = memberShip;
+
     var result = await axios.post(apiUrls.WalletUrls.TransferMoneyToOther, obj);
-    if(result.data.name.isValid==false){
+    if(result.data.name.isValid==true){
+      setIsSucceed(true);
+      setErrorResult({
+        isValid:true,
+        errorMessage:result.data.name.message
+      });
+      setMemberShip({
+        ...memberShip,
+        email: "",
+        amount: 0,
+        isAccecpted: false
+      });
+      UpdateCash();
+    }else{
       setErrorResult({
         isValid:false,
         errorMessage:result.data.name.message
       });
     }
-    console.log({ result });
   }
 
   const acceptAgreementHandler = (e) => {
@@ -168,6 +189,9 @@ const index = () => {
                   {
                     errorResult.isValid == false &&
                     <Alert severity="error">{errorResult.errorMessage}</Alert>
+                  }{
+                    isSucceed &&
+                    <Alert severity="success">عملیات با موفقیت انجام گردید.</Alert>
                   }
                 </Grid>
               </Grid>
