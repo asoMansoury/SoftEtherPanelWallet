@@ -1,4 +1,6 @@
 export const CreateUserOnCisco = async (config,username,password,expireDate)=>{
+    if(process.env.NODE_ENV !== 'test' || process.env.NODE_ENV != 'development')
+        return;
     var serverConfig = {
         host:         config.host,
         userName:     config.username,
