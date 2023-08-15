@@ -1,6 +1,6 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
-import {  sendEmail, sendEmailCiscoClient, sendEmailCiscoClientTest } from 'src/lib/emailsender';
+import {  sendEmail, sendEmailCiscoClient, sendEmailCiscoClientTest, sendEmailTest } from 'src/lib/emailsender';
 import { GenerateOneMonthExpiration, GenerateRandomPassword, GenerateTestExpiration, MONGO_URI, formatDate } from 'src/lib/utils';
 import GetServers, { GetServersForTest } from '../server/getservers';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
@@ -76,7 +76,7 @@ export async function GenerateNewAccountTest(email,type,currentDomain,password){
             }else{
                 customerAccount.username = insertTestAccount.username;
                 CreateUserOnSoftEther(selectedServer,customerAccount,"P1",selectedUser.expires);
-                var sendingEmailResult =await sendEmail(email,tmpUsers,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount)
+                var sendingEmailResult =await sendEmailTest(email,tmpUsers,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount)
                 console.log({sendingEmailResult});
             }
 
