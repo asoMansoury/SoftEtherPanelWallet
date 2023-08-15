@@ -32,7 +32,7 @@ async function ChangeUserServer(obj){
 
         var foundUser =await userCollection.findOne({username:obj.username});
         var currentServerOfUser = await GetServerByCode(foundUser.currentservercode);
-        
+        console.log({foundUser})
         var tmpUsers = []
         tmpUsers.push(foundUser);
 

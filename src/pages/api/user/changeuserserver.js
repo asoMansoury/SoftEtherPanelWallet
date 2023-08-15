@@ -24,7 +24,7 @@ export default async function handler(req, res) {
         }
       // Handle the POST request here
       const { body } = req.body;
-      const selectedServer = GetServerByCode(body.servercode);
+      const selectedServer =await GetServerByCode(body.servercode);
       var result =await ChangeUserServer(body);
       if(result==null){
         res.status(200).json({ name: "عملیات با شکست مواجه شد، لطفا با پشتیبانی تماس بگیرید."});
