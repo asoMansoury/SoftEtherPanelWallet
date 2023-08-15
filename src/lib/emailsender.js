@@ -1,20 +1,23 @@
 import nodemailer from 'nodemailer';
-import { ConvertToPersianDateTime } from './utils';;
+import { ConvertToPersianDateTime, SendingEmailService } from './utils';
+import sgMail from '@sendgrid/mail';
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const transporter = nodemailer.createTransport({
-  service: 'Gmail',
+  host: 'smtp.gmail.com',
   port: 465,
   secure: true, // Set to true for SSL
-  host: 'smtp.gmail.com',
+  service: 'Gmail',
   auth: {
     user: process.env.EMAIL_SENDER, // Replace with your Gmail email address
-    pass: process.env.EMAIL_SENDER_AUTH // Replace with your Gmail password or an app-specific password
+    pass: process.env.EMAIL_SENDER_AUTH// Replace with your Gmail password or an app-specific password
   }
 });
 
-export async function sendEmail(to,users,subject,currentDomain,customer) {
-    try {
+export async function sendEmail(to, users, subject, currentDomain, customer) {
+  try {
 
-      const tableRows = users.map((user, index) => 
+    const tableRows = users.map((user, index) =>
       `
       <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : '#ffffff'};">
         <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${user.username}</td>
@@ -27,7 +30,7 @@ export async function sendEmail(to,users,subject,currentDomain,customer) {
     `).join('');
 
 
-      const table = `
+    const table = `
       <div>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
           <thead style="background-color: #f1f1f1;">
@@ -59,38 +62,59 @@ export async function sendEmail(to,users,subject,currentDomain,customer) {
       </div>
       `;
 
+      if (Boolean(process.env.BY_SENDGRID) == true) {
+        console.log("sending Email via sendgrid")
+        const msg = {
+          to: to, // Change to your recipient
+          from: process.env.EMAIL_SENDER, // Change to your verified sender
+          subject: subject,
+          html: table,
+        }
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.error(`sending email to ${to} email was successful: `)
+          })
+          .catch((error) => {
+            console.error(`sending email to ${to} email was not successful the error is: `, error)
+          })
+      } else {
+        console.log("sending Email via Gmail Service")
+        const mailOptions = {
+          from: process.env.EMAIL_SENDER,
+          to: to, // Replace with the recipient's email address
+          subject: subject,
+          html: table
+        };
+    
+        const info = await transporter.sendMail(mailOptions);
+    
+        console.log('Email sent:', info.response);
+      }
 
-      const mailOptions = {
-        from: process.env.EMAIL_SENDER,
-        to: to, // Replace with the recipient's email address
-        subject: subject,
-        html: table
-      };
-  
-      const info = await transporter.sendMail(mailOptions);
-  
-      console.log('Email sent:', info.response);
-    } catch (err) {
-      console.error('Error sending email:', err);
-    }
+
+
+  } catch (err) {
+    console.error('Error sending email:', err);
   }
+}
 
 
 
-  export async function sendEmailCiscoClient(to,users,server,subject,currentDomain,customer) {
-    try {
-      const tableRows = users.map((user, index) => 
+export async function sendEmailCiscoClient(to, users, server, subject, currentDomain, customer) {
+  try {
+    const tableRows = users.map((user, index) =>
       `
       <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : '#ffffff'};">
         <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${user.username}</td>
         <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${user.password}</td>
         <td style="padding: 10px; border: 1px solid #ddd; color: #555555; font-weight: bold; color: #5b2121;">${user.expires}</td>
-        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${server.ciscourl+":"+server.ciscoPort}</td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${server.ciscourl + ":" + server.ciscoPort}</td>
       </tr>
     `).join('');
 
-      var domainUrl = currentDomain;
-      const table = `
+    var domainUrl = currentDomain;
+    const table = `
         <div>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead style="background-color: #f1f1f1;">
@@ -126,37 +150,55 @@ export async function sendEmail(to,users,subject,currentDomain,customer) {
       `;
 
 
-      const mailOptions = {
-        from: process.env.EMAIL_SENDER,
-        to: to, // Replace with the recipient's email address
-        subject: subject,
-        html: table
-      };
-  
-      const info = await transporter.sendMail(mailOptions);
-  
-      console.log('Email sent:', info.response);
-    } catch (err) {
-      console.error('Error sending email:', err);
-    }
+      if (Boolean(process.env.BY_SENDGRID) == true) {
+        console.log("sending Email via sendgrid")
+        const msg = {
+          to: to, // Change to your recipient
+          from: process.env.EMAIL_SENDER, // Change to your verified sender
+          subject: subject,
+          html: table,
+        }
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.error(`sending email to ${to} email was successful: `)
+          })
+          .catch((error) => {
+            console.error(`sending email to ${to} email was not successful the error is: `, error)
+          })
+      } else {
+        console.log("sending Email via Gmail Service")
+        const mailOptions = {
+          from: process.env.EMAIL_SENDER,
+          to: to, // Replace with the recipient's email address
+          subject: subject,
+          html: table
+        };
+    
+        const info = await transporter.sendMail(mailOptions);
+    
+        console.log('Email sent:', info.response);
+      }
+  } catch (err) {
+    console.error('Error sending email:', err);
   }
+}
 
-  
 
-  export async function sendEmailCiscoClientTest(to,users,server,subject,currentDomain,customer) {
-    try {
-      const tableRows = users.map((user, index) => 
+
+export async function sendEmailCiscoClientTest(to, users, server, subject, currentDomain, customer) {
+  try {
+    const tableRows = users.map((user, index) =>
       `
       <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : '#ffffff'};">
         <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${user.username}</td>
         <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${user.password}</td>
         <td style="padding: 10px; border: 1px solid #ddd; color: #555555; font-weight: bold; color: #5b2121;">${user.expires}</td>
-        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;"><span>${server.ciscourl+":"+server.ciscoPort}</span></td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;"><span>${server.ciscourl + ":" + server.ciscoPort}</span></td>
       </tr>
     `).join('');
 
-      var domainUrl = currentDomain;
-      const table = `
+    const table = `
         <div>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead style="background-color: #f1f1f1;">
@@ -188,19 +230,38 @@ export async function sendEmail(to,users,subject,currentDomain,customer) {
         </div>
       `;
 
-
-      const mailOptions = {
-        from: process.env.EMAIL_SENDER,
-        to: to, // Replace with the recipient's email address
-        subject: subject,
-        html: table
-      };
-  
-      const info = await transporter.sendMail(mailOptions);
-  
-      console.log('Email sent:', info.response);
-    } catch (err) {
-      console.error('Error sending email:', err);
-    }
+    
+      if (Boolean(process.env.BY_SENDGRID) == true) {
+        console.log("sending Email via sendgrid")
+        const msg = {
+          to: to, // Change to your recipient
+          from: process.env.EMAIL_SENDER, // Change to your verified sender
+          subject: subject,
+          html: table,
+        }
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.error(`sending email to ${to} email was successful: `)
+          })
+          .catch((error) => {
+            console.error(`sending email to ${to} email was not successful the error is: `, error)
+          })
+      } else {
+        console.log("sending Email via Gmail Service")
+        const mailOptions = {
+          from: process.env.EMAIL_SENDER,
+          to: to, // Replace with the recipient's email address
+          subject: subject,
+          html: table
+        };
+    
+        const info = await transporter.sendMail(mailOptions);
+    
+        console.log('Email sent:', info.response);
+      }
+  } catch (err) {
+    console.error('Error sending email:', err);
   }
+}
 

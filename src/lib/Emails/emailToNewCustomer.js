@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
-
+import { SendingEmailService } from '../utils';
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
@@ -10,6 +12,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_SENDER_AUTH// Replace with your Gmail password or an app-specific password
   }
 });
+
 
 export async function sendEmailToNewCustomer(to,subject,customer,transferedMoney,agentEmail) {
     try {
@@ -25,16 +28,37 @@ export async function sendEmailToNewCustomer(to,subject,customer,transferedMoney
       `;
 
 
-      const mailOptions = {
-        from: `${process.env.EMAIL_SENDER}`,
-        to: to, // Replace with the recipient's email address
-        subject: subject,
-        html: table
-      };
   
-      const info = await transporter.sendMail(mailOptions);
-  
-      console.log('Email sent:', info.response);
+      if (Boolean(process.env.BY_SENDGRID) == true) {
+        console.log("sending Email via sendgrid")
+
+        const msg = {
+          to: to, // Change to your recipient
+          from: process.env.EMAIL_SENDER, // Change to your verified sender
+          subject: subject,
+          html: table,
+        }
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.error(`sending email to ${to} email was successful: `)
+          })
+          .catch((error) => {
+            console.error(`sending email to ${to} email was not successful the error is: `, error)
+          })
+      } else {
+        console.log("sending Email via Gmail Service")
+        const mailOptions = {
+          from: process.env.EMAIL_SENDER,
+          to: to, // Replace with the recipient's email address
+          subject: subject,
+          html: table
+        };
+    
+        const info = await transporter.sendMail(mailOptions);
+    
+        console.log('Email sent:', info.response);
+      }
     } catch (err) {
       console.error('Error sending email:', err);
     }
@@ -52,16 +76,36 @@ export async function sendEmailToNewCustomer(to,subject,customer,transferedMoney
       `;
 
 
-      const mailOptions = {
-        from: `${process.env.EMAIL_SENDER}`,
-        to: to, // Replace with the recipient's email address
-        subject: subject,
-        html: table
-      };
-  
-      const info = await transporter.sendMail(mailOptions);
-  
-      console.log('Email sent:', info.response);
+      if (Boolean(process.env.BY_SENDGRID) == true) {
+        console.log("sending Email via sendgrid")
+
+        const msg = {
+          to: to, // Change to your recipient
+          from: process.env.EMAIL_SENDER, // Change to your verified sender
+          subject: subject,
+          html: table,
+        }
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.error(`sending email to ${to} email was successful: `)
+          })
+          .catch((error) => {
+            console.error(`sending email to ${to} email was not successful the error is: `, error)
+          })
+      } else {
+        console.log("sending Email via Gmail Service")
+        const mailOptions = {
+          from: process.env.EMAIL_SENDER,
+          to: to, // Replace with the recipient's email address
+          subject: subject,
+          html: table
+        };
+    
+        const info = await transporter.sendMail(mailOptions);
+    
+        console.log('Email sent:', info.response);
+      }
     } catch (err) {
       console.error('Error sending email:', err);
     }

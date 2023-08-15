@@ -1,5 +1,6 @@
 import moment from "jalali-moment";
 import jalaliMoment from 'jalali-moment';
+
 export const GenerateRandomPassword = ()=>{
     var randomstring = Math.random().toString(36).slice(-6);
     
@@ -168,3 +169,8 @@ export const REDIS_URL="redis://Admin:AdminAso@123@redis-11016.c261.us-east-1-4.
 //   port: 6379,
 //   password: 'AdminAso@123',
 // }
+
+
+export const SendingEmailService = async(to,subject,table)=>{
+
+}
