@@ -26,6 +26,7 @@ export default async function handler(req, res) {
       const { body } = req.body;
       const selectedServer =await GetServerByCode(body.servercode);
       var result =await ChangeUserServer(body);
+      const newSelectedServer = await GetServerByCode(result.currentservercode);
       if(result==null){
         res.status(200).json({ name: "عملیات با شکست مواجه شد، لطفا با پشتیبانی تماس بگیرید."});
         return;
@@ -40,7 +41,7 @@ export default async function handler(req, res) {
         item.username= item.userwithhub
       });
 
-      res.status(200).json({ name: `آدرس سرور جدید شما : ${selectedServer.ciscourl}`});
+      res.status(200).json({ name: `آدرس سرور جدید شما : ${newSelectedServer.ciscourl}`});
    }else {
         console.log("method not allow")
       res.status(405).json({ message: 'Method Not Allowed' });

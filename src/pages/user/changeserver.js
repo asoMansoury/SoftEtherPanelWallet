@@ -20,6 +20,7 @@ const ChangeServer = () => {
   const [isShowServerComponent,setShowServerComponent] = useState(false);
   const [selectedUser,setSelectedUser]=useState();
   const {  data:session,status } = useSession();
+  const [isWorking , setIsWorking] = useState(false);
   const [profileSelector,setProfileSelector] = useState({
     isLoggedIn:false
   });
@@ -52,6 +53,7 @@ const ChangeServer = () => {
   }
 
   async function changeServerHandler(item){
+    setIsWorking(true);
     var obj = {
       servercode:item.servercode,
       username:selectedUser
@@ -59,6 +61,7 @@ const ChangeServer = () => {
     
     setShowServerComponent(false);
     var result =await axios.post(apiUrls.userUrl.changeUserServerUrl,{body:obj});
+    setIsWorking(false);
     setErros({
       hasErros:true,
       erroMsg:result.data.name
@@ -71,13 +74,17 @@ const ChangeServer = () => {
             <Card>
                 <CardHeader title='لیست اکانت ها برای تغییر سرور' titleTypographyProps={{ variant: 'h6' }} />
                 <ChanginServerTable getUsersServerHandler={getUsersServerHandler}></ChanginServerTable>
-
+                {
+                        isWorking==true &&
+                        <Alert severity="info">در حال تغییر سرور. لطفا منتظر بمانید...</Alert>
+                }
                 {
                   isShowServerComponent && (
                     <>
                        <div style={{paddingRight:'30px', paddingTop:'30px',paddingBottom: '30px'}}>
                           <Alert severity="success">از سرورهای زیر یکی از سرورها را انتخاب نمایید.</Alert>
                       </div>
+
                       <LoadinServerForChange changeServerHandler={changeServerHandler} servers={userServer}></LoadinServerForChange>
                     </>
                   )
