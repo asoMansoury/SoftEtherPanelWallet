@@ -38,7 +38,8 @@ async function ChangeUserServer(obj){
             ChangeServerForUserSoftEther(servers,currentServerOfUser,foundUser,obj)
         }else if(foundUser.type === apiUrls.types.Cisco){
             var servers =await GetServers(apiUrls.types.Cisco);
-            ChangeServerForUserCisco(servers,currentServerOfUser,foundUser,obj)
+            ChangeServerForUserCisco(servers,currentServerOfUser,foundUser,obj);
+            
         }
 
 

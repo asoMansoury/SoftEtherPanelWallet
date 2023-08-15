@@ -60,6 +60,7 @@ export async function GenerateNewAccountTest(email,type,currentDomain,password){
             var selectedServer =await GetServersForTest(type);
             var insertTestAccount = await GenerateNewAccount(email,selectedServer,type);
             const selectedUser = await collection.findOne({email:email,type:type});
+            console.log({selectedUser});
             var tmpUsers=[];
             if(type==apiUrls.types.Cisco)
                 selectedUser.username = selectedUser.email;
@@ -76,6 +77,7 @@ export async function GenerateNewAccountTest(email,type,currentDomain,password){
                 console.log({sendingEmailResult});
             }else{
                 customerAccount.username = insertTestAccount.username;
+                console.log({tmpUsers});
                 CreateUserOnSoftEther(selectedServer,customerAccount,"P1",selectedUser.expires);
                 var sendingEmailResult =await sendEmailTest(email,tmpUsers,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount)
                 console.log({sendingEmailResult});
