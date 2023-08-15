@@ -42,7 +42,8 @@ async function ChangeUserServer(obj){
         }else if(foundUser.type === apiUrls.types.Cisco){
             var servers =await GetServers(apiUrls.types.Cisco);
             ChangeServerForUserCisco(servers,currentServerOfUser,foundUser,obj);
-            sendEmailCiscoClientTest(foundUser.email,tmpUsers,currentServerOfUser,"اطلاعات اکانت شما")
+            var emailResult = await  sendEmailCiscoClientTest(foundUser.email,tmpUsers,currentServerOfUser,"اطلاعات اکانت شما")
+            console.log({emailResult})
         }
 
 
