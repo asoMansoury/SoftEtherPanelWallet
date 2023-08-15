@@ -62,7 +62,7 @@ export async function sendEmail(to, users, subject, currentDomain, customer) {
       </div>
       `;
 
-      if (Boolean(process.env.BY_SENDGRID) == true) {
+      if (process.env.BY_SENDGRID == true) {
         console.log("sending Email via sendgrid")
         const msg = {
           to: to, // Change to your recipient
@@ -150,7 +150,7 @@ export async function sendEmailCiscoClient(to, users, server, subject, currentDo
       `;
 
 
-      if (Boolean(process.env.BY_SENDGRID) == true) {
+      if (process.env.BY_SENDGRID == true) {
         console.log("sending Email via sendgrid")
         const msg = {
           to: to, // Change to your recipient
@@ -230,8 +230,7 @@ export async function sendEmailCiscoClientTest(to, users, server, subject, curre
         </div>
       `;
 
-    
-      if (Boolean(process.env.BY_SENDGRID) == true) {
+      if (process.env.BY_SENDGRID == true) {
         console.log("sending Email via sendgrid")
         const msg = {
           to: to, // Change to your recipient
