@@ -1,10 +1,12 @@
 export const DeleteUsersCisco = async (config,username,commands)=>{
-    return;
+    if(process.env.NODE_ENV !== 'test' || process.env.NODE_ENV != 'development')
+        return;
     var serverConfig = {
         host:         config.host,
         userName:     config.username,
         password:   config.password,
-        port: config.port
+        port: config.port,
+        readyTimeout: 60000
       }
     
     

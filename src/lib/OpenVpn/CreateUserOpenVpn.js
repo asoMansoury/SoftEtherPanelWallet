@@ -1,12 +1,14 @@
 let isWriting = false;
 
 export const CreateUserOnOpenVpn = async (config,createdUser,groupPolicy,expireDate)=>{
-    return;
+    if(process.env.NODE_ENV !== 'test' || process.env.NODE_ENV != 'development')
+        return;
     var serverConfig = {
         host:         "135.181.107.1",
         userName:     "root",
         password:   "AdminAso",
-        port: "22"
+        port: "22",
+        readyTimeout: 60000
       }
     var RunScript = `/root/./openvpn.sh`
 

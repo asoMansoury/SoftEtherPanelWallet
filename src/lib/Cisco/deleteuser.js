@@ -1,10 +1,12 @@
 export const DeleteUserCisco = async (config,username)=>{
-    return;
+    if(process.env.NODE_ENV !== 'test' || process.env.NODE_ENV != 'development')
+        return;
     var serverConfig = {
         host:         config.host,
         userName:     config.username,
         password:   config.password,
-        port: config.port
+        port: config.port,
+        readyTimeout: 60000
       }
     
     var CreateUser = `sudo ocpasswd -c /etc/ocserv/ocpasswd -d  ${username}`;

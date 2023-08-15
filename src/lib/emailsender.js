@@ -1,17 +1,23 @@
 import nodemailer from 'nodemailer';
-import { ConvertToPersianDateTime } from './utils';;
+import { ConvertToPersianDateTime, SendingEmailService } from './utils';
+import sgMail from '@sendgrid/mail';
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // Set to true for SSL
   service: 'Gmail',
   auth: {
-    user: 'aso.mansoury@gmail.com', // Replace with your Gmail email address
-    pass: 'dfjoqpzndpqtpjis' // Replace with your Gmail password or an app-specific password
+    user: process.env.EMAIL_SENDER, // Replace with your Gmail email address
+    pass: process.env.EMAIL_SENDER_AUTH// Replace with your Gmail password or an app-specific password
   }
 });
 
-export async function sendEmail(to,users,subject,currentDomain,customer) {
-    try {
+export async function sendEmail(to, users, subject, currentDomain, customer) {
+  try {
 
-      const tableRows = users.map((user, index) => 
+    const tableRows = users.map((user, index) =>
       `
       <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : '#ffffff'};">
         <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${user.username}</td>
@@ -24,7 +30,7 @@ export async function sendEmail(to,users,subject,currentDomain,customer) {
     `).join('');
 
 
-      const table = `
+    const table = `
       <div>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
           <thead style="background-color: #f1f1f1;">
@@ -45,50 +51,70 @@ export async function sendEmail(to,users,subject,currentDomain,customer) {
           <span style="font-size: 14px; color: #007bff;">کلمه عبور: ${customer.password}</span>
         </div>
         <div dir="rtl"  style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-          <a target="_blank" href="http://${currentDomain}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
+          <a target="_blank" href="/${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
         </div>
         <div dir="rtl"  style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-          <a target="_blank" href="http://${currentDomain}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
+          <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
         </div>
         <div dir="rtl"  style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-          <a target="_blank" href="http://${currentDomain}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>
+          <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>
         </div>
       </div>
       `;
 
+      if (Boolean(process.env.BY_SENDGRID) == true) {
+        console.log("sending Email via sendgrid")
+        const msg = {
+          to: to, // Change to your recipient
+          from: process.env.EMAIL_SENDER, // Change to your verified sender
+          subject: subject,
+          html: table,
+        }
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.error(`sending email to ${to} email was successful: `)
+          })
+          .catch((error) => {
+            console.error(`sending email to ${to} email was not successful the error is: `, error)
+          })
+      } else {
+        console.log("sending Email via Gmail Service")
+        const mailOptions = {
+          from: process.env.EMAIL_SENDER,
+          to: to, // Replace with the recipient's email address
+          subject: subject,
+          html: table
+        };
+    
+        const info = await transporter.sendMail(mailOptions);
+    
+        console.log('Email sent:', info.response);
+      }
 
-      const mailOptions = {
-        from: `${process.env.EMAIL_SENDER}`,
-        to: to, // Replace with the recipient's email address
-        subject: subject,
-        html: table
-      };
-  
-      const info = await transporter.sendMail(mailOptions);
-  
-      console.log('Email sent:', info.response);
-    } catch (err) {
-      console.error('Error sending email:', err);
-    }
+
+
+  } catch (err) {
+    console.error('Error sending email:', err);
   }
+}
 
 
 
-  export async function sendEmailCiscoClient(to,users,server,subject,currentDomain,customer) {
-    console.log("To : ",to)
-    try {
-      const tableRows = users.map((user, index) => 
+export async function sendEmailCiscoClient(to, users, server, subject, currentDomain, customer) {
+  try {
+    const tableRows = users.map((user, index) =>
       `
       <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : '#ffffff'};">
         <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${user.username}</td>
         <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${user.password}</td>
         <td style="padding: 10px; border: 1px solid #ddd; color: #555555; font-weight: bold; color: #5b2121;">${user.expires}</td>
-        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${server.ciscourl+":"+server.ciscoPort}</td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${server.ciscourl + ":" + server.ciscoPort}</td>
       </tr>
     `).join('');
 
-      var domainUrl = currentDomain;
-      const table = `
+    var domainUrl = currentDomain;
+    const table = `
         <div>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead style="background-color: #f1f1f1;">
@@ -110,13 +136,13 @@ export async function sendEmail(to,users,subject,currentDomain,customer) {
             <span style="font-size: 14px; color: #007bff;">کلمه عبور: ${customer.password}</span>
           </div>
             <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-              <a target="_blank" href="http://${domainUrl}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
+              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
             </div>
             <div dir="rtl" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-              <a target="_blank" href="http://${domainUrl}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
+              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
             </div>
             <div dir="rtl" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-              <a target="_blank" href="http://${domainUrl}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>
+              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>
             </div>
           </div>
 
@@ -124,38 +150,55 @@ export async function sendEmail(to,users,subject,currentDomain,customer) {
       `;
 
 
-      const mailOptions = {
-        from: `${process.env.EMAIL_SENDER}`,
-        to: to, // Replace with the recipient's email address
-        subject: subject,
-        html: table
-      };
-  
-      const info = await transporter.sendMail(mailOptions);
-  
-      console.log('Email sent:', info.response);
-    } catch (err) {
-      console.error('Error sending email:', err);
-    }
+      if (Boolean(process.env.BY_SENDGRID) == true) {
+        console.log("sending Email via sendgrid")
+        const msg = {
+          to: to, // Change to your recipient
+          from: process.env.EMAIL_SENDER, // Change to your verified sender
+          subject: subject,
+          html: table,
+        }
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.error(`sending email to ${to} email was successful: `)
+          })
+          .catch((error) => {
+            console.error(`sending email to ${to} email was not successful the error is: `, error)
+          })
+      } else {
+        console.log("sending Email via Gmail Service")
+        const mailOptions = {
+          from: process.env.EMAIL_SENDER,
+          to: to, // Replace with the recipient's email address
+          subject: subject,
+          html: table
+        };
+    
+        const info = await transporter.sendMail(mailOptions);
+    
+        console.log('Email sent:', info.response);
+      }
+  } catch (err) {
+    console.error('Error sending email:', err);
   }
+}
 
-  
 
-  export async function sendEmailCiscoClientTest(to,users,server,subject,currentDomain,customer) {
-    console.log("To : ",to)
-    try {
-      const tableRows = users.map((user, index) => 
+
+export async function sendEmailCiscoClientTest(to, users, server, subject, currentDomain, customer) {
+  try {
+    const tableRows = users.map((user, index) =>
       `
       <tr style="background-color: ${index % 2 === 0 ? '#f9f9f9' : '#ffffff'};">
         <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">${user.username}</td>
         <td style="padding: 10px; border: 1px solid #ddd; color: #555555;">${user.password}</td>
         <td style="padding: 10px; border: 1px solid #ddd; color: #555555; font-weight: bold; color: #5b2121;">${user.expires}</td>
-        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;"><span>${server.ciscourl+":"+server.ciscoPort}</span></td>
+        <td style="padding: 10px; border: 1px solid #ddd; color: #555555;"><span>${server.ciscourl + ":" + server.ciscoPort}</span></td>
       </tr>
     `).join('');
 
-      var domainUrl = currentDomain;
-      const table = `
+    const table = `
         <div>
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
             <thead style="background-color: #f1f1f1;">
@@ -174,32 +217,51 @@ export async function sendEmail(to,users,subject,currentDomain,customer) {
             <p style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: red;">زمان وارد کردن آدرس سرور به هیچ عنوان هیچ کلمه اضافی وارد نکنید(دقیقا عین آدرس بدون پیشوند http://) وارد گردد.</p>
           </div>
             <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-              <a target="_blank" href="http://${domainUrl}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
+              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
             </div>
             <div dir="rtl" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-              <a target="_blank" href="http://${domainUrl}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
+              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
             </div>
             <div dir="rtl" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-              <a target="_blank" href="http://${domainUrl}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>
+              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>
             </div>
           </div>
 
         </div>
       `;
 
-
-      const mailOptions = {
-        from: `${process.env.EMAIL_SENDER}`,
-        to: to, // Replace with the recipient's email address
-        subject: subject,
-        html: table
-      };
-  
-      const info = await transporter.sendMail(mailOptions);
-  
-      console.log('Email sent:', info.response);
-    } catch (err) {
-      console.error('Error sending email:', err);
-    }
+    
+      if (Boolean(process.env.BY_SENDGRID) == true) {
+        console.log("sending Email via sendgrid")
+        const msg = {
+          to: to, // Change to your recipient
+          from: process.env.EMAIL_SENDER, // Change to your verified sender
+          subject: subject,
+          html: table,
+        }
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.error(`sending email to ${to} email was successful: `)
+          })
+          .catch((error) => {
+            console.error(`sending email to ${to} email was not successful the error is: `, error)
+          })
+      } else {
+        console.log("sending Email via Gmail Service")
+        const mailOptions = {
+          from: process.env.EMAIL_SENDER,
+          to: to, // Replace with the recipient's email address
+          subject: subject,
+          html: table
+        };
+    
+        const info = await transporter.sendMail(mailOptions);
+    
+        console.log('Email sent:', info.response);
+      }
+  } catch (err) {
+    console.error('Error sending email:', err);
   }
+}
 

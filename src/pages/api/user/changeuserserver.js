@@ -18,13 +18,8 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
         const token = await getToken({ req });
         if(token ==null ){
-          res.status(200).json({ name:"شما دسترسی  خرید اکانت ندارید."});
+          res.status(200).json({ name:"شما دسترسی  به عملیات مورد نظر را ندارید."});
             return;
-        }
-        var isAgent =await IsAgentValid(token.email);
-        if(isAgent.isAgent==false){
-          res.status(200).json({ name:"شما دسترسی  خرید اکانت ندارید."});
-          return;
         }
       // Handle the POST request here
       const { body } = req.body;

@@ -52,6 +52,7 @@
     "@persian-tools/persian-tools": "^3.4.1",
     "@popperjs/core": "^2.11.2",
     "@reduxjs/toolkit": "^1.9.5",
+    "@sendgrid/mail": "^7.7.0",
     "apexcharts-clevision": "3.28.5",
     "axios": "^1.4.0",
     "babel-eslint": "^10.1.0",

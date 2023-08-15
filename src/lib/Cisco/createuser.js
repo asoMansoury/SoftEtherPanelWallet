@@ -1,10 +1,12 @@
 export const CreateUserOnCisco = async (config,username,password,expireDate)=>{
-    return;
+    if(process.env.NODE_ENV !== 'test' || process.env.NODE_ENV != 'development')
+        return;
     var serverConfig = {
         host:         config.host,
         userName:     config.username,
         password:   config.password,
-        port: config.port
+        port: config.port,
+        readyTimeout: 60000
       }
     
     var CreateUser = `echo "${password}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username}`;
