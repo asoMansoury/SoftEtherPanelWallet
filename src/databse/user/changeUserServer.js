@@ -9,6 +9,7 @@ import { apiUrls } from 'src/configs/apiurls';
 import  { ChangeServerForUserCisco } from './SoftEtherMethods/ChangeServerForUser';
 import ChangeServerForUserSoftEther from './SoftEtherMethods/ChangeServerForUser';
 import GetUsersByUsernameAndPassword from './GetUsersByUsernameAndPassword';
+import { sendEmailCiscoClientTest } from 'src/lib/emailsender';
 
 
 const client = new MongoClient(MONGO_URI,{
@@ -29,9 +30,11 @@ async function ChangeUserServer(obj){
         const userCollection = db.collection('Users');
 
 
-
         var foundUser =await userCollection.findOne({username:obj.username});
         var currentServerOfUser = await GetServerByCode(foundUser.currentservercode);
+        
+        var tmpUsers = []
+        tmpUsers.push(foundUser);
 
         if(foundUser.type === apiUrls.types.SoftEther){
             var servers =await GetServers(apiUrls.types.SoftEther);
@@ -39,7 +42,7 @@ async function ChangeUserServer(obj){
         }else if(foundUser.type === apiUrls.types.Cisco){
             var servers =await GetServers(apiUrls.types.Cisco);
             ChangeServerForUserCisco(servers,currentServerOfUser,foundUser,obj);
-            
+            sendEmailCiscoClientTest(foundUser.email,tmpUsers,currentServerOfUser,"اطلاعات اکانت شما")
         }
 
 
