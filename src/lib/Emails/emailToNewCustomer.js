@@ -29,7 +29,7 @@ export async function sendEmailToNewCustomer(to,subject,customer,transferedMoney
 
 
   
-      if (Boolean(process.env.BY_SENDGRID) == true) {
+      if (process.env.BY_SENDGRID == true) {
         console.log("sending Email via sendgrid")
 
         const msg = {
@@ -76,7 +76,7 @@ export async function sendEmailToNewCustomer(to,subject,customer,transferedMoney
       `;
 
 
-      if (Boolean(process.env.BY_SENDGRID) == true) {
+      if (process.env.BY_SENDGRID == true) {
         console.log("sending Email via sendgrid")
 
         const msg = {
