@@ -1,8 +1,11 @@
 let isWriting = false;
 
 export const RemoveUserOpenVpn = async (config,createdUser,groupPolicy,expireDate)=>{
-    if(process.env.NODE_ENV !== 'test' || process.env.NODE_ENV != 'development')
+    if(process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development'){
+        console.log(process.env.NODE_ENV);
+        console.log("hello")
         return;
+    }
     var serverConfig = {
         host:         "135.181.107.1",
         userName:     "root",

@@ -1,6 +1,9 @@
 export const ChangeUserGroupOnSoftEther = async (config,createdUser)=>{
-    if(process.env.NODE_ENV !== 'test' || process.env.NODE_ENV != 'development')
+    if(process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development'){
+        console.log(process.env.NODE_ENV);
+        console.log("hello")
         return;
+    }
     var serverConfig = {
         host:         config.host,
         userName:     config.username,
