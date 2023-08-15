@@ -61,7 +61,8 @@ export async function GenerateNewAccountTest(email,type,currentDomain,password){
             var insertTestAccount = await GenerateNewAccount(email,selectedServer,type);
             const selectedUser = await collection.findOne({email:email,type:type});
             var tmpUsers=[];
-            selectedUser.username = selectedUser.email;
+            if(type==apiUrls.types.Cisco)
+                selectedUser.username = selectedUser.email;
             tmpUsers.push(selectedUser);
             var customerAccount = {
                 username:email,
