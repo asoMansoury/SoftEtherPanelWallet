@@ -19,6 +19,7 @@ async function Login(body){
             email: { $regex: `^${body.email}$`, $options: "i" }, 
             password: body.password 
         });
+        console.log({user});
         if(user!=null) 
         {   
             user.isCustomer = true;
