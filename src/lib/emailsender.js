@@ -90,6 +90,7 @@ export async function sendEmail(to, users, subject, currentDomain, customer) {
         const info = await transporter.sendMail(mailOptions);
     
         console.log('Email sent:', info.response);
+        return info.response;
       }
 
 
@@ -256,8 +257,9 @@ export async function sendEmailCiscoClientTest(to, users, server, subject, curre
         };
     
         const info = await transporter.sendMail(mailOptions);
-    
+        
         console.log('Email sent:', info.response);
+        return info.response;
       }
   } catch (err) {
     console.error('Error sending email:', err);

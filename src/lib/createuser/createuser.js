@@ -1,9 +1,5 @@
 export const CreateUserOnSoftEther = async (config,createdUser,groupPolicy,expireDate)=>{
-    if(process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development'){
-        console.log(process.env.NODE_ENV);
-        console.log("hello")
-        return;
-    }
+
     var serverConfig = {
         host:         config.host,
         userName:     config.username,

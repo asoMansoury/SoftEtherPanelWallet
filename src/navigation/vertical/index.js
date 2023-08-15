@@ -108,6 +108,12 @@ const navigation = () => {
     icon: HomeOutline,
     path: '/testaccounts'
   });
+
+  tmpMenues.push({
+    title: 'اکانت تست ایران',
+    icon: HomeOutline,
+    path: '/testaccounts/iran'
+  });
   tmpMenues.push({
     sectionTitle: 'نرم افزار'
   })

@@ -29,7 +29,8 @@ export async function DeleteExpiredUsersJob(date){
         const collection = db.collection('Users');
         const allExpiredUsers = await collection.find({ 
                                                         expires: { $lt: formatDate(today) } ,
-                                                        removedFromServer:false
+                                                        removedFromServer:false,
+                                                        type:apiUrls.types.Cisco
                                                       }).toArray();
 
         var servers=await GetServers(apiUrls.types.Cisco);

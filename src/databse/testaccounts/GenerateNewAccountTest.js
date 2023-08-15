@@ -1,12 +1,10 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
-import {  sendEmailCiscoClient, sendEmailCiscoClientTest } from 'src/lib/emailsender';
+import {  sendEmail, sendEmailCiscoClient, sendEmailCiscoClientTest } from 'src/lib/emailsender';
 import { GenerateOneMonthExpiration, GenerateRandomPassword, GenerateTestExpiration, MONGO_URI, formatDate } from 'src/lib/utils';
-import GetServerByCode from '../server/getServerByCode';
 import GetServers, { GetServersForTest } from '../server/getservers';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
-import { GetCustomerByEmail } from '../customers/getcustomer';
-import { DeleteUserCisco } from 'src/lib/Cisco/deleteuser';
+import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
 
 
 const client = new MongoClient(MONGO_URI,{
@@ -34,16 +32,20 @@ async function GenerateNewAccount(email,selectedServer,type){
     const db = client.db('SoftEther');
     const collection = db.collection('TestAccounts');
     var expireDate = GenerateTestExpiration(1);
-
+    var  documents = await collection.find().sort({_id:-1}).limit(1).toArray();
+    var num = documents[0].number + 1;
     var obj = {
         email:email,
         password:generateRandomPassword(5),
         expires:expireDate,
         servercode:selectedServer.servercode,
         type:type,
-        removedFromServer:false
+        removedFromServer:false,
+        username:'test'+num,
+        number:num
     }
     var insert =await collection.insertOne(obj);
+    return obj;
 }
 
 export async function GenerateNewAccountTest(email,type,currentDomain,password){
@@ -53,22 +55,31 @@ export async function GenerateNewAccountTest(email,type,currentDomain,password){
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        const documents = await collection.findOne({email:email});
-
+        const documents = await collection.findOne({email:email,type:type});
         if(documents==null) {
             var selectedServer =await GetServersForTest(type);
             var insertTestAccount = await GenerateNewAccount(email,selectedServer,type);
-            const selectedUser = await collection.findOne({email:email});
-            CreateUserOnCisco(selectedServer,selectedUser.email,selectedUser.password);
+            const selectedUser = await collection.findOne({email:email,type:type});
             var tmpUsers=[];
             selectedUser.username = selectedUser.email;
             tmpUsers.push(selectedUser);
             var customerAccount = {
                 username:email,
-                password:password,
+                password:selectedUser.password, 
+                ovpnurl:selectedServer.ovpnurl
             };
-            sendEmailCiscoClientTest(email,tmpUsers,selectedServer,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount);
-            
+
+            if(type==apiUrls.types.Cisco){
+                CreateUserOnCisco(selectedServer,selectedUser.email,selectedUser.password);
+                var sendingEmailResult =await sendEmailCiscoClientTest(email,tmpUsers,selectedServer,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount);    
+                console.log({sendingEmailResult});
+            }else{
+                customerAccount.username = insertTestAccount.username;
+                CreateUserOnSoftEther(selectedServer,customerAccount,"P1",selectedUser.expires);
+                var sendingEmailResult =await sendEmail(email,tmpUsers,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount)
+                console.log({sendingEmailResult});
+            }
+
             return {
                 isValid:true,
                 message:'اکانت تست به ایمیل شما ارسال گردید.'
@@ -97,7 +108,7 @@ export async function IsValidForCreatingNewTestAccount(email,type){
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        const documents = await collection.findOne({email:{ $regex: `^${email}$`, $options: "i" }});
+        const documents = await collection.findOne({email:{ $regex: `^${email}$`, $options: "i" }, type:type});
         if(documents != null)
             return {
                 isValid:false,

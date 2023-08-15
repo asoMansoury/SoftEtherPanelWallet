@@ -108,30 +108,6 @@ const index = () => {
     return true;
   }
 
-  async function checkLoggedInUser(userLogin,email,password){
-    if(userLogin.error==null){
-      var url = apiUrls.agentUrl.isAgentUrl+email;
-      await axios.get(url).then(data =>{
-        setProfileSelector({
-          isLoggedIn:true,
-          email:email,
-          isAgent:data.data.name.isAgent
-        })
-      });
-  
-      return true;
-    }else{
-      
-      setError({
-        ...error,
-        isValid:false,
-        errosMsg:"نام کاربری یا کلمه عبور اشتباه می باشد.(قبلا با این ایمیل ثبت نام شده است)"
-      });
-
-      return false;
-    }
-  }
-  
  async function GetTestAccount(e){
     e.preventDefault();
     if(profileSelector.isLoggedIn==false){
@@ -140,11 +116,11 @@ const index = () => {
     }
 
     setIsEnabledConfirm(true);
-    var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid+email+"&type="+apiUrls.types.Cisco)).data;
+    var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid+email+"&type="+apiUrls.types.SoftEther)).data;
 
     if(isUserValid.name.isValid==true){
             //بعد از اعتبارسنجی هایه بالا برای کاربر یک اکانت تستی درست می کنیم و به ایمیل او ارسال می کنیم.
-            var generateAccount = (await axios.get(apiUrls.testAccountsUrls.gettestaccount+email+"&type="+apiUrls.types.Cisco));
+            var generateAccount = (await axios.get(apiUrls.testAccountsUrls.gettestaccount+email+"&type="+apiUrls.types.SoftEther));
             setError({
                 isValid:generateAccount.data.name.isValid,
                 isValidShow:generateAccount.data.name.isValid,
