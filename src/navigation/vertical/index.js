@@ -48,11 +48,11 @@ const navigation = () => {
     tmpMenues.push({
       sectionTitle: 'پنل کاربر'
     })
-    tmpMenues.push(    {
-      title: 'لیست اکانت های کاربر',
-      icon: AccountCogOutline,
-      path: '/user/purchasedaccount'
-    });
+    // tmpMenues.push(    {
+    //   title: 'لیست اکانت های کاربر',
+    //   icon: AccountCogOutline,
+    //   path: '/user/purchasedaccount'
+    // });
 
   tmpMenues.push({
     title: 'تغییر سرور اکانت',
