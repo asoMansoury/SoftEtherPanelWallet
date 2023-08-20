@@ -48,11 +48,14 @@ const navigation = () => {
     tmpMenues.push({
       sectionTitle: 'پنل کاربر'
     })
-    // tmpMenues.push(    {
-    //   title: 'لیست اکانت های کاربر',
-    //   icon: AccountCogOutline,
-    //   path: '/user/purchasedaccount'
-    // });
+    if(profileSelector.isLoggedIn&&profileSelector.isAgent==true){
+      tmpMenues.push(    {
+        title: 'تعریف قیمت کاربران',
+        icon: AccountCogOutline,
+        path: '/agentprice'
+      });
+    }
+
 
   tmpMenues.push({
     title: 'تغییر سرور اکانت',

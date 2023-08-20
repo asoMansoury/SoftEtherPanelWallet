@@ -16,7 +16,9 @@ export const apiUrls = {
     "agentUrl":{
         "getAgentInformation":`/api/agents/getagent/?name=`,
         "isAgentUrl":`/api/agents/isagent/?name=`,
-        "getAgentBill":'/api/agents/getAgentBill/'
+        "getAgentBill":'/api/agents/getAgentBill/',
+        "getagentprice":`/api/agents/getagentprice`,
+        "registerAgentPrice":`/api/agents/registeragentPrice`
     },
     "userUrl":{
         "createNewUserUrl":`/api/user/createnewuser/`,

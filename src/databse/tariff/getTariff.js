@@ -28,3 +28,19 @@ export async function getTariffs(type){
     }
 }
 
+
+export async function getAllTariffs(){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Tariff');
+        const documents = await collection.find({}).toArray();
+        
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+

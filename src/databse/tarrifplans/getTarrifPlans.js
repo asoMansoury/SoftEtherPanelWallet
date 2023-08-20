@@ -47,4 +47,20 @@ export async function getTarrifPrice(type){
 }
 
 
+export async function getAllTariffPrices(){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('TariffPlans');
+        const documents = await collection.find({}).toArray();
+        
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
+
 
