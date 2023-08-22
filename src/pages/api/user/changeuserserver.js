@@ -24,7 +24,7 @@ export default async function handler(req, res) {
         }
       // Handle the POST request here
       const { body } = req.body;
-      const selectedServer =await GetServerByCode(body.servercode);
+
       var result =await ChangeUserServer(body);
       const newSelectedServer = await GetServerByCode(result.currentservercode);
       if(result==null){
