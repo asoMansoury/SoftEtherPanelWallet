@@ -1,5 +1,6 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
+import { UpdateTank } from 'src/databse/SalesTank/SalesTank';
 import { GetWalletUser, GetWalletUserByCode } from 'src/databse/Wallet/getWalletUser';
 import { GetAgentByUserCode } from 'src/databse/agent/getagentinformation';
 import { GetCustomerAgentCode, GetCustomerByEmail } from 'src/databse/customers/getcustomer';
@@ -46,14 +47,14 @@ async function RevokeUser(username,tariffplancode,tariffcode,type,uuid){
             var selectedPlanType = months.filter((item)=> item.code == tariffplancode)[0];
 
         }else if (foundedUser.isfromagent==true){
-            var customer =await GetCustomerAgentCode(foundedUser.agentcode)
+            var customer =await GetCustomerAgentCode(foundedUser.agentcode);
             var getAgentPricePlans =await getAgentPlans(foundedUser.agentcode,foundedUser.type);
             var agentPlans = getAgentPricePlans.filter((item)=> item.tariffplancode==tariffplancode
                                                                     && item.tarrifcode==tariffcode );
 
             var totalPrice = await CalculateTotalPriceModifed(foundedUser.agentcode,agentPlans,foundedUser.type);
             var agentWallet =await GetWalletUserByCode(foundedUser.agentcode,foundedUser.type);
-            var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice
+            var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice;
             if(checkHasCash<0){
               return{
                 isValid:false,
@@ -62,6 +63,7 @@ async function RevokeUser(username,tariffplancode,tariffcode,type,uuid){
             }
 
             const walletCollection = db.collection('Wallet');
+            UpdateTank(type,totalPrice.ownerPrice);
             var result =await  walletCollection.updateOne({email:{ $regex: `^${customer.email}$`, $options: "i" }}, 
             {
                 $set: {

@@ -17,7 +17,7 @@ async function GetPurchasedAccounts(email){
         const db = client.db('SoftEther');
         const collection = db.collection('Users');
         
-        const data = (await collection.find({email:{ $regex: `^${email}$`, $options: "i" }}).toArray());
+        const data = (await collection.find({email:{ $regex: `^${email}$`, $options: "i" }}).sort({ _id: -1 }).toArray());
         
         var result = data.map((item)=>{
             var typeTitle = "";

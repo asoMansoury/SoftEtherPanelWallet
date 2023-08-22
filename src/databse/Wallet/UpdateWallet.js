@@ -1,5 +1,6 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
 import { MONGO_URI } from 'src/lib/utils';
+import { UpdateTank } from '../SalesTank/SalesTank';
 
 
 const client = new MongoClient(MONGO_URI,{
@@ -20,6 +21,7 @@ export async function CalculateWallet(email,type,boughtAmount){
 
         const collection = db.collection('Wallet');
         const wallet = await collection.findOne({email:{ $regex: `^${email}$`, $options: "i" }});
+        UpdateTank(type,boughtAmount);
         wallet.cashAmount = wallet.cashAmount - boughtAmount;
         var result = await collection.updateOne({email:{ $regex: `^${email}$`, $options: "i" }}, 
         {

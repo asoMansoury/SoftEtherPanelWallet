@@ -66,7 +66,6 @@ export async function CreateWalletForMemberedUser(email,isAgent,cashAmount,debit
             debitToAgent : parseInt(debitToAgent),
             agentcode : agentcode
         }
-        console.log(insertedWallet);
         return result;
     }catch(erros){
         return Promise.reject(erros);

@@ -28,6 +28,7 @@ import { ConvertMonthFromAgentFormat } from 'src/views/baskets/basketUtils';
 import { addCommas, digitsEnToFa } from '@persian-tools/persian-tools';
 import CircularProgress from '@mui/material/CircularProgress';
 import { v4 as uuidv4 } from 'uuid';
+import CalculatedAmountComponent from 'src/views/baskets/CalculatedAmountComponent';
   
 const RevokeSelectedUser = (props) => {
 
@@ -39,10 +40,14 @@ const RevokeSelectedUser = (props) => {
   const [selectedUser,setSelectedUser] = useState();
   const [selectedUserBasket,setSelectedUserBasket] = useState();
   const [selectedPlanType,setSelectedPlanType]= useState();
+  const [selectedPlaAgentnType,setSelectedAgentPlanType]= useState();
   const [showLoadingProgress,setShowLoadingProgress]= useState(false)
   const [showLoadingProgressForRevoke,setShowLoadingProgressForRevoke]= useState(false)
   const [revokeMessage,setRevokeMessage] = useState("");
   const [userName,setUserName] = useState("");
+  const [profileSelector,setProfileSelector] = useState({
+    isLoggedIn:false
+  });
   const [expireUser,setExpireUser]= useState("2020/01/01");
   useEffect(async ()=>{
     if(props!=undefined && props.selectedUser!=undefined && props.selectedUser.username!=undefined){
@@ -50,9 +55,10 @@ const RevokeSelectedUser = (props) => {
       GetUserInformation(props.selectedUser.username)
       setShowLoadingProgress(true);
       setExpireUser(props.selectedUser.expires);
+      setProfileSelector(props.profileSelector);
     }
-
   },[props]);
+  
 
   async function GetUserInformation(username){
     var userInformation = await axios.get(apiUrls.userUrl.getUserInformationUrl+username);
@@ -93,8 +99,7 @@ const RevokeSelectedUser = (props) => {
   function calculatePlanPrices(tariffplancode){
     var selectedPlanType = calculatedTariff.AgentTariffPrices
                                            .filter((item)=>item.tariffplancode==tariffplancode)[0];
-      if(selectedUser.isfromagent)
-      selectedPlanType.price = selectedPlanType.agentprice;
+  
       setSelectedPlanType(selectedPlanType);
       setShowLoadingProgress(false);
   }
@@ -136,6 +141,7 @@ const RevokeSelectedUser = (props) => {
       return;
     }
     GetUserInformation(userName);
+    props.FinishRevokingHandler();
   }
   
 
@@ -218,9 +224,10 @@ const RevokeSelectedUser = (props) => {
             {
               selectedPlanType&&
               <Grid>
-                <div style={{marginTop:'16px'}}>
+                <CalculatedAmountComponent profileSelector={profileSelector} price={selectedPlanType.price} agentprice={selectedPlanType.agentprice}></CalculatedAmountComponent>
+                {/* <div style={{marginTop:'16px'}}>
                     <Alert severity="success"> مبلغ قابل پرداخت:  {addCommas(digitsEnToFa(selectedPlanType.price))} تومان</Alert>
-                </div>
+                </div> */}
               </Grid>
             }
 

@@ -65,7 +65,7 @@ const navigation = () => {
 
     if(profileSelector.isLoggedIn&&profileSelector.isAgent==true){
       tmpMenues.push({
-        title: 'عضو گیری',
+        title: 'انتقال شارژ',
         icon: CreditCardOutline,
         path: '/agentmembership'
       });
