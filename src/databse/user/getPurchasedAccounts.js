@@ -1,6 +1,8 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
 import {  MONGO_URI } from 'src/lib/utils';
+import { GetCustomerByEmail } from '../customers/getcustomer';
+import { GetAgentByUserCode, IsAgentValid } from '../agent/getagentinformation';
 
 
 const client = new MongoClient(MONGO_URI,{
@@ -11,32 +13,43 @@ const client = new MongoClient(MONGO_URI,{
     }
 });
 
+function wrappUsers(data){
+    var result = data.map((item)=>{
+        var typeTitle = "";
+        if(item.type== apiUrls.types.SoftEther)
+            typeTitle = "وی پی ان ایران";
+        else if(item.type == apiUrls.types.Cisco)
+            typeTitle = "وی پی ان سیسکو"
+
+        return{
+            email:item.email,
+            username:item.username,
+            expires:item.expires,
+            type:item.type,
+            typeTitle:typeTitle,
+            userwithhub:item.userwithhub
+        }
+    });
+
+    return result;
+}
 async function GetPurchasedAccounts(email){
     try{
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('Users');
-        
-        const data = (await collection.find({email:{ $regex: `^${email}$`, $options: "i" }}).sort({ _id: -1 }).toArray());
-        
-        var result = data.map((item)=>{
-            var typeTitle = "";
-            if(item.type== apiUrls.types.SoftEther)
-                typeTitle = "وی پی ان ایران";
-            else if(item.type == apiUrls.types.Cisco)
-                typeTitle = "وی پی ان سیسکو"
 
-            return{
-                email:item.email,
-                username:item.username,
-                expires:item.expires,
-                type:item.type,
-                typeTitle:typeTitle,
-                userwithhub:item.userwithhub
-            }
-        });
+        const agentDoc = await IsAgentValid(email);
+        
+        if(agentDoc.isAgent ==true){
+            const data = (await collection.find({agentcode:agentDoc.agentcode}).sort({ _id: -1 }).toArray());
+            return wrappUsers(data);
+        }else{
+            const data = (await collection.find({email:{ $regex: `^${email}$`, $options: "i" }}).sort({ _id: -1 }).toArray());
+            return wrappUsers(data);
+        }
+        
 
-        return result;
     }catch(erros){
         return Promise.reject(erros);
     }finally{

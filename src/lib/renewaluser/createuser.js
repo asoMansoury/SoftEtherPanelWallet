@@ -1,5 +1,7 @@
 export const RenewalUserOnSoftEther = async (config,createdUser,groupPolicy,expireDate)=>{
-    return;
+    console.log("CREATE_SOFTETHER Flag : ",process.env.CREATE_SOFTETHER)
+    if(process.env.CREATE_SOFTETHER == 'false' )
+      return;
     var serverConfig = {
         host:         config.host,
         userName:     config.username,

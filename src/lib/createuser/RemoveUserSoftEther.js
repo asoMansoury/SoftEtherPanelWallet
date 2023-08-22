@@ -1,4 +1,4 @@
-export const ChangeUserGroupOnSoftEther = async (config,createdUser)=>{
+export const RemoveUserSoftEther = async (config,createdUser)=>{
     console.log("CREATE_SOFTETHER Flag : ",process.env.CREATE_SOFTETHER)
     if(process.env.CREATE_SOFTETHER == 'false' )
       return;
@@ -12,8 +12,7 @@ export const ChangeUserGroupOnSoftEther = async (config,createdUser)=>{
       }
     var Vpncmd = `/opt/softether/vpncmd -SERVER 127.0.0.1 -PASSWORD:${config.vpncmdpassword}`
     var HubName = `Hub ${config.HubName}`;
-    var RemoveUserGroup = `GroupUnjoin ${createdUser.username} `;
-    var AddToNewUserGroup = `GroupJoin ${createdUser.policy} /USERNAME:${createdUser.username} `;
+    var RemoveUserFromHub = `UserDelete ${createdUser.username} `;
     
     var host = {
         server:  serverConfig,
@@ -22,8 +21,7 @@ export const ChangeUserGroupOnSoftEther = async (config,createdUser)=>{
          "msg:This is a message that will be displayed during the process",
          Vpncmd,
          HubName,
-         RemoveUserGroup,
-         AddToNewUserGroup
+         RemoveUserFromHub
         ],
         onCommandComplete:   function( command, response, sshObj) {
             //handle just one command or do it for all of the each time
