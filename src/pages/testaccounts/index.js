@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
-import {Alert} from '@mui/material';
+import { Alert } from '@mui/material';
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
@@ -22,188 +22,178 @@ import CardActions from '@mui/material/CardActions'
 import { isEmail } from 'validator';
 import Profilestatus from 'src/redux/actions/profileActions';
 import { useSession } from 'next-auth/react';
+import Select from '@mui/material/Select'
 
 const index = () => {
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
-  const [isEnablePassword,setIsEnablePassword] = useState(false);
-  const [isEnableEmail,setIsEnableEmail] = useState(false);
-  const [isEnabledConfirm,setIsEnabledConfirm] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isEnablePassword, setIsEnablePassword] = useState(false);
+  const [isEnableEmail, setIsEnableEmail] = useState(false);
+  const [isEnabledConfirm, setIsEnabledConfirm] = useState(false);
   // const dispatch = useDispatch();
 
-  const {  data:session,status } = useSession();
-  const [profileSelector,setProfileSelector] = useState({
-    isLoggedIn:false
+  const { data: session, status } = useSession();
+  const [selectedServer, setSelectedServer] = useState("");
+  const [servers, setServers] = useState([]);
+  const [profileSelector, setProfileSelector] = useState({
+    isLoggedIn: false
   });
-  const [error,setError]=useState({
-    isValid:true,
-    isValidShow:false,
-    errosMsg:""
+  const [error, setError] = useState({
+    isValid: true,
+    isValidShow: false,
+    errosMsg: ""
   });
 
 
-  useEffect(async()=>{
-    
-    if(status ==="authenticated"){
+  useEffect(async () => {
+
+    if (status === "authenticated") {
       setProfileSelector({
-        email:session.user.email,
-        isLoggedIn:true
+        email: session.user.email,
+        isLoggedIn: true
       });
     }
-  },[status])
+  }, [status])
 
 
-  useEffect(async ()=>{
-    if(profileSelector.isLoggedIn==true){
-        var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid+profileSelector.email+"&type="+apiUrls.types.Cisco)).data;
-        if(isUserValid.name.isValid==false){
-            setError({
-                isValid:false,
-                errosMsg:isUserValid.name.message
-              });
-        }
-        setEmail(profileSelector.email);
-        setIsEnablePassword(true);
-        setIsEnableEmail(true);
-        setIsEnabledConfirm(true);
+  useEffect(async () => {
+    await LoadServers();
+    if (profileSelector.isLoggedIn == true) {
+      var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + profileSelector.email + "&type=" + apiUrls.types.Cisco)).data;
+      if (isUserValid.name.isValid == false) {
+        setError({
+          isValid: false,
+          errosMsg: isUserValid.name.message
+        });
+      }
+      setEmail(profileSelector.email);
+      setIsEnablePassword(true);
+      setIsEnableEmail(true);
+      setIsEnabledConfirm(true);
+    }else{
+      setIsEnabledConfirm(false);
     }
-  },[]);
+
+  }, []);
 
 
-  function validatePassowrd(pass){
-    if(pass==undefined||!pass!='') {
+  async function LoadServers(){
+    setIsEnabledConfirm(true);
+    var servers = await axios.get(apiUrls.server.getServersByTypeApi + apiUrls.types.Cisco);
+    var tmp = [];
+    servers.data.name.map((item) => {
+      tmp.push(item);
+    });
+    setSelectedServer(tmp[0].servercode);
+    setServers(tmp);
+  }
+
+  function validateEmail(email) {
+    if (email == undefined || email == "" || !isEmail(email)) {
       setError({
-        isValid:false,
-        errosMsg:"فرمت پسورد صحیح نمی باشد."
+        isValid: false,
+        errosMsg: "فرمت ایمیل صحیح نمی باشد."
       });
 
       return false;
-    }else{
+    } else {
+
       setError({
-        isValid:true,
-        errosMsg:""
+        isValid: true,
+        errosMsg: ""
       });
+
     }
 
     return true;
   }
 
-  function validateEmail(email){
-    if(email==undefined||email==""||!isEmail(email)) {
-      setError({
-        isValid:false,
-        errosMsg:"فرمت ایمیل صحیح نمی باشد."
-      });
-
-      return false;
-    }else{
-
-      setError({
-        isValid:true,
-        errosMsg:""
-      });
-
-    }
-
-    return true;
-  }
-
-  async function checkLoggedInUser(userLogin,email,password){
-    if(userLogin.error==null){
-      var url = apiUrls.agentUrl.isAgentUrl+email;
-      await axios.get(url).then(data =>{
-        setProfileSelector({
-          isLoggedIn:true,
-          email:email,
-          isAgent:data.data.name.isAgent
-        })
-      });
-  
-      return true;
-    }else{
-      
-      setError({
-        ...error,
-        isValid:false,
-        errosMsg:"نام کاربری یا کلمه عبور اشتباه می باشد.(قبلا با این ایمیل ثبت نام شده است)"
-      });
-
-      return false;
-    }
-  }
-  
- async function GetTestAccount(e){
+  async function GetTestAccount(e) {
     e.preventDefault();
-    if(profileSelector.isLoggedIn==false){
-        if(validateEmail(email)==false)
-            return ;
+    if (profileSelector.isLoggedIn == false) {
+      if (validateEmail(email) == false)
+        return;
     }
 
     setIsEnabledConfirm(true);
-    var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid+email+"&type="+apiUrls.types.Cisco)).data;
+    var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + email + "&type=" + apiUrls.types.Cisco)).data;
 
-    if(isUserValid.name.isValid==true){
-            //بعد از اعتبارسنجی هایه بالا برای کاربر یک اکانت تستی درست می کنیم و به ایمیل او ارسال می کنیم.
-            var generateAccount = (await axios.get(apiUrls.testAccountsUrls.gettestaccount+email+"&type="+apiUrls.types.Cisco));
-            setError({
-                isValid:generateAccount.data.name.isValid,
-                isValidShow:generateAccount.data.name.isValid,
-                errosMsg:generateAccount.data.name.message
-              });
-    }else{
-        setError({
-            isValid:false,
-            errosMsg:isUserValid.name.message
-          });
+    if (isUserValid.name.isValid == true) {
+      //بعد از اعتبارسنجی هایه بالا برای کاربر یک اکانت تستی درست می کنیم و به ایمیل او ارسال می کنیم.
+      var generateAccount = (await axios.get(apiUrls.testAccountsUrls.gettestaccount + email + "&type=" + apiUrls.types.Cisco+"&servercode="+selectedServer));
+      setError({
+        isValid: generateAccount.data.name.isValid,
+        isValidShow: generateAccount.data.name.isValid,
+        errosMsg: generateAccount.data.name.message
+      });
+    } else {
+      setError({
+        isValid: false,
+        errosMsg: isUserValid.name.message
+      });
     }
     setIsEnabledConfirm(false);
   }
 
   return (
     <Grid container spacing={6}>
-            <Grid item xs={12} sm={12} >
-                <Card>
-                    <CardHeader title='دریافت اکانت تست ' titleTypographyProps={{ variant: 'h6' }} >   
-                    </CardHeader>
-                    <CardContent>
-                    <Grid container spacing={5}>
-                    <Grid item xs={12} sm={12}>
-                        <Alert severity="error">اطلاعات اکانت تست به ایمیل شخصی شما تنها برای یکبار ارسال میگردد. لطفا ایمیل معتبر و شخصی خود را وارد نمایید.</Alert>
-                      </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField name="email" 
-                               disabled={isEnableEmail}
-                                type='email'
-                                value={email}
-                               onChange={(e)=>setEmail(e.target.value)}  
-                            fullWidth label='ایمیل' placeholder='وارد کردن ایمیل اجباری است' />
-                        </Grid>
-                        {/* <Grid item xs={12} sm={6}>
-                            <TextField name="password" 
-                                 disabled={isEnablePassword}
-                                 type='password'
-                                onChange={(e)=>setPassword(e.target.value)}   
-                                fullWidth label="پسورد اکانت" placeholder="پسورد اکانت " />
-                        </Grid> */}
-                        <Grid item xs={12} sm={12}>
-                            {
-                                (error.isValid==false) &&
-                                        <Alert severity="error">{error.errosMsg}</Alert>
-                            }
-                            {
-                                (error.isValidShow==true) &&
-                                        <Alert severity="success">{error.errosMsg}</Alert>
-                            }
-                        </Grid>
-                    </Grid>
-                    </CardContent>
-                    <CardActions>
-                        <Button disabled={isEnabledConfirm}  size='large' onClick={GetTestAccount}  type='submit' sx={{ mr: 2 }} variant='contained'>
-                            دریافت اکانت تست
-                        </Button>
-                    </CardActions>
-                </Card>
+      <Grid item xs={12} sm={12} >
+        <Card>
+          <CardHeader title='دریافت اکانت تست ' titleTypographyProps={{ variant: 'h6' }} >
+          </CardHeader>
+          <CardContent>
+            <Grid container spacing={5}>
+              <Grid item xs={12} sm={12}>
+                <Alert severity="error">اطلاعات اکانت تست به ایمیل شخصی شما تنها برای یکبار ارسال میگردد. لطفا ایمیل معتبر و شخصی خود را وارد نمایید.</Alert>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField name="email"
+                  disabled={isEnableEmail}
+                  type='email'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  fullWidth label='ایمیل' placeholder='وارد کردن ایمیل اجباری است' />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                  {
+                    servers.length > 0 &&
+                    <Select
+                      name="plantType"
+                      label='انتخاب سرور'
+                      defaultValue={selectedServer}
+                      onChange={(e) => { setSelectedServer(e.target.value) }}
+                      id='form-layouts-separator-select'
+                      labelId='form-layouts-separator-select-label'
+                    >
+                      {
+                        servers.map((item, index) => (
+                          <MenuItem key={index} value={item.servercode}>{item.title}</MenuItem>
+                        ))
+                      }
+                    </Select>
+                  }
+              </Grid>
+
+
+              <Grid item xs={12} sm={12}>
+                {
+                  (error.isValid == false) &&
+                  <Alert severity="error">{error.errosMsg}</Alert>
+                }
+                {
+                  (error.isValidShow == true) &&
+                  <Alert severity="success">{error.errosMsg}</Alert>
+                }
+              </Grid>
             </Grid>
+          </CardContent>
+          <CardActions>
+            <Button disabled={isEnabledConfirm} size='large' onClick={GetTestAccount} type='submit' sx={{ mr: 2 }} variant='contained'>
+              دریافت اکانت تست
+            </Button>
+          </CardActions>
+        </Card>
+      </Grid>
 
     </Grid>
   )
