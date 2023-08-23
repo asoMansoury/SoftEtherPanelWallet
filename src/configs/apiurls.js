@@ -33,6 +33,7 @@ export const apiUrls = {
         "calculateUserForRevokeRul":`/api/user/calculateUserForRevoke`,
         "revokeuserUrl":`/api/user/Cisco/revokeuser`,
         "calculateRevokeUserUrl":`/api/user/Cisco/revokeprice`,
+        "ChangeUserPassworUrl":`/api/user/changeuserpassword`
     },
     "redisUrl":{
         "setRedisApi":`/api/redis/setredis/`,

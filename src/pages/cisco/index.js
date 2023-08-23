@@ -7,7 +7,6 @@ import { apiUrls } from 'src/configs/apiurls';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
 import {  useSession } from 'next-auth/react';
 const Cisco = () => {
   const [tariffs, setTariffs] = useState([]);
