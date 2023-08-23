@@ -65,6 +65,10 @@ const UserDropdown = (props) => {
 
     handleDropdownClose('/pages/login')
   }
+
+  function goToProfileHandler(e){
+    router.push("/user/Profile")
+  }
   
   return (
     <Fragment>
@@ -90,7 +94,7 @@ const UserDropdown = (props) => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Box sx={{ pt: 2, pb: 3, px: 4 }}>
+        <Box sx={{ pt: 2, pb: 3, px: 4, cursor:'pointer' }} onClick={goToProfileHandler}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Badge
               overlap='circular'

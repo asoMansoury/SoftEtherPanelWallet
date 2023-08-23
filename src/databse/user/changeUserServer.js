@@ -32,18 +32,18 @@ async function ChangeUserServer(obj){
 
         var foundUser =await userCollection.findOne({username:obj.username});
         var currentServerOfUser = await GetServerByCode(foundUser.currentservercode);
-        console.log({foundUser})
         var tmpUsers = []
         tmpUsers.push(foundUser);
 
         if(foundUser.type === apiUrls.types.SoftEther){
+            const foundNewServer =await GetServerByCode(obj.servercode);
             var servers =await GetServers(apiUrls.types.SoftEther);
             ChangeServerForUserSoftEther(servers,currentServerOfUser,foundUser,obj)
+            
         }else if(foundUser.type === apiUrls.types.Cisco){
             var servers =await GetServers(apiUrls.types.Cisco);
             ChangeServerForUserCisco(servers,currentServerOfUser,foundUser,obj);
             var emailResult = await  sendEmailCiscoClientTest(foundUser.email,tmpUsers,currentServerOfUser,"اطلاعات اکانت شما")
-            console.log({emailResult,currentServerOfUser})
         }
 
 

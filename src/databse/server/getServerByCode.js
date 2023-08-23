@@ -14,8 +14,7 @@ async function GetServerByCode(code){
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('Servers');
-        const documents = await collection.findOne({servercode:code});
-        
+        const documents = await collection.findOne({servercode:code,isremoved: false});
         return documents;
     }catch(erros){
         return Promise.reject(erros);

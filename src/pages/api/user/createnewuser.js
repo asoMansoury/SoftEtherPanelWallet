@@ -104,7 +104,8 @@ export default async function handler(req, res) {
           var expireDate = userItem.expires;
           servers.map((server,index)=>{
             var groupPolicy = server.servercode == selectedServer.servercode ?userItem.policy : server.policy;
-            CreateUserOnSoftEther(server,userItem,groupPolicy,expireDate);
+            if(server.servercode == selectedServer.servercode)
+              CreateUserOnSoftEther(server,userItem,groupPolicy,expireDate);
          });
         })
 

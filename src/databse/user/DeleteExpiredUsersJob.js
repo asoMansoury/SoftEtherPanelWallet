@@ -7,6 +7,7 @@ import { getTariffPrices } from '../tariff/tariffPrice';
 import { apiUrls } from 'src/configs/apiurls';
 import GetServers from '../server/getservers';
 import { DeleteUserCisco } from 'src/lib/Cisco/deleteuser';
+import { RemoveUserSoftEther } from 'src/lib/createuser/RemoveUserSoftEther';
 
 
 const client = new MongoClient(MONGO_URI,{
@@ -29,14 +30,15 @@ export async function DeleteExpiredUsersJob(date){
         const collection = db.collection('Users');
         const allExpiredUsers = await collection.find({ 
                                                         expires: { $lt: formatDate(today) } ,
-                                                        removedFromServer:false,
-                                                        type:apiUrls.types.Cisco
+                                                        removedFromServer:false
                                                       }).toArray();
 
-        var servers=await GetServers(apiUrls.types.Cisco);
+
+        var CiscoServers=await GetServers(apiUrls.types.Cisco);
+        var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
         for (const user of allExpiredUsers) {
             if (user.type === apiUrls.types.Cisco) {
-                var selectedServer = servers.filter(server=>server.servercode==user.servercode)[0];
+                var selectedServer = CiscoServers.filter(server=>server.servercode==user.servercode)[0];
                 DeleteUserCisco(selectedServer,user.username);
                 user.removedFromServer = true;
 
@@ -44,6 +46,14 @@ export async function DeleteExpiredUsersJob(date){
               const filter = { _id: user._id };
               const updateOperation = { $set: user };
               await collection.updateOne(filter, updateOperation);
+            }else if (user.type === apiUrls.types.SoftEther){
+                var selectedSoftEtherServer = SoftEtherServers.filter(server=>server.servercode==user.servercode)[0];
+                user.removedFromServer = true;
+                //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                RemoveUserSoftEther(selectedSoftEtherServer,user);
+                const filter = { _id: user._id };
+                const updateOperation = { $set: user };
+                await collection.updateOne(filter, updateOperation);
             }
         }
 

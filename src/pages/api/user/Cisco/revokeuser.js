@@ -1,3 +1,4 @@
+import { getToken } from "next-auth/jwt";
 import RevokeUser from "src/databse/user/CiscoMethods/RevokeUser";
 
 
@@ -18,8 +19,13 @@ export default async function handler(req, res) {
 
           // Handle the POST request here
           const { username,tariffplancode,tariffcode,type,uuid } = req.body;
-
-          var result = await RevokeUser(username,tariffplancode,tariffcode,type,uuid);
+          const token = await getToken({ req });
+          if(token ==null ){
+            res.status(200).json({ name:"شما دسترسی  به عملیات مورد نظر را ندارید."});
+              return;
+          }
+          
+          var result = await RevokeUser(username,tariffplancode,tariffcode,type,uuid,token);
           
           res.status(200).json({ result});
         } else {

@@ -15,11 +15,11 @@ const transporter = nodemailer.createTransport({
 
 
 export async function sendEmailToNewCustomer(to,subject,customer,transferedMoney,agentEmail) {
-  if(process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development'){
-    console.log(process.env.NODE_ENV);
-    console.log("hello")
+  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
+  if(process.env.SEND_EMAIL == 'false' ){
     return;
   }
+
     try {
       const table = `
       <div>
@@ -71,11 +71,11 @@ export async function sendEmailToNewCustomer(to,subject,customer,transferedMoney
 
 
   export async function sendEmailToInformCustomer(to,subject,transferedMoney,agentEmail) {
-    if(process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development'){
-      console.log(process.env.NODE_ENV);
-      console.log("hello")
+    console.log("Send Email Flag : ",process.env.SEND_EMAIL)
+    if(process.env.SEND_EMAIL == 'false' ){
       return;
-  }
+    }
+  
     try {
       const table = `
       <div>

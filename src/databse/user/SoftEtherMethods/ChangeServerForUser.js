@@ -4,6 +4,8 @@ import { ChangeUserGroupOnSoftEther } from 'src/lib/createuser/changeUserGroup';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { DeleteUserCisco } from 'src/lib/Cisco/deleteuser';
 import GetServerByCode from 'src/databse/server/getServerByCode';
+import { RemoveUserSoftEther } from 'src/lib/createuser/RemoveUserSoftEther';
+import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
 
 const client = new MongoClient(MONGO_URI,{
     serverApi:{
@@ -14,8 +16,9 @@ const client = new MongoClient(MONGO_URI,{
 });
 
 
- async function ChangeServerForUserSoftEther(servers,currentServerOfUser,foundNewServer,foundUser,obj){
+ async function ChangeServerForUserSoftEther(servers,currentServerOfUser,foundUser,obj){
     var foundNewServer = await GetServerByCode(obj.servercode);
+    console.log({foundNewServer});
     if(foundNewServer==null )
         return null;
     try{
@@ -28,12 +31,10 @@ const client = new MongoClient(MONGO_URI,{
                     username:foundUser.username,
                     policy:'D1'
                 }
-                
-                ChangeUserGroupOnSoftEther(serverItem,newObj);
-            }else{
-                if(serverItem.isremoved==false){
-                    ChangeUserGroupOnSoftEther(serverItem,foundUser);
-                }
+                RemoveUserSoftEther(serverItem,newObj);
+            }else if(serverItem.servercode == foundNewServer.servercode){
+                var groupPolicy = foundUser.policy;
+                CreateUserOnSoftEther(foundNewServer,foundUser,groupPolicy,foundUser.expires)
             }
         });
 

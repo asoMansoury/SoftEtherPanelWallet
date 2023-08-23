@@ -15,11 +15,11 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendEmail(to, users, subject, currentDomain, customer) {
-  if(process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development'){
-    console.log(process.env.NODE_ENV);
-    console.log("hello")
+  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
+  if(process.env.SEND_EMAIL == 'false' ){
     return;
-  } 
+  }
+
   try {
 
     const tableRows = users.map((user, index) =>
@@ -104,11 +104,10 @@ export async function sendEmail(to, users, subject, currentDomain, customer) {
 
 
 export async function sendEmailTest(to, users, subject) {
-  if(process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development'){
-    console.log(process.env.NODE_ENV);
-    console.log("hello")
+  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
+  if(process.env.SEND_EMAIL == 'false' ){
     return;
-}
+  }
   try {
 
     const tableRows = users.map((user, index) =>
@@ -189,11 +188,11 @@ export async function sendEmailTest(to, users, subject) {
 
 
 export async function sendEmailCiscoClient(to, users, server, subject, currentDomain, customer) {
-  if(process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development'){
-    console.log(process.env.NODE_ENV);
-    console.log("hello")
+  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
+  if(process.env.SEND_EMAIL == 'false' ){
     return;
-}
+  }
+
   try {
     const tableRows = users.map((user, index) =>
       `
@@ -276,11 +275,11 @@ export async function sendEmailCiscoClient(to, users, server, subject, currentDo
 
 
 export async function sendEmailCiscoClientTest(to, users, server, subject, currentDomain, customer) {
-  if(process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development'){
-    console.log(process.env.NODE_ENV);
-    console.log("hello")
+  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
+  if(process.env.SEND_EMAIL == 'false' ){
     return;
   }
+
   try {
     const tableRows = users.map((user, index) =>
       `

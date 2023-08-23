@@ -79,7 +79,6 @@ export async function GetWalletUserByCode(agentCode,type){
 }
 
 export async function CheckAgentWalet(email,type){
-    var agentCode = code.toString();
     if(type=='' || type == undefined)
         type= "SF1";
     try{
