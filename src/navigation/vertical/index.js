@@ -82,6 +82,11 @@ const navigation = () => {
     tmpMenues.push({
       sectionTitle: 'پنل مدیریت'
     })
+    tmpMenues.push({
+      title: "تعریف نماینده فروش",
+      icon: CubeOutline,
+      path: '/admin/agents'
+    })
 
     tmpMenues.push({
       title: 'ثبت تسویه حساب',
