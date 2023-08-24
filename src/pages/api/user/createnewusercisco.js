@@ -77,7 +77,7 @@ export default async function handler(req, res) {
 
          var newUsers =await CreateUser(usersBasketObj);
 
-        await CalculateWallet(registerCustomer.email,apiUrls.types.Cisco,usersBasketObj.price);
+        await CalculateWallet(registerCustomer.email,apiUrls.types.Cisco,usersBasketObj.price,usersBasketObj);
         //put the new user into the database
         var userRegistered = [];
         await Promise.all(newUsers.map(async (userNew) => {
