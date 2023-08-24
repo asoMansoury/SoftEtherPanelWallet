@@ -12,40 +12,23 @@ const client = new MongoClient(MONGO_URI,{
     }
 });
 
-export async function GetAgentByUserCode(code,type){
-    var agentCode = code.toString();
-    if(type=='' || type == undefined)
-        type= "SF1";
+export async function GetAgentByAgentPrefix(agentprefix){
     try{
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
 
-        const tariffCollection = db.collection('Tariff');
-        const tariff = await tariffCollection.find({type:type}).toArray();
-
         const collection = db.collection('Agents');
-        const documents = await collection.findOne({agentcode:agentCode});
+        const documents = await collection.findOne({agentprefix:{ $regex: `^${agentprefix}$`, $options: "i" }});
         if(documents==null)
             return {
-                agentInformation:documents,
+                agentInformation:null,
                 isAgentValid:false
             };
-
-        const customerCollection = db.collection('Customers');
-        const customerDocumnts = await customerCollection.findOne({agentcode:agentCode});
-
-        const TariffAgentCollection = db.collection('TariffAgent');
-        const agentTariffs = await TariffAgentCollection.find({agentcode:agentCode,type:type}).toArray();
-        const AgentWallet = await GetWalletUser(customerDocumnts.email);
-        const result ={
-            agentInformation:documents,
-            isAgentValid:true,
-            agentTariffs:agentTariffs,
-            tariff:tariff,
-            agentWallet : WalletDocToDTo(AgentWallet),
-            customer:{
-                email:customerDocumnts.email
-            }
+        else{
+            return {
+                agentInformation:documents,
+                isAgentValid:true
+            };
         }
 
         return result;

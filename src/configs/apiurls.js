@@ -11,7 +11,8 @@ export const apiUrls = {
         "getAgentTariffPlanUrl":`/api/tariff/getagentatariffplans/?name=`,
         "getTariffPriceUrl":`/api/tariff/gettariffprice/?type=`,
         "calculateTotalPrice":`/api/tariff/calculatetotalpriceapi/`,
-        "getAllTarifPriceUrl":`/api/tariff/getAllTariffPrices`
+        "getAllTarifPriceUrl":`/api/tariff/getAllTariffPrices`,
+        "getAllAgentPlansUrl":`/api/tariff/getAllAgentPlans`
 
     },
     "agentUrl":{
@@ -19,7 +20,8 @@ export const apiUrls = {
         "isAgentUrl":`/api/agents/isagent/?name=`,
         "getAgentBill":'/api/agents/getAgentBill/',
         "getagentprice":`/api/agents/getagentprice`,
-        "registerAgentPrice":`/api/agents/registeragentPrice`
+        "registerAgentPrice":`/api/agents/registeragentPrice`,
+        "defineSubAgentUrl":`/api/agents/defineSubAgent`
     },
     "userUrl":{
         "createNewUserUrl":`/api/user/createnewuser/`,

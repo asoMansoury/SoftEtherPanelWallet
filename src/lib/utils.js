@@ -182,5 +182,13 @@ export function ConvertCodeToTitle(typeCode) {
     return "سیسکو";
   else if (typeCode == apiUrls.types.SoftEther)
     return "وی پی ان ایران";
+}
 
+
+export function ValidateUIElements(element){
+
+}
+
+export function isNumber(value) {
+  return !isNaN(parseInt(value));
 }

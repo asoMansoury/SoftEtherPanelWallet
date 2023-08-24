@@ -47,6 +47,42 @@ export async function RegisterAgentCustomers(user,type){
     }
 }
 
+export async function RegisterAgentCustomersByOtherAgents(user,introducerEmail,isSubAgent){
+
+
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Customers');
+        var documents =await collection.find({email:{ $regex: `^${user.email}$`, $options: "i" }}).toArray();
+        if(documents[0]){
+            var doc = documents[0];
+            return doc;
+        }
+        else{
+
+            const result = await collection.insertOne({
+                email:user.email,
+                password:user.password,
+                isfromagent:user.isFromAgent, 
+                agentcode:user.agentcode,
+                isAdmin:false,
+                agentIntoducer:user.isFromAgent==true?user.agentInformation.agentcode:null,
+                introducerEmail:introducerEmail,
+                isSubAgent:isSubAgent
+            });
+            if(user.isFromAgent){
+                result.agentIntroducerDetail = await GetAgentByUserCode(user.agentInformation.agentcode,type) 
+            }
+            return result;
+        }
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
 
 async function RegisterCustomers(user,type){
 
