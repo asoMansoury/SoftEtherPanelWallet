@@ -10,7 +10,8 @@ export const apiUrls = {
         "getTariffPlanUrl":`/api/tariff/getatariffplans/?type=`,
         "getAgentTariffPlanUrl":`/api/tariff/getagentatariffplans/?name=`,
         "getTariffPriceUrl":`/api/tariff/gettariffprice/?type=`,
-        "calculateTotalPrice":`/api/tariff/calculatetotalpriceapi/`
+        "calculateTotalPrice":`/api/tariff/calculatetotalpriceapi/`,
+        "getAllTarifPriceUrl":`/api/tariff/getAllTariffPrices`
 
     },
     "agentUrl":{
@@ -66,7 +67,8 @@ export const apiUrls = {
     "AdminManagementUrls":{
         "DeleteExpiresUsersApi":`/api/admin/deleteexpiredaccount`,
         "GetAgentInvoice":`/api/admin/getAgentInvoice/?username=`,
-        "InvoiceWithAgent":`/api/admin/InvoiceWithAgent/?agentCode=`
+        "InvoiceWithAgent":`/api/admin/InvoiceWithAgent/?agentCode=`,
+        "DefineNewAgent":`/api/admin/DefineNewAgent`
     },
     "TutorialUrls":{
         "GetTutorial":`/api/tutorial/gettutorial`

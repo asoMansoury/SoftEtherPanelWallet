@@ -12,8 +12,6 @@ const client = new MongoClient(MONGO_URI,{
 
 
 export async function CreateNewWallet(email,isAgent,cashAmount,debitAmount,debitToAgent,agentcode){
-    if(type=='' || type == undefined)
-        type= "SF1";
     try{
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
