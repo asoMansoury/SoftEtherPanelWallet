@@ -2,7 +2,7 @@ import { MongoClient, ServerApiVersion } from 'mongodb';
 import { MONGO_URI } from 'src/lib/utils';
 import { ValidationDto } from '../CommonDto/ValidationDto';
 
-import { ValidationForInputs, ValidationForPlans } from './agentUtils';
+import { ValidationForInputs, ValidationForPlans, ValidationForWallet } from './agentUtils';
 import { GetCustomerAgentCode, GetCustomerAgentCodeIgnoreCase, GetCustomerByEmail } from '../customers/getcustomer';
 import { GetAgentByAgentPrefix } from './GetAgentByAgentPrefix';
 import { WrapperCustomer } from '../customers/customerUtils';
@@ -28,29 +28,32 @@ async function ValidationForAgent(agent) {
 
 
     const collectionAgent = db.collection('Agents');
-    const loadCustomerByEmail =await GetCustomerByEmail(agent.email);
+    const loadCustomerByEmail = await GetCustomerByEmail(agent.email);
 
     if (loadCustomerByEmail.isvalid == true)
         return new ValidationDto(false, "ایجنت برای این ایمیل قبلا تعریف شده است.");
 
     const customerDoc = await GetCustomerAgentCodeIgnoreCase(agent.agentcode);
-    console.log({customerDoc})
+    console.log({ customerDoc })
     if (customerDoc.isvalid == true)
         return new ValidationDto(false, `کد ایجنت << ${agent.agentcode} >> قبلا تعریف شده است. لطفا این کدرا تغییر دهید.`);
 
     const agentPrefixIsExist = await GetAgentByAgentPrefix(agent.agentprefix);
-    if (agentPrefixIsExist.isAgentValid ==true)
+    if (agentPrefixIsExist.isAgentValid == true)
         return new ValidationDto(false, `کد پشوند کاربر << ${agent.agentprefix} >> قبلا تعریف شده است. لطفا این کدرا تغییر دهید.`);
     return new ValidationDto(true, "")
 }
 
 
 
-async function ValidationInputs(agent, plans) {
+async function ValidationInputs(agent, plans,token) {
     var resultValidationForNonAsync = ValidationForInputs(agent);
     if (resultValidationForNonAsync.isValid == false)
         return resultValidation;
 
+    var resultValidationForNonAsync = ValidationForWallet(agent,token.email);
+    if (resultValidationForNonAsync.isValid == false)
+        return resultValidation;
 
     var resultValidationAsync = await ValidationForAgent(agent);
     if (resultValidationAsync.isValid == false)
@@ -63,8 +66,8 @@ async function ValidationInputs(agent, plans) {
     return new ValidationDto(true, "");
 
 }
-export async function DefineSubAgent(agent, plans,token) {
-    const ValidateValue =await ValidationInputs(agent, plans);
+export async function DefineSubAgent(agent, plans, token) {
+    const ValidateValue = await ValidationInputs(agent, plans,token);
     if (ValidateValue.isValid == false)
         return ValidateValue;
 
@@ -72,15 +75,15 @@ export async function DefineSubAgent(agent, plans,token) {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
 
-        const {email,password,agentcode,cashAmount,agentprefix,name} = agent;
+        const { email, password, agentcode, cashAmount, agentprefix, name } = agent;
 
-        var user = WrapperCustomer(email,password,agentcode);
-        var resultRegisterCustomer = await  RegisterAgentCustomersByOtherAgents(user,token.email,true);
-        var resultCreateNewWallet =  await  CreateNewWallet(email,true,cashAmount,0,0,agentcode);
-        var resultCreateNewAgent = await CreateNewAgentByAgents(name,"6221061221256532",20,agentcode,agentcode,20000,agentprefix,token.email,true);
-        var resultDefineNewTariffAgent = await DefineNewTariffAgent(plans,agentcode);
-        TransferMoneyToOtherWallet(token.email,"",cashAmount);
-        TransferedWalletLog(token.email,token.agentcode,email,cashAmount);
+        var user = WrapperCustomer(email, password, agentcode);
+        var resultRegisterCustomer = await RegisterAgentCustomersByOtherAgents(user, token.email, true);
+        var resultCreateNewWallet = await CreateNewWallet(email, true, cashAmount, 0, 0, agentcode);
+        var resultCreateNewAgent = await CreateNewAgentByAgents(name, "6221061221256532", 20, agentcode, agentcode, 20000, agentprefix, token.email, true);
+        var resultDefineNewTariffAgent = await DefineNewTariffAgent(plans, agentcode);
+        TransferMoneyToOtherWallet(token.email, "", cashAmount);
+        TransferedWalletLog(token.email, token.agentcode, email, cashAmount);
 
         return { isValid: true };
     } catch (erros) {

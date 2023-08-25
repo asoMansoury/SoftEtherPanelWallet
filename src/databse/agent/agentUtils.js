@@ -1,6 +1,7 @@
 import { addCommas, digitsEnToFa } from "@persian-tools/persian-tools";
 import { ValidationDto } from "../CommonDto/ValidationDto";
 import { isEmail } from 'validator';
+import { GetWalletUser } from "../Wallet/getWalletUser";
 
 export async function ValidationForInputs(agent) {
     if (agent.email || agent.cashAmount == 0 || agent.password || agent.agentcode == ""
@@ -21,11 +22,23 @@ export async function ValidationForInputs(agent) {
 
 
 export async function ValidationForPlans(plans) {
+    var result = true;
     plans.forEach((item, index) => {
-        console.log({item});
         if (parseInt(item.price) < parseInt(item.ownerPrice)) {
-            return new ValidationDto(false, `قیمت  فروش شما به نماینده فروش برای اکانت << ${item.tarrifTitle} >> و نوع اکانت << ${item.typeTitle} >> نباید از قیمت فروش به شما کمتر باشد. حداقل قیمت می بایست بزرگتر یا برابر با <<${addCommas(digitsEnToFa(item.ownerPrice))}>>. ردیف شماره ${digitsEnToFa(index + 1)} چک گردد.`,)
+            result = false;
+            return;
         }
     })
+    if (result == false)
+        return new ValidationDto(false, `قیمت  فروش شما به نماینده فروش برای اکانت << ${item.tarrifTitle} >> و نوع اکانت << ${item.typeTitle} >> نباید از قیمت فروش به شما کمتر باشد. حداقل قیمت می بایست بزرگتر یا برابر با <<${addCommas(digitsEnToFa(item.ownerPrice))}>>. ردیف شماره ${digitsEnToFa(index + 1)} چک گردد.`,)
+
+    return new ValidationDto(true, "")
+}
+
+
+export async function ValidationForWallet(agent, senderEmail) {
+    var UserWallet = await GetWalletUser(senderEmail);
+    if (UserWallet.cashAmount < agent.cashAmount)
+        return new ValidationDto(false, "موجودی حساب شما کمتر از مبلغ انتقالی می باشد.");
     return new ValidationDto(true, "")
 }

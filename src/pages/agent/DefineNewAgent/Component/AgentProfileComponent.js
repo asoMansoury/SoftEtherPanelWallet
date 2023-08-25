@@ -50,20 +50,20 @@ const AgentProfileComponent = (props) => {
 
     function formDataHandler(e) {
         e.preventDefault();
-
         var element = e.target;
         if (element['id'] === 'cashAmount') {
             if (isNumber(e.target.value) == false)
                 return;
             if (e.target.value > agentWallet.cashAmount)
                 e.target.value = agentWallet.cashAmount;
-
         }
+        var tmp = formData;
+        tmp[element['id']] = e.target.value;
         setFormData({
             ...formData,
-            [element['id']]: e.target.value
-        })
-        props.formDataHandler(formData);
+            tmp
+        });
+        props.formDataHandler(tmp);
     }
 
 
@@ -93,7 +93,7 @@ const AgentProfileComponent = (props) => {
                             <TextField id='agentprefix' fullWidth label='پیشوند کاربر' onChange={formDataHandler} value={formData.agentprefix} defaultValue={formData.agentprefix} placeholder='کد ایجنت' />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <TextField id="cashAmount" type='number' fullWidth label='مبلغ شارژ کیف پول' onChange={formDataHandler} value={formData.cashAmount} defaultValue={formData.cashAmount} placeholder='مبلغ شارژ کیف پول' />
+                            <TextField id="cashAmount"  fullWidth label='مبلغ شارژ کیف پول' onChange={formDataHandler} value={formData.cashAmount} defaultValue={formData.cashAmount} placeholder='مبلغ شارژ کیف پول' />
                         </Grid>
                         <Divider></Divider>
                         <Grid item xs={12} sm={6}>

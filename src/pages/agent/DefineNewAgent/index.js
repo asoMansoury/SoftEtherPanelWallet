@@ -103,19 +103,23 @@ const Index = () => {
     }
 
     function ValidatePlansData() {
+        var result = true;
         plans.forEach((item, index) => {
             if (parseInt(item.price) < parseInt(item.ownerPrice)) {
                 setPlanError({
                     isValid: false,
-                    errorMsg: `قیمت  فروش شما به نماینده فروش برای اکانت << ${item.tarrifTitle} >> و نوع اکانت << ${item.typeTitle} >> نباید از قیمت فروش به شما کمتر باشد. حداقل قیمت می بایست بزرگتر یا برابر با <<${addCommas(digitsEnToFa(item.ownerPrice))}>>. ردیف شماره ${digitsEnToFa(index+1)} چک گردد.`,
+                    errorMsg: `قیمت  فروش شما به نماینده فروش برای اکانت << ${item.tarrifTitle} >> و نوع اکانت << ${item.typeTitle} >> نباید از قیمت فروش به شما کمتر باشد. حداقل قیمت می بایست بزرگتر یا برابر با <<${addCommas(digitsEnToFa(item.ownerPrice))}>>. ردیف شماره ${digitsEnToFa(index + 1)} چک گردد.`,
                     severity: 'error'
                 })
-                return false;
+                result = false;
+                return;
+
             }
         })
+        return result;
     }
 
-    function ClearErrors(){
+    function ClearErrors() {
         setError({
             isValid: true,
             errorMsg: "",
@@ -131,39 +135,50 @@ const Index = () => {
 
     async function btnFinalHandler(e) {
         e.preventDefault();
-        console.log(formData);
         setDisableBtn(true);
-        if (ValidateFormData() == false)
+        if (ValidateFormData() == false) {
+            setDisableBtn(false);
             return;
+        }
         if (!isEmail(formData.email)) {
             setError({
                 isValid: false,
                 errorMsg: "فرمت ایمیل صحیح نمی باشد.",
                 severity: 'error'
             });
+            setDisableBtn(false);
             return;
         }
 
-        if (ValidatePlansData() == false)
+        if (ValidatePlansData() == false) {
+            setDisableBtn(false);
             return;
+
+        }
+
         ClearErrors();
+
+
 
         var obj = {
             agent: formData,
             plans: plans
         }
+        console.log({ obj });
+        setDisableBtn(false);
+        return;
         var result = await axios.post(apiUrls.agentUrl.defineSubAgentUrl, obj);
-        if(result.data.result.isValid==true){
+        if (result.data.result.isValid == true) {
             setPlanError({
-                isValid:false,
-                errorMsg:"عملیات با موفقیت انجام گردید.",
-                severity:'success'
+                isValid: false,
+                errorMsg: "عملیات با موفقیت انجام گردید.",
+                severity: 'success'
             })
-        }else{
+        } else {
             setPlanError({
-                isValid:false,
-                errorMsg:result.data.result.errorMsg,
-                severity:'error'
+                isValid: false,
+                errorMsg: result.data.result.errorMsg,
+                severity: 'error'
             })
         }
         setDisableBtn(false);

@@ -67,10 +67,12 @@ const Index = () => {
     function formDataHandler(e) {
         e.preventDefault();
         var element = e.target;
+        var tmp = formData;
+        tmp[element['id']] = e.target.value;
         setFormData({
             ...formData,
-            [element['id']]: e.target.value
-        })
+            tmp
+        });
     }
 
 
