@@ -26,12 +26,15 @@ export default async function handler(req,res){
             data.price=result.ownerPrice;
             data.agentPrice = result.agentPrice;
             data.debitToAgent = result.agentPrice - result.ownerPrice;
+            data.isfromagent = false;
         }else{
             var customer = await GetCustomerByEmail(token.email);
             var result =await CalculateTotalPriceModifed(customer.agentIntoducer,data.tariffPlans,data.type);
             data.price=result.agentPrice;
             data.agentPrice = result.agentPrice;
             data.debitToAgent = 0;
+            data.ownerprice = result.ownerPrice;
+            data.agentIntoducer = customer.agentIntoducer; 
         }
         
         var objJson = JSON.stringify(data);

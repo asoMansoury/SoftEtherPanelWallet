@@ -5,6 +5,7 @@ import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline';
 import DownloadBoxOutline from 'mdi-material-ui/DownloadBoxOutline';
 import AccountClock from 'mdi-material-ui/AccountClock';
+import AccountMultiple from 'mdi-material-ui/AccountMultiple'
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
@@ -64,6 +65,12 @@ const navigation = () => {
   })
 
     if(profileSelector.isLoggedIn&&profileSelector.isAgent==true){
+      tmpMenues.push({
+        title:"تعریف زیرمجموعه فروش",
+        icon:AccountMultiple,
+        path:'/agent/DefineNewAgent/'
+      })
+      
       tmpMenues.push({
         title: 'انتقال شارژ',
         icon: CreditCardOutline,

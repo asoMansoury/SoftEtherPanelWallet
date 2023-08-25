@@ -20,10 +20,11 @@ export async function getAgentTariff(agentcode){
         const tariffs = await getAllTariffs();
         const plans = await getAllTariffPrices();
         const documents = await collection.find({agentcode:agentcode}).toArray();
+
         var result = [];
         documents.forEach((item)=>{
             var selectedTariff = tariffs.filter((e)=> e.code === item.tarrifcode && e.type === item.type)[0];
-            var selectedPlan = plans.filter((e)=> e.code === item.tariffplancode && e.type === item.type)[0];
+            var selectedPlan = plans.filter((e)=> e.tariffplancode === item.tariffplancode && e.type === item.type)[0];
             result.push({
                 agentprice:item.agentprice,
                 price:item.price,
