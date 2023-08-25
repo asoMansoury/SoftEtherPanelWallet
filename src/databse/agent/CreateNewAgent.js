@@ -38,7 +38,7 @@ export async function CreateNewAgent(name,cardnumber,comission,agenturl,agentcod
 
 
 export async function CreateNewAgentByAgents(name,cardnumber,comission,agenturl,agentcode
-                                                 ,price,agentprefix,introducerEmail,isSubAgent){
+                                                 ,price,agentprefix,introducerEmail,introducerAgentCode,isSubAgent){
     try{
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
@@ -53,6 +53,7 @@ export async function CreateNewAgentByAgents(name,cardnumber,comission,agenturl,
             price,
             agentprefix,
             introducerEmail:introducerEmail,
+            introducerAgentCode:introducerAgentCode,
             isSubAgent:isSubAgent
         })
         if(documents==null)

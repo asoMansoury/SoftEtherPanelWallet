@@ -2,6 +2,10 @@ import { MongoClient, ServerApiVersion } from 'mongodb';
 import { MONGO_URI } from 'src/lib/utils';
 import { UpdateTank } from '../SalesTank/SalesTank';
 import { GetCustomerAgentCode } from '../customers/getcustomer';
+import { GetAgentByUserCode } from '../agent/getagentinformation';
+import { GetWalletUser } from './getWalletUser';
+import { CalculateTotalPriceModifed } from '../tariffagent/calculateTotalPrice';
+import { IncreaseWallet } from './IncreaseWallet';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -12,6 +16,14 @@ const client = new MongoClient(MONGO_URI, {
     }
 });
 
+async function  RecalculateForParentAgent(introducerEmail,introducerAgentCode,tariffPlans,type,boughtAmount){
+    var IntroducerAgenttWallet = await GetWalletUser(introducerEmail);
+    const IntroducerAgentCustomer = await GetCustomerAgentCode(introducerAgentCode);
+    var CalculatedResult =await CalculateTotalPriceModifed(IntroducerAgentCustomer.agentcode,tariffPlans,type);
+    const differPrice = boughtAmount - CalculatedResult.ownerPrice;//محاسبه ما به تفاوت قیمت فروش ما به ایجنت و قیمت فروش ایجنت به مشتری
+    IntroducerAgenttWallet.cashAmount = IntroducerAgenttWallet.cashAmount + differPrice;
+    IncreaseWallet(IntroducerAgenttWallet.cashAmount,IntroducerAgentCustomer.email);
+}
 
 export async function CalculateWallet(email, type, boughtAmount, usersBasketObj) {
     if (type == '' || type == undefined)
@@ -19,16 +31,23 @@ export async function CalculateWallet(email, type, boughtAmount, usersBasketObj)
     try {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
-
         const collection = db.collection('Wallet');
         const wallet = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" } });
         wallet.cashAmount = wallet.cashAmount - boughtAmount;
-        var result = await collection.updateOne({ email: { $regex: `^${email}$`, $options: "i" } },
-            {
-                $set: {
-                    cashAmount: wallet.cashAmount,
-                }
-            })
+        IncreaseWallet(wallet.cashAmount,email);
+        //        console.log("Cash Amount", wallet.cashAmount,"Email:",email );
+
+        //محاسبه مابه تفاوتی که باید به ایجنت اصلی ایجنت معرفی شده برگردد.
+        const agent =await GetAgentByUserCode(wallet.agentcode);
+        if(agent.isAgentValid == true){
+            if(agent.agentInformation.isSubAgent==true){
+                RecalculateForParentAgent(agent.agentInformation.introducerEmail,
+                                          agent.agentInformation.introducerAgentCode,
+                                          usersBasketObj.tariffPlans,
+                                          usersBasketObj.type,
+                                          boughtAmount)
+            }
+        }
 
 
         if (usersBasketObj.agentIntoducer != null) {
@@ -38,13 +57,18 @@ export async function CalculateWallet(email, type, boughtAmount, usersBasketObj)
                 const mainAgentWallet = await collection.findOne({ email: { $regex: `^${mainAgentCustomer.email}$`, $options: "i" } });
                 const differPrice = boughtAmount - usersBasketObj.ownerprice;//محاسبه ما به تفاوت قیمت فروش ما به ایجنت و قیمت فروش ایجنت به مشتری
                 mainAgentWallet.cashAmount = mainAgentWallet.cashAmount + differPrice;
-                await collection.updateOne({ email: { $regex: `^${mainAgentCustomer.email}$`, $options: "i" } },
-                    {
-                        $set: {
-                            cashAmount: mainAgentWallet.cashAmount,
-                        }
-                    })
+                IncreaseWallet(mainAgentWallet.cashAmount,mainAgentCustomer.email );
                 UpdateTank(type, usersBasketObj.ownerprice);
+
+                if(mainAgentCustomer.isSubAgent==true){
+                    var CalculatedResult =await CalculateTotalPriceModifed(mainAgentCustomer.agentcode,usersBasketObj.tariffPlans,usersBasketObj.type);
+                    RecalculateForParentAgent(mainAgentCustomer.introducerEmail,
+                                              mainAgentCustomer.introducerAgentCode,
+                                              usersBasketObj.tariffPlans,
+                                              usersBasketObj.type,
+                                              CalculatedResult.ownerPrice)
+                }
+
             }
         }else{
             UpdateTank(type, boughtAmount);

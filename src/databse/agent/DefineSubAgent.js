@@ -80,7 +80,7 @@ export async function DefineSubAgent(agent, plans, token) {
         var user = WrapperCustomer(email, password, agentcode);
         var resultRegisterCustomer = await RegisterAgentCustomersByOtherAgents(user, token.email, true);
         var resultCreateNewWallet = await CreateNewWallet(email, true, cashAmount, 0, 0, agentcode);
-        var resultCreateNewAgent = await CreateNewAgentByAgents(name, "6221061221256532", 20, agentcode, agentcode, 20000, agentprefix, token.email, true);
+        var resultCreateNewAgent = await CreateNewAgentByAgents(name, "6221061221256532", 20, agentcode, agentcode, 20000, agentprefix, token.email, token.agentcode, true);
         var resultDefineNewTariffAgent = await DefineNewTariffAgent(plans, agentcode);
         TransferMoneyToOtherWallet(token.email, "", cashAmount);
         TransferedWalletLog(token.email, token.agentcode, email, cashAmount);
