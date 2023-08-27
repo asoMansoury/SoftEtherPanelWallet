@@ -23,178 +23,68 @@ import CardContent from '@mui/material/CardContent'
 import { Button, Input } from '@mui/material';
 import { isEmail } from 'validator';
 import { ValidateUIElements } from 'src/lib/utils';
+import { SubAgentsTable } from './Components/SubAgentsTable';
+import SubAgentDetails from './Components/SubAgentDetails';
 
 const Index = () => {
     const { data: session, status } = useSession();
     const [agentInformation, setAgentInformation] = useState();
-    const [agentWallet, setAgentWallet] = useState();
-    const [profileSelector, setProfileSelector] = useState({
-        isLoggedIn: false
-    });
-    const [plans, setPlans] = useState([]);
-    const [formData, setFormData] = useState({
-        email: '',
-        cashAmount: 0,
-        password: "",
-        agentcode: '',
-        agentprefix: "",
-        name: ""
-    });
+
+    const [isSubAgentSelected, setSubAgentSelected] = useState(false);
+    const [subAgents, setSubAgents] = useState();
+    const [subAgentInformation, setSubAgentInformation] = useState();
     const [error, setError] = useState({
         isValid: true,
         errosMsg: "",
         severity: "error"
     })
 
-    const [planError, setPlanError] = useState({
-        isValid: true,
-        errosMsg: "",
-        severity: "error"
-    })
-
     const [disableBtn, setDisableBtn] = useState(false)
-
+    const [loading, setLoading] = useState(false);
     useEffect(async () => {
         setDisableBtn(true);
         if (status === "authenticated") {
             if (session.user.isAgent == true) {
-                var agentInformation = await axios.get(apiUrls.agentUrl.getAgentInformation + session.user.agentcode);
+                var getSubAgents = await axios.get(apiUrls.SubAgentUrl.GetAllSubAgentsUrl);
+                setAgentInformation(getSubAgents.data.agentInformation);
+                setSubAgents(getSubAgents.data.subAgents);
             }
         }
     }, [status]);
 
-    async function setPlansMethod() {
-        setPlans([]);
-        var agentTariffs = await axios.get(apiUrls.localUrl.getAllAgentPlansUrl);
-        setPlans(agentTariffs.data.result);
-    }
-
-    function formDataHandler(formData) {
-        setFormData(formData);
-    }
-
-
-    function changePriceHandler(updatedPlans) {
-        setPlans(updatedPlans);
-    }
-
-    function ValidateFormData() {
-        if (formData.email || formData.cashAmount == 0 || formData.password || formData.agentcode == "", formData.agentprefix == "" || formData.name == "") {
-            setError({
-                isValid: false,
-                errorMsg: "اطلاعات به صورت کامل پر نشده است",
-                severity: 'error'
-            });
-            setDisableBtn(false);
-            return false;
-        }
-    }
-
-    function ValidatePlansData() {
-        var result = true;
-        plans.forEach((item, index) => {
-            if (parseInt(item.price) < parseInt(item.ownerPrice)) {
-                setPlanError({
-                    isValid: false,
-                    errorMsg: `قیمت  فروش شما به نماینده فروش برای اکانت << ${item.tarrifTitle} >> و نوع اکانت << ${item.typeTitle} >> نباید از قیمت فروش به شما کمتر باشد. حداقل قیمت می بایست بزرگتر یا برابر با <<${addCommas(digitsEnToFa(item.ownerPrice))}>>. ردیف شماره ${digitsEnToFa(index + 1)} چک گردد.`,
-                    severity: 'error'
-                })
-                result = false;
-                return;
-
-            }
-        })
-        return result;
-    }
-
-    function ClearErrors() {
-        setError({
-            isValid: true,
-            errorMsg: "",
-            severity: 'error'
-        });
-        setPlanError({
-            isValid: true,
-            errorMsg: "",
-            severity: 'error'
-        })
+    async function btnShowDetailHandler(row) {
+        setLoading(true);
+        var getSubAgents = await axios.get(apiUrls.agentUrl.getAgentInformation + row.agentcode);
+        setSubAgentInformation(getSubAgents.data.name);
+        setSubAgentSelected(true);
+        setLoading(false);
     }
 
 
-    async function btnFinalHandler(e) {
-        e.preventDefault();
-        setDisableBtn(true);
-        if (ValidateFormData() == false) {
-            setDisableBtn(false);
-            return;
-        }
-        if (!isEmail(formData.email)) {
-            setError({
-                isValid: false,
-                errorMsg: "فرمت ایمیل صحیح نمی باشد.",
-                severity: 'error'
-            });
-            setDisableBtn(false);
-            return;
-        }
-
-        if (ValidatePlansData() == false) {
-            setDisableBtn(false);
-            return;
-
-        }
-
-        ClearErrors();
-
-
-
-        var obj = {
-            agent: formData,
-            plans: plans
-        }
-        console.log({ obj });
-        setDisableBtn(false);
-        return;
-        var result = await axios.post(apiUrls.agentUrl.defineSubAgentUrl, obj);
-        if (result.data.result.isValid == true) {
-            setPlanError({
-                isValid: false,
-                errorMsg: "عملیات با موفقیت انجام گردید.",
-                severity: 'success'
-            })
-        } else {
-            setPlanError({
-                isValid: false,
-                errorMsg: result.data.result.errorMsg,
-                severity: 'error'
-            })
-        }
-        setDisableBtn(false);
-    }
 
     return <div>
         {
-                <Grid container spacing={6}>
-                    <Grid item xs={12}>
-                        <Card>
-                            <CardHeader title='اطلاعات نماینده فروش شما' titleTypographyProps={{ variant: 'h6' }} />
-                            <Divider sx={{ margin: 0 }} />
-                            <Divider></Divider>
-                            <Table>
-                                <TableFooter>
-                                    <TableRow style={{ paddingLeft: '100px' }}>
-                                        {error.isValid == false && <Alert severity={error.severity}>{error.errorMsg}</Alert>}
-                                        <Grid item xs={12} >
+            <Grid container spacing={6}>
+                <Grid item xs={12}>
+                    <Card>
+                        <CardHeader title='اطلاعات نماینده فروش شما' titleTypographyProps={{ variant: 'h6' }} />
+                        <Divider sx={{ margin: 0 }} />
+                        <SubAgentsTable subAgents={subAgents} btnShowDetailHandler={btnShowDetailHandler}></ SubAgentsTable>
+                        <Divider></Divider>
+                        {
+                            loading &&
+                            <Alert severity="info">در حال بارگزاری اطلاعات لطفا منتظر بمانید...</Alert>
+                        }
+                        {
+                            isSubAgentSelected == true &&
+                            <SubAgentDetails  subAgentInformation={subAgentInformation}></SubAgentDetails>
+                        }
 
-                                        </Grid>
-                                    </TableRow>
-                                </TableFooter>
-                            </Table>
-                        </Card>
-                    </Grid>
-                    <Divider></Divider>
-
+                    </Card>
                 </Grid>
+                <Divider></Divider>
+
+            </Grid>
         }
 
     </div>
