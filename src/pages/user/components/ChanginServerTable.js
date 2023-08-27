@@ -88,7 +88,7 @@ const ChanginServerTable = (props) => {
   
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-    <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
+    <TableContainer  component={Paper} sx={{ maxHeight: 440, overflow: 'scroll', touchAction: 'pan-y' }}>
     <Grid item xs={12}>
 
         <Grid container spacing={6}>
@@ -102,7 +102,8 @@ const ChanginServerTable = (props) => {
           </Grid>
         </Grid>
     </Grid>
-    <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+    
+    <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
       <TableHead stickyHeader>
         <TableRow>
           <TableCell align='center'>نام اکانت</TableCell>

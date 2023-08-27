@@ -24,7 +24,6 @@ export async function registerAgentPrice(agentcode, plans) {
                 && e.tariffplancode === item.tariffplancode
                 && e.type == item.type)[0];
             item.agentprice = selectedPlan.agentprice;
-            console.log({item});
             await collection.updateOne(
                 { _id: item._id },
                 { $set: item }

@@ -24,7 +24,7 @@ export async function DefineNewAgent(agent,plans){
 
         var user = WrapperCustomer(email,password,agentcode);
         RegisterAgentCustomers(user);
-        CreateNewWallet(email,true,cashAmount,0,0,agentcode);
+        CreateNewWallet(email,true,cashAmount,cashAmount,0,agentcode);
         CreateNewAgent(name,"6221061221256532",20,agentcode,agentcode,20000,agentprefix);
         DefineNewTariffAgent(plans,agentcode);
         return {

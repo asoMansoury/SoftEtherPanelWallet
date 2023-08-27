@@ -8,7 +8,6 @@ import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableFooter from '@mui/material/TableFooter'
-import TableContainer from '@mui/material/TableContainer'
 // ** Demo Components Imports
 import { useEffect } from 'react';
 import TextField from '@mui/material/TextField'
@@ -23,8 +22,6 @@ import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import { Button, Input } from '@mui/material';
 import { isEmail } from 'validator';
-import AgentProfileComponent from './Component/AgentProfileComponent';
-import AgentPriceComponent from './Component/AgentPriceComponent';
 import { ValidateUIElements } from 'src/lib/utils';
 
 const Index = () => {
@@ -62,16 +59,6 @@ const Index = () => {
         if (status === "authenticated") {
             if (session.user.isAgent == true) {
                 var agentInformation = await axios.get(apiUrls.agentUrl.getAgentInformation + session.user.agentcode);
-                setAgentInformation(agentInformation.data.name);
-                setAgentWallet(agentInformation.data.name.agentWallet);
-                setPlansMethod();
-                setProfileSelector({
-                    email: session.user.email,
-                    cashAmount: session.user.cashAmount,
-                    isAgent: session.user.isAgent,
-                    isLoggedIn: true
-                });
-                setDisableBtn(false);
             }
         }
     }, [status]);
@@ -187,42 +174,16 @@ const Index = () => {
 
     return <div>
         {
-            agentInformation != undefined && agentWallet != undefined && <>
                 <Grid container spacing={6}>
                     <Grid item xs={12}>
                         <Card>
                             <CardHeader title='اطلاعات نماینده فروش شما' titleTypographyProps={{ variant: 'h6' }} />
                             <Divider sx={{ margin: 0 }} />
-                            <AgentProfileComponent formDataHandler={formDataHandler} agentInformation={agentInformation} agentWallet={agentWallet}></AgentProfileComponent>
-                            <Divider></Divider>
-                            <TableContainer sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }}>
-                                <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
-                                    <TableFooter>
-                                        <TableRow style={{ paddingLeft: '100px' }}>
-                                            {error.isValid == false && <Alert severity={error.severity}>{error.errorMsg}</Alert>}
-                                            <Grid item xs={12} >
-
-                                            </Grid>
-                                        </TableRow>
-                                    </TableFooter>
-                                </Table>
-                            </TableContainer>
-                        </Card>
-                    </Grid>
-                    <Divider></Divider>
-                    <Grid item xs={12}>
-                        <Card>
-                            <CardHeader title='تعریف قیمت نماینده فروش' titleTypographyProps={{ variant: 'h6' }} />
-                            <Divider sx={{ margin: 0 }} />
-                            <CardContent>
-                                <AgentPriceComponent changePriceHandler={changePriceHandler} plans={plans}></AgentPriceComponent>
-                            </CardContent>
                             <Divider></Divider>
                             <Table>
                                 <TableFooter>
                                     <TableRow style={{ paddingLeft: '100px' }}>
-                                        {planError.isValid == false && <Alert severity={planError.severity}>{planError.errorMsg}</Alert>}
-                                        <Button size='large' sx={{ mr: 2 }} disabled={disableBtn} variant='contained' onClick={btnFinalHandler}>تعریف ایجنت جدید</Button>
+                                        {error.isValid == false && <Alert severity={error.severity}>{error.errorMsg}</Alert>}
                                         <Grid item xs={12} >
 
                                         </Grid>
@@ -231,8 +192,9 @@ const Index = () => {
                             </Table>
                         </Card>
                     </Grid>
+                    <Divider></Divider>
+
                 </Grid>
-            </>
         }
 
     </div>

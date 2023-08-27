@@ -12,13 +12,16 @@ import FormLayoutsAlignment from 'src/views/form-layouts/FormLayoutsAlignment'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'
+import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
+import TabInfo from 'src/views/account-settings/TabInfo'
+import CardLinkedIn from 'src/views/cards/CardLinkedIn'
 
 const FormLayouts = () => {
   return (
     <DatePickerWrapper>
       <Grid container spacing={6}>
         <Grid item xs={12} md={6}>
-          <FormLayoutsBasic />
+          <CardLinkedIn />
         </Grid>
         <Grid item xs={12} md={6}>
           <FormLayoutsIcons />

@@ -2,6 +2,7 @@ import {MongoClient,ServerApiVersion} from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
 import { MONGO_URI, generateRandomNumberPassword } from 'src/lib/utils';
 import { GetAgentByUserCode } from '../agent/getagentinformation';
+import UpdateCustomer from './UpdateCustomer';
 
 const client = new MongoClient(MONGO_URI,{
     serverApi:{
@@ -57,6 +58,9 @@ export async function RegisterAgentCustomersByOtherAgents(user,introducerEmail,i
         var documents =await collection.find({email:{ $regex: `^${user.email}$`, $options: "i" }}).toArray();
         if(documents[0]){
             var doc = documents[0];
+            doc.introducerEmail = introducerEmail;
+            doc.isSubAgent = isSubAgent;
+            UpdateCustomer(doc,doc._id);
             return doc;
         }
         else{

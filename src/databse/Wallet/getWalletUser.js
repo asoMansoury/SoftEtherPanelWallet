@@ -36,7 +36,8 @@ export async function GetWalletUser(email,type){
                 cashAmount:wallet.cashAmount,
                 debitAmount:wallet.debitAmount,
                 debitToAgent:wallet.debitToAgent,
-                agentcode : wallet.agentcode
+                agentcode : wallet.agentcode,
+                isValid:true
             }
 
         return result;
