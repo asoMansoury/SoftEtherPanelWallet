@@ -39,3 +39,43 @@ export async function IncreaseWallet(IncreasAmounMoney,email){
 }
 
 
+export async function DecreaseWallet(email,DecreasedAmounMoney){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+
+        const collection = db.collection('Wallet');
+        const query = {email: { $regex: `^${email}$`, $options: "i" } }
+        const update = { $inc: { cashAmount: -DecreasedAmounMoney } };
+        var wallet = await collection.updateOne(query,update);
+
+        return {
+            isValid:true
+        };
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
+
+export async function IncreaseWalletV2(email,IncreaseAmounMoney){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+
+        const collection = db.collection('Wallet');
+        const query = {email: { $regex: `^${email}$`, $options: "i" } }
+        const update = { $inc: { cashAmount: IncreaseAmounMoney } };
+        var wallet = await collection.updateOne(query,update);
+
+        return {
+            isValid:true
+        };
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
