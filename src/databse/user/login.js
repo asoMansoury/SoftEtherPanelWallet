@@ -19,7 +19,6 @@ async function Login(body){
             email: { $regex: `^${body.email}$`, $options: "i" }, 
             password: body.password 
         });
-        console.log({user});
         if(user!=null) 
         {   
             user.isCustomer = true;
@@ -27,6 +26,10 @@ async function Login(body){
             var agent = await agentCollection.findOne({agentcode:user.agentcode});
             if(agent!=null)
                 user.isAgent=true;
+            if(agent.isSubAgent!=undefined)
+                user.isSubAgent = agent.isSubAgent;
+            else
+            user.isSubAgent = false;
         }
         
         return user;

@@ -21,8 +21,8 @@ import Card from '@mui/material/Card'
 import EditIcon from 'src/views/iconImages/editicon';
 import { useSession } from 'next-auth/react';
 
-const createData = (username, typeTitle, expires,removedFromServer) => {
-  return { username, typeTitle, expires ,removedFromServer}
+const createData = (username, typeTitle, expires, removedFromServer) => {
+  return { username, typeTitle, expires, removedFromServer }
 }
 
 
@@ -34,17 +34,17 @@ const SubAgentUsersTable = (props) => {
   const [rows, setRows] = useState([]);
   const [mainRows, setMainRows] = useState([]);
 
-  const [errors, setErrors] = useState({
-    hasError: false,
-    errorMsg: ""
+  const [error, setError] = useState({
+    isValid: true,
+    errosMsg: "",
+    severity: "error"
   })
 
   useEffect(async () => {
 
-    if (props != undefined) {
-      await GetUsersData(props.email);
-    }
-  }, [props])
+    await GetUsersData(props.email);
+
+  }, [])
   const [loading, setLoading] = useState(false);
 
   const GetUsersData = async (email) => {
@@ -54,7 +54,7 @@ const SubAgentUsersTable = (props) => {
     var usersAccounts = await axios.get(apiUrls.userUrl.getsubagentpurchasedUrl + email);
     // getsubagentpurchasedUrl
     usersAccounts.data.name.map((item, index) => {
-      tmp.push(createData(item.username, item.typeTitle, item.expires,item.removedFromServer));
+      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer));
     })
     setRows(tmp);
     setMainRows(tmp)
@@ -73,18 +73,44 @@ const SubAgentUsersTable = (props) => {
 
   }
 
-  
+
   const btnManageUserHandler = async (e) => {
     e.preventDefault();
+    setError({
+      isValid: true,
+      errosMsg: "",
+      severity: "success"
+    })
+    setLoading(true);
+    var tmpRow = rows;
+    setRows([]);
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
-    props.btnManageUserHandler(row);
-
+    const result = await axios.get(apiUrls.userUrl.TogglingUserConnectionUrl + email + "&username=" + row.username)
+    if (result.data.name.isValid == false) {
+      setRows(tmpRow);
+      setError({
+        isValid: false,
+        errosMsg: result.data.name.errosMsg,
+        severity: "error"
+      })
+    } else {
+      GetUsersData(email);
+    }
+    setLoading(false);
   }
 
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+
       <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
+        <Grid item xs={12}>
+          {
+            error.isValid == false ? (
+              <Alert severity='error'>{error.errosMsg}</Alert>
+            ) : <></>
+          }
+        </Grid>
         <Grid item xs={12}>
           <Card>
             {
@@ -107,11 +133,11 @@ const SubAgentUsersTable = (props) => {
           <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
             <TableHead>
               <TableRow>
-                <TableCell align='center'>نوع اکانت</TableCell>
-                <TableCell align='center'>نام اکانت</TableCell>
-                <TableCell align='center'>تاریخ اعتبار</TableCell>
-                <TableCell align='center'>وضعیت اکانت</TableCell>
-                <TableCell align='center'>عملیات</TableCell>
+                <TableCell style={{ width: '40px' }} align='center'>نوع اکانت</TableCell>
+                <TableCell style={{ width: '80px' }} align='center'>نام اکانت</TableCell>
+                <TableCell style={{ width: '120px' }} align='center'>تاریخ اعتبار</TableCell>
+                <TableCell style={{ width: '80px' }} align='center'>وضعیت اکانت</TableCell>
+                <TableCell style={{ width: '120px' }} align='center'>عملیات</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -124,35 +150,25 @@ const SubAgentUsersTable = (props) => {
                     }
                   }}
                 >
-                  <TableCell align='center' component='th' scope='row'>
+                  <TableCell style={{ width: '40px' }} align='center' component='th' scope='row'>
                     {row.typeTitle}
                   </TableCell>
-                  <TableCell align='center' component='th' scope='row'>
+                  <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
                     {row.username}
                   </TableCell>
 
-                  <TableCell align='center' component='th' scope='row'>
+                  <TableCell style={{ width: '120px' }} align='center' component='th' scope='row'>
                     {ConvertToPersianDateTime(row.expires)}
                   </TableCell>
-                  <TableCell>{row.removedFromServer==true?"غیر فعال":"فعال"}</TableCell>
-                  <TableCell align='center' component='th' scope='row'>
-                    <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
-                      <span style={{fontWeight:'bolder', color:'blue', cursor:'pointer'}}>{row.removedFromServer==false?"غیر فعال کردن":"فعال کردن"}</span>
+                  <TableCell style={{ width: '80px' }}>{row.removedFromServer == true ? "غیر فعال" : "فعال"}</TableCell>
+                  <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
+                    <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
+                      <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
                     </div>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter>
-              {
-                errors.errorMsg != '' &&
-                <TableRow style={{ paddingLeft: '100px' }}>
-                  <div style={{ paddingRight: '30px', paddingTop: '30px', paddingBottom: '15px' }}>
-                    <Alert severity="success">{errors.errorMsg}</Alert>
-                  </div>
-                </TableRow>
-              }
-            </TableFooter>
           </Table>
         </TableContainer>
       </TableContainer>

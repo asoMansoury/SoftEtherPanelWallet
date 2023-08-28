@@ -26,10 +26,14 @@ const AppBarContent = props => {
 
   const { data: session, status } = useSession();
   const [cashAmount, setCashAmount] = useState(0);
+  const [isSubAgent,setIsSubAgent] = useState(true);
+  const [isAgent,setIsAgent] = useState(true);
 
   useEffect(async () => {
     if (status == 'authenticated') {
       UpdateWalletFunc();
+      setIsSubAgent(session.user.isSubAgent);
+      setIsAgent(session.user.isAgent);
     }
   }, [status]);
 
@@ -52,17 +56,24 @@ const AppBarContent = props => {
           </IconButton>
         ) : null}
         {
-          <div style={{display:'flex', flexDirection:'row', marginTop:'8px'}}>
+          <div style={{ display: 'flex', flexDirection: 'row', marginTop: '8px' }}>
             {
-              !hidden && status == 'authenticated' ? (
+              !hidden && status == 'authenticated' &&  isAgent==true ?  (
                 <Box>
                   <UserAppBarContent UpdateWalletFunc={UpdateWalletFunc} cashAmount={cashAmount}></UserAppBarContent>
                 </Box>
               ) : null}
             {
-              !hidden && status == 'authenticated' ? (
-                <Box style={{marginRight:'10px'}}>
-                  <ManaginSubAgentComponent UpdateWalletFunc={UpdateWalletFunc} cashAmount={cashAmount}></ManaginSubAgentComponent>
+              !hidden && status == 'authenticated' && isSubAgent==false && isAgent==true ? (
+                <Box style={{ marginRight: '10px' }}>
+                  <ManaginSubAgentComponent title="مدیریت زیر مجموعه فروش" url="/agent/ManagingSubAgents" ></ManaginSubAgentComponent>
+                </Box>
+              ) : null
+            }
+            {
+              !hidden && status == 'authenticated' &&  isAgent==true ? (
+                <Box style={{ marginRight: '10px' }}>
+                  <ManaginSubAgentComponent title="مدیریت کاربران" url="/agent/ManagingUsers" ></ManaginSubAgentComponent>
                 </Box>
               ) : null
             }

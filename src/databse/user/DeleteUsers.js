@@ -10,6 +10,7 @@ import { DeleteUserCisco } from 'src/lib/Cisco/deleteuser';
 import { RemoveUserSoftEther } from 'src/lib/createuser/RemoveUserSoftEther';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
+import { emailForDisconnectedUsers, emailForReconnectingUsers } from 'src/lib/Emails/emailForDisconnectedUsers';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -23,8 +24,8 @@ const client = new MongoClient(MONGO_URI, {
 
 
 
-export async function DeleteExpiredUserOfAgent(email, agentCode, username) {
-    const today = new Date();
+export async function DeleteUserOfAgent(email, agentcode, username) {
+    const today = formatDate(new Date());
 
     try {
         const connectionState = await client.connect();
@@ -32,18 +33,17 @@ export async function DeleteExpiredUserOfAgent(email, agentCode, username) {
         const collection = db.collection('Users');
         const allExpiredUsers = await collection.find({
             username: username,
-            email: email,
             agentcode: agentcode,
-            expires: { $lt: formatDate(today) },
+            expires: { $gt: today }
         }).toArray();
 
-
+        console.log(allExpiredUsers)
         var CiscoServers = await GetServers(apiUrls.types.Cisco);
         var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
         for (const user of allExpiredUsers) {
-            if (user.removedFromServer == true) {
+            if (user.removedFromServer == false) {
                 if (user.type === apiUrls.types.Cisco) {
-                    var selectedServer = CiscoServers.filter(server => server.servercode == user.servercode)[0];
+                    var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                     DeleteUserCisco(selectedServer, user.username);
                     user.removedFromServer = true;
 
@@ -51,6 +51,7 @@ export async function DeleteExpiredUserOfAgent(email, agentCode, username) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
+                    emailForDisconnectedUsers(user.email,"دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)",email,selectedServer,user);
                 } else if (user.type === apiUrls.types.SoftEther) {
                     var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
                     user.removedFromServer = true;
@@ -59,7 +60,9 @@ export async function DeleteExpiredUserOfAgent(email, agentCode, username) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
+                    emailForDisconnectedUsers(user.email,"دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)",email,selectedServer,user);
                 }
+
             } else {
                 if (user.type === apiUrls.types.Cisco) {
                     var selectedServer = CiscoServers.filter(server => server.servercode == user.servercode)[0];
@@ -70,6 +73,7 @@ export async function DeleteExpiredUserOfAgent(email, agentCode, username) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
+                    emailForReconnectingUsers(user.email,"فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)",email,selectedServer,user);
                 } else if (user.type === apiUrls.types.SoftEther) {
                     var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
                     user.removedFromServer = false;
@@ -78,7 +82,9 @@ export async function DeleteExpiredUserOfAgent(email, agentCode, username) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
+                    emailForReconnectingUsers(user.email,"فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)",email,selectedServer,user);
                 }
+
             }
 
         }
@@ -94,4 +100,7 @@ export async function DeleteExpiredUserOfAgent(email, agentCode, username) {
 
 
 
-export default DeleteExpiredUserOfAgent;
+
+
+
+export default DeleteUserOfAgent;

@@ -48,10 +48,6 @@ const SubAgentDetails = (props) => {
 
     }, [props]);
 
-    const btnManageUserHandler = async (row) => {
-        console.log(row);
-        const result = axios.get(apiUrls.userUrl.TogglingUserConnectionUrl+customer.email+"&username="+row.username)
-      }
 
 
     return <div>
@@ -77,7 +73,7 @@ const SubAgentDetails = (props) => {
                                 </Grid>
                                 <Divider></Divider>
                                 <Grid item xs={12}>
-                                    <SubAgentUsersTable btnManageUserHandler={btnManageUserHandler} email = {customer.email}></SubAgentUsersTable>
+                                    <SubAgentUsersTable  email = {customer.email}></SubAgentUsersTable>
                                 </Grid>
                             </Grid>
                         </CardContent>

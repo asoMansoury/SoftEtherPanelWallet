@@ -50,6 +50,7 @@ export const authOptions = {
             session.user.isLoggedIn = true;
             session.user.isAdmin = token.isAdmin;
             session.user.cashAmount = token.cashAmount;
+            session.user.isSubAgent = token.isSubAgent;
           return session;
         },
 
@@ -63,6 +64,7 @@ export const authOptions = {
                 token.isLoggedIn = true;
                 token.isAdmin = user.isAdmin;
                 token.cashAmount = user.cashAmount;
+                token.isSubAgent = user.isSubAgent;
             }
           return token
       },

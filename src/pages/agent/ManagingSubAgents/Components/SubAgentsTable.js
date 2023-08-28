@@ -20,7 +20,6 @@ export const SubAgentsTable = props => {
         if (props.subAgents != undefined) {
             setRow(props.subAgents);
             setLoading(true);
-            console.log(props.subAgents )
         }
 
     }, [props]);

@@ -1,7 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { getSession } from "next-auth/react";
 import { IsAgentValid } from "src/databse/agent/getagentinformation";
-import { DeleteExpiredUserOfAgent } from "src/databse/user/DeleteUsers";
+import DeleteUserOfAgent from "src/databse/user/DeleteUsers";
 import { GetPurchasedAccountsForAgents } from "src/databse/user/getPurchasedAccounts";
 
 export default async function handler(req, res) {
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
             res.status(200).json({
                 name: {
                     isValid: false,
-                    message: "شما دسترسی  انجام عملیات مورد نظر را ندارید."
+                    errosMsg: "شما دسترسی  انجام عملیات مورد نظر را ندارید."
                 }
             });
             return;
@@ -30,9 +30,7 @@ export default async function handler(req, res) {
         } else {
             agentCode = isAgent.agentcode;
         }
-
-
-        var userBasket = await DeleteExpiredUserOfAgent(email,agentCode,username);
+        var userBasket = await DeleteUserOfAgent(email,agentCode,username);
 
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(200).json({ name: userBasket });

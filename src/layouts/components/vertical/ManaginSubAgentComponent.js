@@ -12,7 +12,7 @@ import { useRouter } from "next/router";
 const ManaginSubAgentComponent = (props) => {
   const router = useRouter();
   function goToManaginAgents(e){
-    router.push("/agent/ManagingSubAgents");
+    router.push(props.url);
   }
 
     // ** Hook
@@ -22,7 +22,8 @@ const ManaginSubAgentComponent = (props) => {
             <CardContent sx={{ padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important` }}>
                 <div style={{display:'flex', cursor:'pointer', flexDirection:'row', justifyItems:'center', justifyContent:'space-between'}} onClick={goToManaginAgents}>
                     <Typography variant='body2' sx={{ marginBottom: 3, color: 'common.white' }}>
-                        {`مدیریت زیر مجموعه فروش`}  
+                        {} 
+                        {props.title != undefined && props.title} 
                     </Typography>
                 </div>
 
