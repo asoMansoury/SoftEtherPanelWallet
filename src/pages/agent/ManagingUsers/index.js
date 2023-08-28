@@ -23,14 +23,12 @@ import CardContent from '@mui/material/CardContent'
 import { Button, Input } from '@mui/material';
 import { isEmail } from 'validator';
 import { ValidateUIElements } from 'src/lib/utils';
+import AgentUsersTable from './Components/AgentUsersTable';
 
 const Index = () => {
     const { data: session, status } = useSession();
     const [agentInformation, setAgentInformation] = useState();
 
-    const [isSubAgentSelected, setSubAgentSelected] = useState(false);
-    const [subAgents, setSubAgents] = useState();
-    const [subAgentInformation, setSubAgentInformation] = useState();
     const [error, setError] = useState({
         isValid: true,
         errosMsg: "",
@@ -43,9 +41,9 @@ const Index = () => {
         setDisableBtn(true);
         if (status === "authenticated") {
             if (session.user.isAgent == true) {
-                var getSubAgents = await axios.get(apiUrls.SubAgentUrl.GetAllSubAgentsUrl);
-                setAgentInformation(getSubAgents.data.agentInformation);
-                setSubAgents(getSubAgents.data.subAgents);
+                var result = await axios.get(apiUrls.agentUrl.getAgentInformation+session.user.agentcode);
+                setAgentInformation(result.data.name);
+                console.log(result.data.name);
             }
         }
     }, [status]);
@@ -54,6 +52,7 @@ const Index = () => {
 
     return <div>
         {
+            agentInformation!=undefined && status == 'authenticated' &&
             <Grid container spacing={6}>
                 <Grid item xs={12}>
                     <Card>
@@ -62,7 +61,7 @@ const Index = () => {
                             loading &&
                             <Alert severity="info">در حال بارگزاری اطلاعات لطفا منتظر بمانید...</Alert>
                         }
-
+                        <AgentUsersTable email={agentInformation.customer.email}></AgentUsersTable>
                     </Card>
                 </Grid>
                 <Divider></Divider>

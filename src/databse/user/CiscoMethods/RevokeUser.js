@@ -48,7 +48,7 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
 
         } else if (foundedUser.isfromagent == true) {
 
-            var isAgentValid = IsAgentValid(token.email);
+            var isAgentValid =await IsAgentValid(token.email);
             var customer = await GetCustomerAgentCode(foundedUser.agentcode);
             var getAgentPricePlans = await getAgentPlans(foundedUser.agentcode, foundedUser.type);
             var agentPlans = getAgentPricePlans.filter((item) => item.tariffplancode == tariffplancode
@@ -58,7 +58,7 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
 
 
             //زمانی است که ایجنت لاگین کرده و می خواهد یک مشتری را تمدید کند و در این حالت از کیف پول مشتری کم خواهیم کرد.
-            if ((await isAgentValid).isAgent == true) {
+            if ( isAgentValid.isAgent == true && isAgentValid.isSubAgent!= true) {
                 var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);
                 //محاسبه موجود کیف پول ایجنت فروش
                 var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice;
