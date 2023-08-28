@@ -97,3 +97,5 @@ export const SubAgentsTable = props => {
         </Paper>
     )
 }
+
+export default SubAgentsTable;
