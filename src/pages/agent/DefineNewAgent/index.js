@@ -165,9 +165,6 @@ const Index = () => {
             agent: formData,
             plans: plans
         }
-        console.log({ obj });
-        setDisableBtn(false);
-        return;
         var result = await axios.post(apiUrls.agentUrl.defineSubAgentUrl, obj);
         if (result.data.result.isValid == true) {
             setPlanError({
