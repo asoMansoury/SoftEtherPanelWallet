@@ -80,7 +80,7 @@ export async function CreateNewWalletForAgent(email,isAgent,cashAmount,debitAmou
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const agentWallet = await GetWalletUser(email);
-        if(agentWallet.isValid==false){
+        if(agentWallet.isValid==true){
             IncreaseWallet(cashAmount,email);
         }else{
             const collection = db.collection('Wallet');
@@ -92,6 +92,7 @@ export async function CreateNewWalletForAgent(email,isAgent,cashAmount,debitAmou
                     debitToAgent : parseInt(debitToAgent),
                     agentcode : agentcode
             });
+            console.log({insertedWallet});
             var result = {
                 email : email,
                 isAgent : isAgent,

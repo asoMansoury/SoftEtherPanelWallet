@@ -60,7 +60,7 @@ export async function RegisterAgentCustomersByOtherAgents(user,introducerEmail,i
             var doc = documents[0];
             doc.introducerEmail = introducerEmail;
             doc.isSubAgent = isSubAgent;
-            UpdateCustomer(doc,doc._id);
+            await UpdateCustomer(doc,doc._id);
             return doc;
         }
         else{

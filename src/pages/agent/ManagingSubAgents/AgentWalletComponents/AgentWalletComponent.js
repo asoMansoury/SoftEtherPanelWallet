@@ -26,7 +26,9 @@ import { isEmail } from 'validator';
 import { ValidateUIElements, isNumber } from 'src/lib/utils';
 
 const AgentWalletComponent = (props) => {
-    const [agentInformation, setAgentInformation] = useState();
+    const [agentInformation, setAgentInformation] = useState({
+        cashAmount:0
+    });
     const [agentWallet, setAgentWallet] = useState();
     const [customer, setCustomer] = useState();
     const [isSubmit,setIsSubmit] = useState(false);
@@ -139,7 +141,7 @@ const AgentWalletComponent = (props) => {
                                     <TextField fullWidth label='ایمیل' placeholder='ایمیل ایجنت' value={customer.email} disabled={true} />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
-                                    <Alert severity='info'>موجودی نماینده فروش در حال حاضر : {addCommas(digitsEnToFa(agentWallet.cashAmount))} تومان می باشد</Alert>
+                                    <Alert severity='info'>موجودی نماینده فروش در حال حاضر : {addCommas(digitsEnToFa(agentWallet.cashAmount!= undefined ?agentWallet.cashAmount:'0'))} تومان می باشد</Alert>
                                 </Grid>
                                 <Divider></Divider>
                                 <Grid item xs={12} sm={6}>

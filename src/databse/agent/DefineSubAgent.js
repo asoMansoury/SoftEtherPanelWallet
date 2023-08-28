@@ -53,7 +53,7 @@ async function ValidationInputs(agent, plans,token) {
 
     var resultValidationForNonAsync = ValidationForWallet(agent,token.email);
     if (resultValidationForNonAsync.isValid == false)
-        return resultValidation;
+        return resultValidationForNonAsync;
 
     var resultValidationAsync = await ValidationForAgent(agent);
     if (resultValidationAsync.isValid == false)
@@ -82,9 +82,8 @@ export async function DefineSubAgent(agent, plans, token) {
         var resultCreateNewWallet = await CreateNewWalletForAgent(email, true, cashAmount, 0, 0, agentcode);
         var resultCreateNewAgent = await CreateNewAgentByAgents(name, "6221061221256532", 20, agentcode, agentcode, 20000, agentprefix, token.email, token.agentcode, true);
         var resultDefineNewTariffAgent = await DefineNewTariffAgent(plans, agentcode);
-        TransferMoneyToOtherWallet(token.email, "", cashAmount);
-        TransferedWalletLog(token.email, token.agentcode, email, cashAmount,"انتقال پول به زیر مجموعه زمان تعریف زیر مجموعه");
-
+        var mm =  await TransferMoneyToOtherWallet(token.email, "", cashAmount);
+        var tt = await TransferedWalletLog(token.email, token.agentcode, email, cashAmount,"انتقال پول به زیر مجموعه زمان تعریف زیر مجموعه");
         return { isValid: true };
     } catch (erros) {
         return Promise.reject(erros);

@@ -38,7 +38,7 @@ export async function ValidationForPlans(plans) {
 
 export async function ValidationForWallet(agent, senderEmail) {
     var UserWallet = await GetWalletUser(senderEmail);
-    if (UserWallet.cashAmount < agent.cashAmount)
+    if (parseInt(UserWallet.cashAmount) < parseInt(agent.cashAmount))
         return new ValidationDto(false, "موجودی حساب شما کمتر از مبلغ انتقالی می باشد.");
     return new ValidationDto(true, "")
 }
