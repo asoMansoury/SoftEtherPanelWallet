@@ -110,7 +110,7 @@ export async function CreateNewWalletForAgent(email,isAgent,cashAmount,debitAmou
     }
 }
 
-export async function TransferedWalletLog(senderMoneyEmail,senderAgentCode,memberedEmail,transferedMoney){
+export async function TransferedWalletLog(senderMoneyEmail,senderAgentCode,memberedEmail,transferedMoney,description){
     try{
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
@@ -121,7 +121,8 @@ export async function TransferedWalletLog(senderMoneyEmail,senderAgentCode,membe
                 memberedEmail : memberedEmail,
                 senderAgentCode : senderAgentCode,
                 transferedMoney : parseInt(transferedMoney),
-                createdAt: new Date()
+                createdAt: new Date(),
+                description:description
         });
         var result = {
             senderMoneyEmail : senderMoneyEmail,

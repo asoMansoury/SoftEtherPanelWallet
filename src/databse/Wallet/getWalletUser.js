@@ -27,7 +27,8 @@ export async function GetWalletUser(email,type){
         const wallet = await collection.findOne({email:{ $regex: `^${email}$`, $options: "i" }});
         if(wallet==null)
             return {
-                isValid:false
+                isValid:false,
+                errorMsg:"کیف پول تعریف نشده است."
             };
 
             const result ={
@@ -132,7 +133,7 @@ export async function TransferMoneyToOtherAccount(senderEmail,memberedEmail,tran
 
             await CreateWalletForMemberedUser(memberedEmail,false,transferedMoney,0,0,"");
             await TransferMoneyToOtherWallet(senderEmail,"",transferedMoney);
-            await TransferedWalletLog(senderEmail,agentCustomer.agentcode,memberedEmail,transferedMoney);
+            await TransferedWalletLog(senderEmail,agentCustomer.agentcode,memberedEmail,transferedMoney,"انتقال پول به مشتری عادی");
             await sendEmailToNewCustomer(memberedEmail,"اطلاعات اکانت برای دسترسی به سایت",
                                                     userObj,addCommas(digitsEnToFa(transferedMoney)),senderEmail);
         }else {
@@ -141,13 +142,13 @@ export async function TransferMoneyToOtherAccount(senderEmail,memberedEmail,tran
             if(memberedWallet.isValid==false){
                 await CreateWalletForMemberedUser(memberedEmail,false,transferedMoney,0,0,"");
                 await TransferMoneyToOtherWallet(senderEmail,"",transferedMoney);
-                await TransferedWalletLog(senderEmail,agentCustomer.agentcode,memberedEmail,transferedMoney);
+                await TransferedWalletLog(senderEmail,agentCustomer.agentcode,memberedEmail,transferedMoney,"انتقال پول به مشتری عادی");
             }else{
 
                 var transfered =  await TransferMoneyToOtherWallet(senderEmail,"",transferedMoney);
                 if(transfered.isValid == true){
                     await GetMoneyFromOtherWallet(memberedEmail,"",transferedMoney);
-                    await TransferedWalletLog(senderEmail,agentCustomer.agentcode,memberedEmail,transferedMoney);
+                    await TransferedWalletLog(senderEmail,agentCustomer.agentcode,memberedEmail,transferedMoney,"انتقال پول به مشتری عادی");
                 }
             }
             sendEmailToInformCustomer(memberedEmail,"شارژ اکانت" ,addCommas(digitsEnToFa(transferedMoney)),senderEmail);

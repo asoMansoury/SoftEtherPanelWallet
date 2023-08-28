@@ -28,6 +28,11 @@ export const SubAgentsTable = props => {
         var row = JSON.parse(e.target.getAttribute("row"));
         props.btnShowDetailHandler(row);
     }
+
+    async function btnManaginWalletHandler(e){
+        var row = JSON.parse(e.target.getAttribute("row"));
+        props.btnManaginWalletHandler(row);
+    }
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }} component={Paper}>
@@ -65,8 +70,11 @@ export const SubAgentsTable = props => {
                                 </TableCell>
 
                                 <TableCell align='center' component='th' scope='row'>
-                                    <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', fontWeight:'bolder', color:'blue'}} row={JSON.stringify(row)} onClick={btnShowDetailHandler}>
-                                        مشاهده جزئیات
+                                    <div className="delete-img-con btn-for-select" style={{ width: '120px',cursor: 'pointer', fontWeight:'bolder', color:'blue'}} row={JSON.stringify(row)} onClick={btnShowDetailHandler}>
+                                        مدیریت کاربران ایجنت
+                                    </div>
+                                    <div className="delete-img-con btn-for-select" style={{width: '120px', cursor: 'pointer', fontWeight:'bolder', color:'blue'}} row={JSON.stringify(row)} onClick={btnManaginWalletHandler}>
+                                        مدیریت کیف پول ایجنت 
                                     </div>
                                 </TableCell>
                             </TableRow>

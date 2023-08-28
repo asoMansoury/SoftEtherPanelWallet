@@ -25,19 +25,17 @@ import { isEmail } from 'validator';
 import { ValidateUIElements } from 'src/lib/utils';
 import { SubAgentsTable } from './Components/SubAgentsTable';
 import SubAgentDetails from './Components/SubAgentDetails';
+import AgentWalletComponent from './AgentWalletComponents/AgentWalletComponent';
 
 const Index = () => {
     const { data: session, status } = useSession();
     const [agentInformation, setAgentInformation] = useState();
 
     const [isSubAgentSelected, setSubAgentSelected] = useState(false);
+    const [isSubAgentWallet, setIsSubAgentWallet] = useState(false);
     const [subAgents, setSubAgents] = useState();
     const [subAgentInformation, setSubAgentInformation] = useState();
-    const [error, setError] = useState({
-        isValid: true,
-        errosMsg: "",
-        severity: "error"
-    })
+    const [selectedRow,setSelectedRow] = useState();
 
     const [disableBtn, setDisableBtn] = useState(false)
     const [loading, setLoading] = useState(false);
@@ -54,10 +52,22 @@ const Index = () => {
 
     async function btnShowDetailHandler(row) {
         setLoading(true);
+        setIsSubAgentWallet(false);
         var getSubAgents = await axios.get(apiUrls.agentUrl.getAgentInformation + row.agentcode);
         setSubAgentInformation(getSubAgents.data.name);
         setSubAgentSelected(true);
+
         setLoading(false);
+    }
+
+    async function btnManaginWalletHandler(row){
+        setSelectedRow(row);
+        setLoading(true);
+        setSubAgentSelected(false);
+        var getSubAgents = await axios.get(apiUrls.agentUrl.getAgentInformation + row.agentcode);
+        setIsSubAgentWallet(true);
+        setSubAgentInformation(getSubAgents.data.name);
+        setLoading(false); 
     }
 
 
@@ -69,7 +79,7 @@ const Index = () => {
                     <Card>
                         <CardHeader title='اطلاعات نماینده فروش شما' titleTypographyProps={{ variant: 'h6' }} />
                         <Divider sx={{ margin: 0 }} />
-                        <SubAgentsTable subAgents={subAgents} btnShowDetailHandler={btnShowDetailHandler}></ SubAgentsTable>
+                        <SubAgentsTable subAgents={subAgents} btnShowDetailHandler={btnShowDetailHandler} btnManaginWalletHandler={btnManaginWalletHandler}></ SubAgentsTable>
                         <Divider></Divider>
                         {
                             loading &&
@@ -78,6 +88,10 @@ const Index = () => {
                         {
                             isSubAgentSelected == true &&
                             <SubAgentDetails  subAgentInformation={subAgentInformation}></SubAgentDetails>
+                        }
+                        {
+                            isSubAgentWallet == true && 
+                                <AgentWalletComponent selectedRow={selectedRow}  btnManaginWalletHandler={btnManaginWalletHandler} subAgentInformation={subAgentInformation}></AgentWalletComponent>
                         }
 
                     </Card>

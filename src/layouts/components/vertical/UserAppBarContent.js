@@ -22,7 +22,7 @@ const UserAppBarContent = (props) => {
             <CardContent sx={{ padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important` }}>
                 <div style={{display:'flex', flexDirection:'row', justifyItems:'center', justifyContent:'space-between'}}>
                     <Typography variant='body2' sx={{ marginBottom: 3, color: 'common.white' }}>
-                        {`موجود حساب شما در حال حاضر ${addCommas(digitsEnToFa(cashAmount!=undefined?cashAmount.toString():'0'))} تومان است`}  
+                        {`موجودی حساب شما در حال حاضر ${addCommas(digitsEnToFa(cashAmount!=undefined?cashAmount.toString():'0'))} تومان است`}  
                     </Typography>
                     <Refresh color="white" style={{cursor:'pointer'}} onClick={props.UpdateWalletFunc}></Refresh>
                 </div>

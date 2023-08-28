@@ -21,7 +21,8 @@ export const apiUrls = {
         "getAgentBill":'/api/agents/getAgentBill/',
         "getagentprice":`/api/agents/getagentprice`,
         "registerAgentPrice":`/api/agents/registeragentPrice`,
-        "defineSubAgentUrl":`/api/agents/defineSubAgent`
+        "defineSubAgentUrl":`/api/agents/defineSubAgent`,
+        "refundSubAgentUrl":`/api/agents/refundSubAgent`
     },
     "SubAgentUrl":{
         "GetAllSubAgentsUrl":`/api/subagent/getAllAgents`
