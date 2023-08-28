@@ -138,7 +138,7 @@ export async function GetMoneyFromOtherWallet(email, type, boughtAmount) {
         const collection = db.collection('Wallet');
 
         const filter = { email: { $regex: `^${email}$`, $options: "i" } };
-        const updateOperation = { $inc: { cashAmount: boughtAmount } };
+        const updateOperation = { $inc: { cashAmount: parseInt(boughtAmount) } };
 
         const resultData = await collection.findOneAndUpdate(filter, updateOperation);
 

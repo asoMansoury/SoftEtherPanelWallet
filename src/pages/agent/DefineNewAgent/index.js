@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableFooter from '@mui/material/TableFooter'
+import TableContainer from '@mui/material/TableContainer'
 // ** Demo Components Imports
 import { useEffect } from 'react';
 import TextField from '@mui/material/TextField'
@@ -194,16 +195,18 @@ const Index = () => {
                             <Divider sx={{ margin: 0 }} />
                             <AgentProfileComponent formDataHandler={formDataHandler} agentInformation={agentInformation} agentWallet={agentWallet}></AgentProfileComponent>
                             <Divider></Divider>
-                            <Table>
-                                <TableFooter>
-                                    <TableRow style={{ paddingLeft: '100px' }}>
-                                        {error.isValid == false && <Alert severity={error.severity}>{error.errorMsg}</Alert>}
-                                        <Grid item xs={12} >
+                            <TableContainer sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }}>
+                                <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
+                                    <TableFooter>
+                                        <TableRow style={{ paddingLeft: '100px' }}>
+                                            {error.isValid == false && <Alert severity={error.severity}>{error.errorMsg}</Alert>}
+                                            <Grid item xs={12} >
 
-                                        </Grid>
-                                    </TableRow>
-                                </TableFooter>
-                            </Table>
+                                            </Grid>
+                                        </TableRow>
+                                    </TableFooter>
+                                </Table>
+                            </TableContainer>
                         </Card>
                     </Grid>
                     <Divider></Divider>

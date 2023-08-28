@@ -7,10 +7,11 @@ import { GetCustomerAgentCode, GetCustomerAgentCodeIgnoreCase, GetCustomerByEmai
 import { GetAgentByAgentPrefix } from './GetAgentByAgentPrefix';
 import { WrapperCustomer } from '../customers/customerUtils';
 import { RegisterAgentCustomers, RegisterAgentCustomersByOtherAgents } from '../customers/registercustomers';
-import { CreateNewWallet, TransferedWalletLog } from '../Wallet/CreateWallet';
+import { CreateNewWallet, CreateNewWalletForAgent, TransferedWalletLog } from '../Wallet/CreateWallet';
 import { TransferMoneyToOtherWallet } from '../Wallet/UpdateWallet';
 import { CreateNewAgent, CreateNewAgentByAgents } from './CreateNewAgent';
 import { DefineNewTariffAgent } from '../tariffagent/DefineNewTariffAgent';
+import { GetWalletUser } from '../Wallet/getWalletUser';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -34,7 +35,6 @@ async function ValidationForAgent(agent) {
         return new ValidationDto(false, "ایجنت برای این ایمیل قبلا تعریف شده است.");
 
     const customerDoc = await GetCustomerAgentCodeIgnoreCase(agent.agentcode);
-    console.log({ customerDoc })
     if (customerDoc.isvalid == true)
         return new ValidationDto(false, `کد ایجنت << ${agent.agentcode} >> قبلا تعریف شده است. لطفا این کدرا تغییر دهید.`);
 
@@ -79,11 +79,11 @@ export async function DefineSubAgent(agent, plans, token) {
 
         var user = WrapperCustomer(email, password, agentcode);
         var resultRegisterCustomer = await RegisterAgentCustomersByOtherAgents(user, token.email, true);
-        var resultCreateNewWallet = await CreateNewWallet(email, true, cashAmount, 0, 0, agentcode);
+        var resultCreateNewWallet = await CreateNewWalletForAgent(email, true, cashAmount, 0, 0, agentcode);
         var resultCreateNewAgent = await CreateNewAgentByAgents(name, "6221061221256532", 20, agentcode, agentcode, 20000, agentprefix, token.email, token.agentcode, true);
         var resultDefineNewTariffAgent = await DefineNewTariffAgent(plans, agentcode);
         TransferMoneyToOtherWallet(token.email, "", cashAmount);
-        TransferedWalletLog(token.email, token.agentcode, email, cashAmount);
+        TransferedWalletLog(token.email, token.agentcode, email, cashAmount,"انتقال پول به زیر مجموعه زمان تعریف زیر مجموعه");
 
         return { isValid: true };
     } catch (erros) {

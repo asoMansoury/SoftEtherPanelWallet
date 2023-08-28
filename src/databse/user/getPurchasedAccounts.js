@@ -27,13 +27,38 @@ function wrappUsers(data){
             expires:item.expires,
             type:item.type,
             typeTitle:typeTitle,
-            userwithhub:item.userwithhub
+            userwithhub:item.userwithhub,
+            removedFromServer:item.removedFromServer
         }
     });
 
     return result;
 }
 async function GetPurchasedAccounts(email){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Users');
+
+        const agentDoc = await IsAgentValid(email);
+        
+        if(agentDoc.isAgent ==true){
+            const data = (await collection.find({agentcode:agentDoc.agentcode}).sort({ _id: -1 }).toArray());
+            return wrappUsers(data);
+        }else{
+            const data = (await collection.find({email:{ $regex: `^${email}$`, $options: "i" }}).sort({ _id: -1 }).toArray());
+            return wrappUsers(data);
+        }
+        
+
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
+export async function GetPurchasedAccountsForAgents(email){
     try{
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');

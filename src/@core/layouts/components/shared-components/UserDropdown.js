@@ -30,7 +30,7 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 
 const UserDropdown = (props) => {
   const {  data:session,status } = useSession();
-  const [wallet,setWallet] = useState();
+
   const [cashAmount,setCashAmount] = useState(0);
 
   // ** States
@@ -51,12 +51,9 @@ const UserDropdown = (props) => {
   }
   
   useEffect(async ()=>{
-    if(status == 'authenticated'){
-      var wallet = (await axios.get(apiUrls.WalletUrls.GetUserWalletApi+session.user.email));
-      setWallet(wallet);
-      setCashAmount(wallet.data.name.cashAmount);
-    }
-  },[status])
+    if(props!= undefined)
+        setCashAmount(props.cashAmount);
+  },[props])
 
   const logoutHandler =()=>{
     signOut({

@@ -21,13 +21,18 @@ export const apiUrls = {
         "getAgentBill":'/api/agents/getAgentBill/',
         "getagentprice":`/api/agents/getagentprice`,
         "registerAgentPrice":`/api/agents/registeragentPrice`,
-        "defineSubAgentUrl":`/api/agents/defineSubAgent`
+        "defineSubAgentUrl":`/api/agents/defineSubAgent`,
+        "refundSubAgentUrl":`/api/agents/refundSubAgent`
+    },
+    "SubAgentUrl":{
+        "GetAllSubAgentsUrl":`/api/subagent/getAllAgents`
     },
     "userUrl":{
         "createNewUserUrl":`/api/user/createnewuser/`,
         "insertuserbasketUrl":`/api/user/insertuserbasketapi/`,
         "getusersbasket":`/api/user/getuserbasket/?uuid=`,
         "getpurchasedUrl":`/api/user/getpurchasedaccounts/?email=`,
+        "getsubagentpurchasedUrl":`/api/user/getsubagentpurchased/?email=`,
         "senToEmailUrl":`/api/user/senaccounttoemail/?email=`,
         "getUserInformationUrl":`/api/user/getUserInformation/?username=`,
         "getUserInformationByEmail":`/api/user/getUserInformationByEmail/?email=`,
@@ -36,7 +41,8 @@ export const apiUrls = {
         "calculateUserForRevokeRul":`/api/user/calculateUserForRevoke`,
         "revokeuserUrl":`/api/user/Cisco/revokeuser`,
         "calculateRevokeUserUrl":`/api/user/Cisco/revokeprice`,
-        "ChangeUserPassworUrl":`/api/user/changeuserpassword`
+        "ChangeUserPassworUrl":`/api/user/changeuserpassword`,
+        "TogglingUserConnectionUrl":`/api/user/ToggleUserConnection/?email=`
     },
     "redisUrl":{
         "setRedisApi":`/api/redis/setredis/`,

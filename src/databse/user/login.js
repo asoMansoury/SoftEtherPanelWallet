@@ -1,38 +1,42 @@
-import {MongoClient,ServerApiVersion} from 'mongodb';
+import { MongoClient, ServerApiVersion } from 'mongodb';
 import { MONGO_URI } from 'src/lib/utils';
 
-const client = new MongoClient(MONGO_URI,{
-    serverApi:{
+const client = new MongoClient(MONGO_URI, {
+    serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
         deprecationErrors: true,
     }
 });
 
-async function Login(body){
-    try{
-        const connectionState =  await client.connect();
+async function Login(body) {
+    try {
+        const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const customerCollection = db.collection('Customers');
         const agentCollection = db.collection('Agents');
-        var user =await customerCollection.findOne({ 
-            email: { $regex: `^${body.email}$`, $options: "i" }, 
-            password: body.password 
+        var user = await customerCollection.findOne({
+            email: { $regex: `^${body.email}$`, $options: "i" },
+            password: body.password
         });
-        console.log({user});
-        if(user!=null) 
-        {   
+        if (user != null) {
             user.isCustomer = true;
-            user.isAgent=false;
-            var agent = await agentCollection.findOne({agentcode:user.agentcode});
-            if(agent!=null)
-                user.isAgent=true;
+            user.isAgent = false;
+            var agent = await agentCollection.findOne({ agentcode: user.agentcode });
+            if (agent != null) {
+                user.isAgent = true;
+                if (agent.isSubAgent != undefined)
+                    user.isSubAgent = agent.isSubAgent;
+                else
+                    user.isSubAgent = false;
+            }
+
         }
-        
+
         return user;
-    }catch(erros){
+    } catch (erros) {
         return Promise.reject(erros);
-    }finally{
+    } finally {
         client.close();
     }
 }
