@@ -64,14 +64,14 @@ const AppBarContent = props => {
                 </Box>
               ) : null}
             {
-              !hidden && status == 'authenticated' && isSubAgent==false && isAgent==true ? (
+              status == 'authenticated' && isSubAgent==false && isAgent==true ? (
                 <Box style={{ marginRight: '10px' }}>
                   <ManaginSubAgentComponent title="مدیریت زیر مجموعه فروش" url="/agent/ManagingSubAgents" ></ManaginSubAgentComponent>
                 </Box>
               ) : null
             }
             {
-              !hidden && status == 'authenticated' &&  isAgent==true ? (
+               status == 'authenticated' &&  isAgent==true ? (
                 <Box style={{ marginRight: '10px' }}>
                   <ManaginSubAgentComponent title="مدیریت کاربران" url="/agent/ManagingUsers" ></ManaginSubAgentComponent>
                 </Box>
