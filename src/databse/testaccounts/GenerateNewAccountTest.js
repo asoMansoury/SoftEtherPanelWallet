@@ -1,8 +1,7 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
-import {  sendEmail, sendEmailCiscoClient, sendEmailCiscoClientTest, sendEmailTest } from 'src/lib/emailsender';
-import { GenerateOneMonthExpiration, GenerateRandomPassword, GenerateTestExpiration, MONGO_URI, formatDate } from 'src/lib/utils';
-import GetServers, { GetServersForTest } from '../server/getservers';
+import {   sendEmailCiscoClientTest, sendEmailTest } from 'src/lib/emailsender';
+import {  GenerateTestExpiration, MONGO_URI, formatDate } from 'src/lib/utils';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
 import GetServerByCode from '../server/getServerByCode';
@@ -64,7 +63,7 @@ export async function GenerateNewAccountTest(email,type,currentDomain,servercode
             var tmpUsers=[];
             if(type==apiUrls.types.Cisco)
             {
-                selectedUser.username = selectedUser.email;
+                selectedUser.username = insertTestAccount.username;
             }
 
             if(type==apiUrls.types.SoftEther){
@@ -72,18 +71,17 @@ export async function GenerateNewAccountTest(email,type,currentDomain,servercode
             }
             
             tmpUsers.push(selectedUser);
-            var customerAccount = {
-                username:email,
-                password:selectedUser.password, 
-                ovpnurl:selectedServer.ovpnurl
-            };
+
             console.log(type)
             if(type==apiUrls.types.Cisco){
-                CreateUserOnCisco(selectedServer,selectedUser.email,selectedUser.password);
+                CreateUserOnCisco(selectedServer,insertTestAccount.username,selectedUser.password);
                 var sendingEmailResult =await sendEmailCiscoClientTest(email,tmpUsers,selectedServer,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount);    
             }else{
-                console.log({tmpUsers})
-                customerAccount.username = insertTestAccount.username;
+                var customerAccount = {
+                    username:insertTestAccount.username,
+                    password:selectedUser.password, 
+                    ovpnurl:selectedServer.ovpnurl
+                };
                 CreateUserOnSoftEther(selectedServer,customerAccount,"P1",selectedUser.expires);
                 var sendingEmailResult =await sendEmailTest(email,tmpUsers,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",currentDomain,customerAccount)
             }
