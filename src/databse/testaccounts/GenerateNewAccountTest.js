@@ -28,7 +28,7 @@ function generateRandomPassword(length) {
 }
   
 
-async function GenerateNewAccount(email,selectedServer,type){
+async function GenerateNewAccount(email,selectedServer,type,agentCode){
     const connectionState =  await client.connect();
     const db = client.db('SoftEther');
     const collection = db.collection('TestAccounts');
@@ -43,7 +43,8 @@ async function GenerateNewAccount(email,selectedServer,type){
         type:type,
         removedFromServer:false,
         username:'test'+num,
-        number:num
+        number:num,
+        agentCode:agentCode
     }
     var insert =await collection.insertOne(obj);
     return obj;
@@ -61,7 +62,7 @@ export async function GenerateNewAccountTest(email,type,currentDomain,servercode
         if(documents==null) {
             var agent = await GetAgentByAgentCode(agentCode);
             var selectedServer =await GetServerByCode(servercode);
-            var insertTestAccount = await GenerateNewAccount(email,selectedServer,type);
+            var insertTestAccount = await GenerateNewAccount(email,selectedServer,type,agentCode);
             const selectedUser = await collection.findOne({email:email,type:type});
             var tmpUsers=[];
             if(type==apiUrls.types.Cisco)
