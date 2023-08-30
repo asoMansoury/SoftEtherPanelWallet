@@ -1,6 +1,9 @@
 import { LOCAL_URL } from "src/lib/utils";
 
 export const apiUrls = {
+    "domains":{
+        "DomainUrl":"http://sale.lachom.ir"
+    },
     "types":{
         "Cisco": "OC1",
         "SoftEther":"SF1"

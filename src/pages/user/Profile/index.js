@@ -41,8 +41,8 @@ export const index = () => {
                 cashAmount: session.user.cashAmount,
                 isLoggedIn: true
             });
-            setCiscoUrl(window.location.hostname+":"+window.location.port+"/testaccounts/"+session.user.agentcode);
-            setOpenVpn(window.location.hostname+":"+window.location.port+"/testaccounts/iran/"+session.user.agentcode);
+            setCiscoUrl(apiUrls.domains.DomainUrl+"/testaccounts/"+session.user.agentcode);
+            setOpenVpn(apiUrls.domains.DomainUrl+"/testaccounts/iran/"+session.user.agentcode);
         } else if (status == 'unauthenticated') {
 
         }
@@ -133,7 +133,7 @@ export const index = () => {
                                     </Grid>
                                     <Divider></Divider>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField fullWidth label='وارد کردن آدرس کانال تلگرام' placeholder='carterLeonard' onChange={(e)=>setTelegram(e.target.value)} value={telegram} />
+                                        <TextField fullWidth label=' وارد کردن آدرس کانال تلگرام' placeholder='carterLeonard' onChange={(e)=>setTelegram(e.target.value)} value={telegram} />
                                     </Grid>
                                     <Grid item xs={12} sm={2}>
                                         <Button fullWidth label='تغییر آدرس تلگرام' type='submit' variant='contained' disabled={disabledTelegramBtn} onClick={btnChangeTelegramHandler}>تغییر آدرس تلگرام</Button>
