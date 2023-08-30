@@ -77,6 +77,13 @@ const AppBarContent = props => {
                 </Box>
               ) : null
             }
+                        {
+               status == 'authenticated' &&  isAgent==true ? (
+                <Box style={{ marginRight: '10px' }}>
+                  <ManaginSubAgentComponent title="مشاهده پروفایل" url="/user/Profile/" ></ManaginSubAgentComponent>
+                </Box>
+              ) : null
+            }
           </div>
         }
 

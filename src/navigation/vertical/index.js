@@ -45,7 +45,11 @@ const navigation = () => {
       icon: AccountClock,
       path: '/cisco/revoke'
     });
-    
+    tmpMenues.push({
+      title: 'تغییر سرور اکانت',
+      icon: AccountPlusOutline,
+      path: '/user/changeserver'
+    })
     tmpMenues.push({
       sectionTitle: 'پنل کاربر'
     })
@@ -58,11 +62,7 @@ const navigation = () => {
     }
 
 
-  tmpMenues.push({
-    title: 'تغییر سرور اکانت',
-    icon: AccountPlusOutline,
-    path: '/user/changeserver'
-  })
+
 
     if(profileSelector.isLoggedIn&&profileSelector.isAgent==true){
       tmpMenues.push({

@@ -25,7 +25,11 @@ export const index = () => {
         isLoggedIn: false
     });
     const [disabledBtn, setDisabledBtn] = useState(true);
+    const [disabledTelegramBtn, setDisabledTelegramBtn] = useState(false);
     const [password, setPassword] = useState("");
+    const [telegram, setTelegram] = useState("");
+    const [ciscoUrl,setCiscoUrl]= useState("");
+    const [openVpn,setOpenVpn]= useState("");
     const [validChange, setValidChange] = useState({
         isValid: true,
         errorMsg:""
@@ -37,6 +41,8 @@ export const index = () => {
                 cashAmount: session.user.cashAmount,
                 isLoggedIn: true
             });
+            setCiscoUrl(window.location.hostname+":"+window.location.port+"/testaccounts/"+session.user.agentcode);
+            setOpenVpn(window.location.hostname+":"+window.location.port+"/testaccounts/iran/"+session.user.agentcode);
         } else if (status == 'unauthenticated') {
 
         }
@@ -75,6 +81,28 @@ export const index = () => {
         setPassword('');
         setDisabledBtn(true);
     }
+
+
+    async function btnChangeTelegramHandler(e) {
+        e.preventDefault();
+        setDisabledTelegramBtn(true);
+        var result = await axios.get(apiUrls.agentUrl.ChangeTelegramUrl+telegram);
+        console.log({result});
+        if(result.data.name.isValid == true){
+            setValidChange({
+                isValid: false,
+                errorMsg:"عملیات با موفقیت انجام گردید."
+            })
+        }else{
+            setValidChange({
+                isValid: false,
+                errorMsg:result.data.errorMsg
+    
+            })
+        }
+
+        setDisabledTelegramBtn(false);
+    }
     return <div>
         <Grid container spacing={6}>
             <Grid item xs={12}>
@@ -96,6 +124,21 @@ export const index = () => {
                                     <Grid item xs={12} sm={6}>
                                         <Alert severity='info'>موجودی حساب شما در حال حاضر : {addCommas(digitsEnToFa(profileSelector.cashAmount))} تومان می باشد</Alert>
                                     </Grid>
+                                    <Divider></Divider>
+                                    <Grid item xs={12} sm={12}>
+                                        <Alert severity='info'>آدرس اختصاصی شما برای اکانت تستی سیسکو   : {ciscoUrl}</Alert>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12}>
+                                        <Alert severity='info'>آدرس اختصاصی شما برای اکانت تستی ایران   : {openVpn}</Alert>
+                                    </Grid>
+                                    <Divider></Divider>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField fullWidth label='وارد کردن آدرس کانال تلگرام' placeholder='carterLeonard' onChange={(e)=>setTelegram(e.target.value)} value={telegram} />
+                                    </Grid>
+                                    <Grid item xs={12} sm={2}>
+                                        <Button fullWidth label='تغییر آدرس تلگرام' type='submit' variant='contained' disabled={disabledTelegramBtn} onClick={btnChangeTelegramHandler}>تغییر آدرس تلگرام</Button>
+                                    </Grid>
+
                                     <Divider></Divider>
                                     <Grid item xs={12} sm={6}>
                                         <TextField fullWidth label='پسورد' placeholder='carterLeonard' onChange={passwordTxtHandler} value={password} />

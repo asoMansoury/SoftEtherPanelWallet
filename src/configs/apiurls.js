@@ -22,7 +22,8 @@ export const apiUrls = {
         "getagentprice":`/api/agents/getagentprice`,
         "registerAgentPrice":`/api/agents/registeragentPrice`,
         "defineSubAgentUrl":`/api/agents/defineSubAgent`,
-        "refundSubAgentUrl":`/api/agents/refundSubAgent`
+        "refundSubAgentUrl":`/api/agents/refundSubAgent`,
+        "ChangeTelegramUrl":`/api/agents/changetelegram/?telegram=`,
     },
     "SubAgentUrl":{
         "GetAllSubAgentsUrl":`/api/subagent/getAllAgents`
@@ -42,7 +43,8 @@ export const apiUrls = {
         "revokeuserUrl":`/api/user/Cisco/revokeuser`,
         "calculateRevokeUserUrl":`/api/user/Cisco/revokeprice`,
         "ChangeUserPassworUrl":`/api/user/changeuserpassword`,
-        "TogglingUserConnectionUrl":`/api/user/ToggleUserConnection/?email=`
+        "TogglingUserConnectionUrl":`/api/user/ToggleUserConnection/?email=`,
+
     },
     "redisUrl":{
         "setRedisApi":`/api/redis/setredis/`,
