@@ -15,8 +15,8 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendEmail(to, users, subject, currentDomain, customer) {
-  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
-  if(process.env.SEND_EMAIL == 'false' ){
+  console.log("Send Email Flag : ", process.env.SEND_EMAIL)
+  if (process.env.SEND_EMAIL == 'false') {
     return;
   }
 
@@ -64,36 +64,36 @@ export async function sendEmail(to, users, subject, currentDomain, customer) {
       </div>
       `;
 
-      if (process.env.BY_SENDGRID == true) {
-        console.log("sending Email via sendgrid")
-        const msg = {
-          to: to, // Change to your recipient
-          from: process.env.EMAIL_SENDER, // Change to your verified sender
-          subject: subject,
-          html: table,
-        }
-        sgMail
-          .send(msg)
-          .then(() => {
-            console.error(`sending email to ${to} email was successful: `)
-          })
-          .catch((error) => {
-            console.error(`sending email to ${to} email was not successful the error is: `, error)
-          })
-      } else {
-        console.log("sending Email via Gmail Service")
-        const mailOptions = {
-          from: process.env.EMAIL_SENDER,
-          to: to, // Replace with the recipient's email address
-          subject: subject,
-          html: table
-        };
-    
-        const info = await transporter.sendMail(mailOptions);
-    
-        console.log('Email sent:', info.response);
-        return info.response;
+    if (process.env.BY_SENDGRID == true) {
+      console.log("sending Email via sendgrid")
+      const msg = {
+        to: to, // Change to your recipient
+        from: process.env.EMAIL_SENDER, // Change to your verified sender
+        subject: subject,
+        html: table,
       }
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.error(`sending email to ${to} email was successful: `)
+        })
+        .catch((error) => {
+          console.error(`sending email to ${to} email was not successful the error is: `, error)
+        })
+    } else {
+      console.log("sending Email via Gmail Service")
+      const mailOptions = {
+        from: process.env.EMAIL_SENDER,
+        to: to, // Replace with the recipient's email address
+        subject: subject,
+        html: table
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+
+      console.log('Email sent:', info.response);
+      return info.response;
+    }
 
 
 
@@ -103,12 +103,20 @@ export async function sendEmail(to, users, subject, currentDomain, customer) {
 }
 
 
-export async function sendEmailTest(to, users, subject) {
-  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
-  if(process.env.SEND_EMAIL == 'false' ){
+export async function sendEmailTest(to, users, subject,agentInformation) {
+  console.log("Send Email Flag : ", process.env.SEND_EMAIL)
+  if (process.env.SEND_EMAIL == 'false') {
     return;
   }
   try {
+    const telegramLink =agentInformation.isAgentValid==true? `
+    <p style="font-size: 16px; line-height: 1.5; color: #333; text-align: center;">
+        برای خرید اکانت روی لینک روبرو کلیک کنید. 
+        <a href="${agentInformation.agentInformation.telegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+          اینجا کلیک کنید
+        </a>
+    </p>
+    `:"";
 
     const tableRows = users.map((user, index) =>
       `
@@ -138,6 +146,9 @@ export async function sendEmailTest(to, users, subject) {
             ${tableRows}
           </tbody>
         </table>
+        <div dir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+          ${telegramLink}
+        </div>
         <div dir="rtl"  style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
           <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/OpenVpn/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
         </div>
@@ -147,36 +158,36 @@ export async function sendEmailTest(to, users, subject) {
       </div>
       `;
 
-      if (process.env.BY_SENDGRID == true) {
-        console.log("sending Email via sendgrid")
-        const msg = {
-          to: to, // Change to your recipient
-          from: process.env.EMAIL_SENDER, // Change to your verified sender
-          subject: subject,
-          html: table,
-        }
-        sgMail
-          .send(msg)
-          .then(() => {
-            console.error(`sending email to ${to} email was successful: `)
-          })
-          .catch((error) => {
-            console.error(`sending email to ${to} email was not successful the error is: `, error)
-          })
-      } else {
-        console.log("sending Email via Gmail Service")
-        const mailOptions = {
-          from: process.env.EMAIL_SENDER,
-          to: to, // Replace with the recipient's email address
-          subject: subject,
-          html: table
-        };
-    
-        const info = await transporter.sendMail(mailOptions);
-    
-        console.log('Email sent:', info.response);
-        return info.response;
+    if (process.env.BY_SENDGRID == true) {
+      console.log("sending Email via sendgrid")
+      const msg = {
+        to: to, // Change to your recipient
+        from: process.env.EMAIL_SENDER, // Change to your verified sender
+        subject: subject,
+        html: table,
       }
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.error(`sending email to ${to} email was successful: `)
+        })
+        .catch((error) => {
+          console.error(`sending email to ${to} email was not successful the error is: `, error)
+        })
+    } else {
+      console.log("sending Email via Gmail Service")
+      const mailOptions = {
+        from: process.env.EMAIL_SENDER,
+        to: to, // Replace with the recipient's email address
+        subject: subject,
+        html: table
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+
+      console.log('Email sent:', info.response);
+      return info.response;
+    }
 
 
 
@@ -188,8 +199,8 @@ export async function sendEmailTest(to, users, subject) {
 
 
 export async function sendEmailCiscoClient(to, users, server, subject, currentDomain, customer) {
-  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
-  if(process.env.SEND_EMAIL == 'false' ){
+  console.log("Send Email Flag : ", process.env.SEND_EMAIL)
+  if (process.env.SEND_EMAIL == 'false') {
     return;
   }
 
@@ -238,35 +249,35 @@ export async function sendEmailCiscoClient(to, users, server, subject, currentDo
       `;
 
 
-      if (process.env.BY_SENDGRID == true) {
-        console.log("sending Email via sendgrid")
-        const msg = {
-          to: to, // Change to your recipient
-          from: process.env.EMAIL_SENDER, // Change to your verified sender
-          subject: subject,
-          html: table,
-        }
-        sgMail
-          .send(msg)
-          .then(() => {
-            console.error(`sending email to ${to} email was successful: `)
-          })
-          .catch((error) => {
-            console.error(`sending email to ${to} email was not successful the error is: `, error)
-          })
-      } else {
-        console.log("sending Email via Gmail Service")
-        const mailOptions = {
-          from: process.env.EMAIL_SENDER,
-          to: to, // Replace with the recipient's email address
-          subject: subject,
-          html: table
-        };
-    
-        const info = await transporter.sendMail(mailOptions);
-    
-        console.log('Email sent:', info.response);
+    if (process.env.BY_SENDGRID == true) {
+      console.log("sending Email via sendgrid")
+      const msg = {
+        to: to, // Change to your recipient
+        from: process.env.EMAIL_SENDER, // Change to your verified sender
+        subject: subject,
+        html: table,
       }
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.error(`sending email to ${to} email was successful: `)
+        })
+        .catch((error) => {
+          console.error(`sending email to ${to} email was not successful the error is: `, error)
+        })
+    } else {
+      console.log("sending Email via Gmail Service")
+      const mailOptions = {
+        from: process.env.EMAIL_SENDER,
+        to: to, // Replace with the recipient's email address
+        subject: subject,
+        html: table
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+
+      console.log('Email sent:', info.response);
+    }
   } catch (err) {
     console.error('Error sending email:', err);
   }
@@ -274,12 +285,20 @@ export async function sendEmailCiscoClient(to, users, server, subject, currentDo
 
 
 
-export async function sendEmailCiscoClientTest(to, users, server, subject, currentDomain, customer) {
-  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
-  if(process.env.SEND_EMAIL == 'false' ){
+export async function sendEmailCiscoClientTest(to, users, server, subject, agentInformation) {
+  console.log("Send Email Flag : ", process.env.SEND_EMAIL)
+  if (process.env.SEND_EMAIL == 'false') {
     return;
   }
 
+  const telegramLink =agentInformation.isAgentValid==true? `
+  <p style="font-size: 16px; line-height: 1.5; color: #333; text-align: center;">
+      برای خرید اکانت روی لینک روبرو کلیک کنید. 
+      <a href="${agentInformation.agentInformation.telegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+        اینجا کلیک کنید
+      </a>
+  </p>
+  `:"";
   try {
     const tableRows = users.map((user, index) =>
       `
@@ -308,6 +327,7 @@ export async function sendEmailCiscoClientTest(to, users, server, subject, curre
           </table>
           <div dir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
             <p style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: red;">زمان وارد کردن آدرس سرور به هیچ عنوان هیچ کلمه اضافی وارد نکنید(دقیقا عین آدرس بدون پیشوند http://) وارد گردد.</p>
+            ${telegramLink}
           </div>
             <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
               <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
@@ -320,36 +340,36 @@ export async function sendEmailCiscoClientTest(to, users, server, subject, curre
         </div>
       `;
 
-      if (process.env.BY_SENDGRID == true) {
-        console.log("sending Email via sendgrid")
-        const msg = {
-          to: to, // Change to your recipient
-          from: process.env.EMAIL_SENDER, // Change to your verified sender
-          subject: subject,
-          html: table,
-        }
-        sgMail
-          .send(msg)
-          .then(() => {
-            console.error(`sending email to ${to} email was successful: `)
-          })
-          .catch((error) => {
-            console.error(`sending email to ${to} email was not successful the error is: `, error)
-          })
-      } else {
-        console.log("sending Email via Gmail Service")
-        const mailOptions = {
-          from: process.env.EMAIL_SENDER,
-          to: to, // Replace with the recipient's email address
-          subject: subject,
-          html: table
-        };
-    
-        const info = await transporter.sendMail(mailOptions);
-        
-        console.log('Email sent:', info.response);
-        return info.response;
+    if (process.env.BY_SENDGRID == true) {
+      console.log("sending Email via sendgrid")
+      const msg = {
+        to: to, // Change to your recipient
+        from: process.env.EMAIL_SENDER, // Change to your verified sender
+        subject: subject,
+        html: table,
       }
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.error(`sending email to ${to} email was successful: `)
+        })
+        .catch((error) => {
+          console.error(`sending email to ${to} email was not successful the error is: `, error)
+        })
+    } else {
+      console.log("sending Email via Gmail Service")
+      const mailOptions = {
+        from: process.env.EMAIL_SENDER,
+        to: to, // Replace with the recipient's email address
+        subject: subject,
+        html: table
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+
+      console.log('Email sent:', info.response);
+      return info.response;
+    }
   } catch (err) {
     console.error('Error sending email:', err);
   }
