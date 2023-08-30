@@ -130,3 +130,29 @@ export async function IsAgentValid(email) {
     }
 }
 
+
+export async function GetAgentByAgentCode(agentcode) {
+    try {
+        const connectionState = await client.connect();
+        const db = client.db('SoftEther');
+
+        const collection = db.collection('Agents');
+        const documents = await collection.findOne({ agentcode: agentcode });
+        if (documents == null)
+            return {
+                agentInformation: documents,
+                isAgentValid: false
+            };
+        const result = {
+            agentInformation: documents,
+            isAgentValid: true
+        }
+
+        return result;
+    } catch (erros) {
+        return Promise.reject(erros);
+    } finally {
+        client.close();
+    }
+}
+

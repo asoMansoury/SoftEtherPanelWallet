@@ -9,7 +9,8 @@ import { apiUrls } from 'src/configs/apiurls';
 import  { ChangeServerForUserCisco } from './SoftEtherMethods/ChangeServerForUser';
 import ChangeServerForUserSoftEther from './SoftEtherMethods/ChangeServerForUser';
 import GetUsersByUsernameAndPassword from './GetUsersByUsernameAndPassword';
-import { sendEmailCiscoClientTest } from 'src/lib/emailsender';
+import { sendEmailCiscoClientTest, sendEmailTest } from 'src/lib/emailsender';
+import { GetAgentByAgentCode } from '../agent/getagentinformation';
 
 
 const client = new MongoClient(MONGO_URI,{
@@ -32,18 +33,20 @@ async function ChangeUserServer(obj){
 
         var foundUser =await userCollection.findOne({username:obj.username});
         var currentServerOfUser = await GetServerByCode(foundUser.currentservercode);
+        var agent = await GetAgentByAgentCode(foundUser.agentcode);
         var tmpUsers = []
         tmpUsers.push(foundUser);
 
         if(foundUser.type === apiUrls.types.SoftEther){
             const foundNewServer =await GetServerByCode(obj.servercode);
             var servers =await GetServers(apiUrls.types.SoftEther);
-            ChangeServerForUserSoftEther(servers,currentServerOfUser,foundUser,obj)
+            ChangeServerForUserSoftEther(servers,currentServerOfUser,foundUser,obj);
+            var sendingEmailResult =await sendEmailTest(foundUser.email,tmpUsers,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",agent)
             
         }else if(foundUser.type === apiUrls.types.Cisco){
             var servers =await GetServers(apiUrls.types.Cisco);
             ChangeServerForUserCisco(servers,currentServerOfUser,foundUser,obj);
-            var emailResult = await  sendEmailCiscoClientTest(foundUser.email,tmpUsers,currentServerOfUser,"اطلاعات اکانت شما")
+            var emailResult = await  sendEmailCiscoClientTest(foundUser.email,tmpUsers,currentServerOfUser,"اطلاعات اکانت شما",agent)
         }
 
 
