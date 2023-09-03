@@ -29,7 +29,7 @@ export async function UpdateTank(type,amount){
 
 
         let todayDatePure = getTodayDate();
-        var foundDoc = await collection.findOne({todayDate:todayDatePure});
+        var foundDoc = await collection.findOne({todayDate:todayDatePure,type:type});
         if(foundDoc==null){
             const documents = await collection.insertOne({
                 type:type,
