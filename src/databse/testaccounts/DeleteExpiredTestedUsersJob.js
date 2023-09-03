@@ -36,7 +36,7 @@ export async function DeleteExpiredTestedUsersJob(date){
         for (const user of allExpiredUsers) {
             if (user.type === apiUrls.types.Cisco) {
                 var selectedServer = servers.filter(server=>server.servercode==user.servercode)[0];
-                DeleteUserCisco(selectedServer,user.email);
+                DeleteUserCisco(selectedServer,user.username);
                 user.removedFromServer = true;
 
               //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
