@@ -65,7 +65,7 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
 
             } else {
                 if (user.type === apiUrls.types.Cisco) {
-                    var selectedServer = CiscoServers.filter(server => server.servercode == user.servercode)[0];
+                    var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                     CreateUserOnCisco(selectedServer, user.username, user.password, user.expires);
                     user.removedFromServer = false;
 
@@ -75,7 +75,7 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
                     await collection.updateOne(filter, updateOperation);
                     emailForReconnectingUsers(user.email,"فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)",email,selectedServer,user);
                 } else if (user.type === apiUrls.types.SoftEther) {
-                    var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
+                    var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
                     user.removedFromServer = false;
                     //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
                     CreateUserOnSoftEther(selectedServer, user, user.policy, user.expires);
