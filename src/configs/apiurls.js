@@ -6,7 +6,8 @@ export const apiUrls = {
     },
     "types":{
         "Cisco": "OC1",
-        "SoftEther":"SF1"
+        "SoftEther":"SF1",
+        "OpenVpn":"OP1"
     },
     "localUrl":{
         "getTariffsUrl": `/api/tariff/getatariff/?type=`,

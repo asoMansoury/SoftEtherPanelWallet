@@ -8,6 +8,7 @@ import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { GetCustomerByEmail } from '../customers/getcustomer';
 import { DeleteUserCisco } from 'src/lib/Cisco/deleteuser';
 import { RemoveUserSoftEther } from 'src/lib/createuser/RemoveUserSoftEther';
+import { RemoveUserOpenVpn } from 'src/lib/OpenVpn/RemoveUserOpenVpn';
 
 
 const client = new MongoClient(MONGO_URI,{
@@ -33,6 +34,7 @@ export async function DeleteExpiredTestedUsersJob(date){
 
         var servers=await GetServers(apiUrls.types.Cisco);
         var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
+        var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
         for (const user of allExpiredUsers) {
             if (user.type === apiUrls.types.Cisco) {
                 var selectedServer = servers.filter(server=>server.servercode==user.servercode)[0];
@@ -47,8 +49,15 @@ export async function DeleteExpiredTestedUsersJob(date){
                 var selectedSoftEtherServer = SoftEtherServers.filter(server=>server.servercode==user.servercode)[0];
                 user.removedFromServer = true;
                 //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
-                console.log({user});
                 RemoveUserSoftEther(selectedSoftEtherServer,user);
+                const filter = { _id: user._id };
+                const updateOperation = { $set: user };
+                await collection.updateOne(filter, updateOperation);
+            }else if(user.type === apiUrls.types.OpenVpn){
+                var selectedOpenVpnServer = OpenVpnServers.filter(server=>server.servercode==user.servercode)[0];
+                user.removedFromServer = true;
+                //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                RemoveUserOpenVpn(selectedOpenVpnServer,user);
                 const filter = { _id: user._id };
                 const updateOperation = { $set: user };
                 await collection.updateOne(filter, updateOperation);

@@ -1,57 +1,57 @@
 let isWriting = false;
 
-export const CreateUserOnOpenVpn = async (config,createdUser,groupPolicy,expireDate)=>{
-    console.log("CREATE_SOFTETHER Flag : ",process.env.CREATE_SOFTETHER)
-    if(process.env.CREATE_SOFTETHER == false )
-      return;
-    
+export const CreateUserOnOpenVpn = async (config, selectedUser, expireDate) => {
+    console.log("CREATE_SOFTETHER Flag : ", process.env.CREATE_OPENVPN)
+    if (process.env.CREATE_OPENVPN == false)
+        return;
+
     var serverConfig = {
-        host:         "135.181.107.1",
-        userName:     "root",
-        password:   "AdminAso",
+        host: "91.107.129.236",
+        userName: "root",
+        password: "AdminAso@123",
         port: "22",
         readyTimeout: 60000
-      }
-    var RunScript = `/root/./openvpn.sh`
+    }
+    
+    var CreateUserCommand = `sudo useradd -m ${selectedUser.username} && echo '${selectedUser.username}:${selectedUser.password}' | sudo chpasswd`
 
     var host = {
-        server:  serverConfig,
-        commands:      [
-         "`This is a message that will be added to the full sessionText`",
-         "msg:This is a message that will be displayed during the process",
-         RunScript,
-
+        server: serverConfig,
+        commands: [
+            "`This is a message that will be added to the full sessionText`",
+            "msg:This is a message that will be displayed during the process",
+            CreateUserCommand,
         ],
-        onCommandComplete:   function( command, response, sshObj) {
+        onCommandComplete: function (command, response, sshObj) {
             //handle just one command or do it for all of the each time
-            console.log("command completed with response" , response)
+            console.log("command completed with response", response)
         },
-        onCommandProcessing: function (command, response, sshObj, stream){
-            console.log ("onCommandProcessing is equal to : ", command, response, sshObj);
+        onCommandProcessing: function (command, response, sshObj, stream) {
+            console.log("onCommandProcessing is equal to : ", command, response, sshObj);
 
-                  // Respond to any prompts encountered during the installation process
-                if (response.includes("Add a new client")&& !isWriting) {
-                    
-                    stream.write(`1\n`);
-                    stream.write(`asoVpn9\n`);
-                    isWriting = true;
+            // Respond to any prompts encountered during the installation process
+            if (response.includes("Add a new client") && !isWriting) {
 
-                    return;
-                }
+                stream.write(`1\n`);
+                stream.write(`asoVpn9\n`);
+                isWriting = true;
 
                 return;
+            }
+
+            return;
         }
-       };
-    
-    var SSH2Shell = require ('ssh2shell'),
-        SSH       = new SSH2Shell(host);
-    
-    var callback = function (sessionText){
-            console.log (sessionText);
-        }
-    
+    };
+
+    var SSH2Shell = require('ssh2shell'),
+        SSH = new SSH2Shell(host);
+
+    var callback = function (sessionText) {
+        console.log(sessionText);
+    }
+
     SSH.connect(callback);
 
-    
+
 }
 

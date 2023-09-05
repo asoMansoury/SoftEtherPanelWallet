@@ -18,7 +18,6 @@ async function GetServers(type){
         const db = client.db('SoftEther');
         const collection = db.collection('Servers');
         const documents = await collection.find({type:type,isremoved: false,}).toArray();
-
         return documents;
     }catch(erros){
         return Promise.reject(erros);
