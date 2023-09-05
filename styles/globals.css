@@ -4,6 +4,19 @@
   src: url('/fonts/Digikala -_font.ttf') format('truetype');
 }
 
+
+/* For Webkit Browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  height: 14px; /* Set the desired height of the scrollbar */
+  width: 14px; /* Set the desired width of the scrollbar */
+}
+
+/* For Firefox */
+::-moz-scrollbar {
+  height: 14px; /* Set the desired height of the scrollbar */
+  width: 14px; /* Set the desired width of the scrollbar */
+}
+
 html,
 body {
   min-height: 100%;

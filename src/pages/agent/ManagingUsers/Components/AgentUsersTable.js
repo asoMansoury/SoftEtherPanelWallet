@@ -21,8 +21,8 @@ import Card from '@mui/material/Card'
 import EditIcon from 'src/views/iconImages/editicon';
 import { useSession } from 'next-auth/react';
 
-const createData = (username, typeTitle, expires, removedFromServer) => {
-  return { username, typeTitle, expires, removedFromServer }
+const createData = (username, typeTitle, expires, removedFromServer,servertitle) => {
+  return { username, typeTitle, expires, removedFromServer,servertitle }
 }
 
 
@@ -54,7 +54,7 @@ const AgentUsersTable = (props) => {
     var usersAccounts = await axios.get(apiUrls.userUrl.getsubagentpurchasedUrl + email);
     // getsubagentpurchasedUrl
     usersAccounts.data.name.map((item, index) => {
-      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer));
+      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer,item.servertitle));
     })
     setRows(tmp);
     setMainRows(tmp)
@@ -135,6 +135,7 @@ const AgentUsersTable = (props) => {
               <TableRow>
                 <TableCell style={{ width: '40px' }} align='center'>نوع اکانت</TableCell>
                 <TableCell style={{ width: '80px' }} align='center'>نام اکانت</TableCell>
+                <TableCell style={{ width: '80px' }} align='center'>نام سرور</TableCell>
                 <TableCell style={{ width: '120px' }} align='center'>تاریخ اعتبار</TableCell>
                 <TableCell style={{ width: '80px' }} align='center'>وضعیت اکانت</TableCell>
                 <TableCell style={{ width: '120px' }} align='center'>عملیات</TableCell>
@@ -156,7 +157,9 @@ const AgentUsersTable = (props) => {
                   <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
                     {row.username}
                   </TableCell>
-
+                  <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
+                    {row.servertitle}
+                  </TableCell>
                   <TableCell style={{ width: '120px' }} align='center' component='th' scope='row'>
                     {ConvertToPersianDateTime(row.expires)}
                   </TableCell>

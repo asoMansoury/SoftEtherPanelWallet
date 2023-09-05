@@ -43,7 +43,6 @@ const Index = () => {
             if (session.user.isAgent == true) {
                 var result = await axios.get(apiUrls.agentUrl.getAgentInformation+session.user.agentcode);
                 setAgentInformation(result.data.name);
-                console.log(result.data.name);
             }
         }
     }, [status]);
