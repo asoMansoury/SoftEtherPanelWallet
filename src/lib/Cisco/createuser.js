@@ -1,5 +1,4 @@
 export const CreateUserOnCisco = async (config,username,password,expireDate)=>{
-    console.log(username,password)
     console.log("CREATE_CISCO Flag : ",process.env.CREATE_CISCO)
     if(process.env.CREATE_CISCO == 'false' )
       return;

@@ -52,6 +52,22 @@ const ChangeServer = () => {
     setSelectedUser(item.username);
   }
 
+  async function ToggleActivateUserHandler(item){
+    setIsWorking(true);
+    var obj = {
+      servercode:item.servercode,
+      username:selectedUser
+    }
+    
+    setShowServerComponent(false);
+    const result = await axios.get(apiUrls.userUrl.DeactivatinUserConnectionUrl +  item.username)
+    setIsWorking(false);
+    setErros({
+      hasErros:true,
+      erroMsg:result.data.name.message
+    });
+  }
+
   async function changeServerHandler(item){
     setIsWorking(true);
     var obj = {
@@ -73,10 +89,10 @@ const ChangeServer = () => {
         <Grid item xs={12}>
             <Card>
                 <CardHeader title='لیست اکانت ها برای تغییر سرور' titleTypographyProps={{ variant: 'h6' }} />
-                <ChanginServerTable getUsersServerHandler={getUsersServerHandler}></ChanginServerTable>
+                <ChanginServerTable getUsersServerHandler={getUsersServerHandler} ToggleActivateUserHandler={ToggleActivateUserHandler}></ChanginServerTable>
                 {
                         isWorking==true &&
-                        <Alert severity="info">در حال تغییر سرور. لطفا منتظر بمانید...</Alert>
+                        <Alert severity="info">در حال لود اطلاعات. لطفا منتظر بمانید...</Alert>
                 }
                 {
                   isShowServerComponent && (

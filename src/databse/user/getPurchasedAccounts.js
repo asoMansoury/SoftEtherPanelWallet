@@ -51,7 +51,7 @@ async function GetPurchasedAccounts(email) {
             const data = (await collection.find({ agentcode: agentDoc.agentcode }).sort({ _id: -1 }).toArray());
             return wrappUsers(data, servers);
         } else {
-            const data = (await collection.find({ email: { $regex: `^${email}$`, $options: "i" } }).sort({ _id: -1 }).toArray());
+            const data = (await collection.find({ email: { $regex: `^${email}$`, $options: "i" },removedByAgent:false }).sort({ _id: -1 }).toArray());
             return wrappUsers(data, servers);
         }
 

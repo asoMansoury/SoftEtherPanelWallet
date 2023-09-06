@@ -21,8 +21,8 @@ import EditIcon from 'src/views/iconImages/editicon';
 import TextField from '@mui/material/TextField'
 import { useSession } from 'next-auth/react';
 
-const createData = (username, expires, userwithhub, type, typeTitle, servertitle) => {
-  return { username, expires, userwithhub, type, typeTitle, servertitle }
+const createData = (username, expires, userwithhub, type, typeTitle, removedFromServer, servertitle) => {
+  return { username, expires, userwithhub, type, typeTitle, removedFromServer, servertitle }
 }
 
 
@@ -61,7 +61,7 @@ const ChanginServerTable = (props) => {
     var tmp = [];
     var usersAccounts = await axios.get(apiUrls.userUrl.getpurchasedUrl + session.user.email);
     usersAccounts.data.name.map((item, index) => {
-      tmp.push(createData(item.username, item.expires, item.userwithhub, item.type, item.typeTitle, item.servertitle));
+      tmp.push(createData(item.username, item.expires, item.userwithhub, item.type, item.typeTitle, item.removedFromServer, item.servertitle));
     });
 
     setRows(tmp);
@@ -77,6 +77,14 @@ const ChanginServerTable = (props) => {
     setRows(findedElements);
 
   }
+
+  async function ToggleActivateUserHandler(e) {
+    e.preventDefault();
+    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    props.ToggleActivateUserHandler(row);
+    await GetUsersData();
+  }
+
 
   async function ChangeServerHandler(e) {
     e.preventDefault();
@@ -115,13 +123,16 @@ const ChanginServerTable = (props) => {
           </Grid>
         </Grid>
 
-        <Table stickyHeader sx={{ minWidth: 650, touchAction: 'pan-y' }} style={{ userSelect: 'none' }} aria-label='simple table'>
+        <Table stickyHeader sx={{ minWidth: 650, touchAction: 'manipulation' }} style={{ userSelect: 'none' }} aria-label='simple table'>
           <TableHead stickyHeader>
             <TableRow>
               <TableCell align='center'>نام اکانت</TableCell>
               <TableCell align='center'>نوع اکانت</TableCell>
+
               <TableCell align='center'>نام سرور</TableCell>
               <TableCell align='center'>تاریخ اعتبار</TableCell>
+              <TableCell align='center'>وضعیت اکانت</TableCell>
+              <TableCell align='center'>فعال/غیر فعال</TableCell>
               <TableCell align='center'>تغییر سرور</TableCell>
             </TableRow>
           </TableHead>
@@ -148,10 +159,20 @@ const ChanginServerTable = (props) => {
                   {ConvertToPersianDateTime(row.expires)}
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
+                  {row.removedFromServer == true ? "غیر فعال است" : "فعال است"}
+                </TableCell>
+                <TableCell align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ToggleActivateUserHandler}>
+                    
+                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>{row.removedFromServer == false ? "غیر فعال" : "فعال کردن"}</Button>
+                  </div>
+                </TableCell>
+                <TableCell align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangeServerHandler}>
                     <EditIcon></EditIcon>
                   </div>
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>

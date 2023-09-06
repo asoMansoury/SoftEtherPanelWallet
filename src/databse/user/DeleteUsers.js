@@ -41,6 +41,7 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
         var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
         for (const user of allExpiredUsers) {
             if (user.removedFromServer == false) {
+                user.removedByAgent = true;
                 if (user.type === apiUrls.types.Cisco) {
                     var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                     DeleteUserCisco(selectedServer, user.username);
@@ -63,6 +64,7 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
                 }
 
             } else {
+                user.removedByAgent = false;
                 if (user.type === apiUrls.types.Cisco) {
                     var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                     CreateUserOnCisco(selectedServer, user.username, user.password, user.expires);
@@ -97,6 +99,71 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
 }
 
 
+export async function DeleteUserOfByClient( username) {
+    const today = formatDate(new Date());
+    try {
+        const connectionState = await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Users');
+        const allExpiredUsers = await collection.find({
+            username: username,
+            expires: { $gt: today }
+        }).toArray();
+
+        var CiscoServers = await GetServers(apiUrls.types.Cisco);
+        var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
+        for (const user of allExpiredUsers) {
+            if (user.removedFromServer == false) {
+                if (user.type === apiUrls.types.Cisco) {
+                    var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
+                    DeleteUserCisco(selectedServer, user.username);
+                    user.removedFromServer = true;
+
+                    //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                    const filter = { _id: user._id };
+                    const updateOperation = { $set: user };
+                    await collection.updateOne(filter, updateOperation);
+                } else if (user.type === apiUrls.types.SoftEther) {
+                    var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
+                    user.removedFromServer = true;
+                    //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                    RemoveUserSoftEther(selectedSoftEtherServer, user);
+                    const filter = { _id: user._id };
+                    const updateOperation = { $set: user };
+                    await collection.updateOne(filter, updateOperation);
+                }
+
+            } else {
+                if (user.type === apiUrls.types.Cisco) {
+                    var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
+                    CreateUserOnCisco(selectedServer, user.username, user.password, user.expires);
+                    user.removedFromServer = false;
+
+                    //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                    const filter = { _id: user._id };
+                    const updateOperation = { $set: user };
+                    await collection.updateOne(filter, updateOperation);
+                } else if (user.type === apiUrls.types.SoftEther) {
+                    var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
+                    user.removedFromServer = false;
+                    //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                    CreateUserOnSoftEther(selectedServer, user, user.policy, user.expires);
+                    const filter = { _id: user._id };
+                    const updateOperation = { $set: user };
+                    await collection.updateOne(filter, updateOperation);
+                }
+
+            }
+
+        }
+
+        return allExpiredUsers;
+    } catch (erros) {
+        return Promise.reject(erros);
+    } finally {
+        client.close();
+    }
+}
 
 
 

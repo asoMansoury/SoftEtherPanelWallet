@@ -129,8 +129,8 @@ const SubAgentUsersTable = (props) => {
             </Grid>
           </Card>
         </Grid>
-        <TableContainer component={Paper} sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }}>
-          <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
+        <TableContainer component={Paper} sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'manipulation' }}>
+          <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none',touchAction: 'manipulation' }} aria-label='simple table'>
             <TableHead>
               <TableRow>
                 <TableCell style={{ width: '40px' }} align='center'>نوع اکانت</TableCell>

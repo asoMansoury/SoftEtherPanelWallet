@@ -48,6 +48,7 @@ export const apiUrls = {
         "calculateRevokeUserUrl":`/api/user/Cisco/revokeprice`,
         "ChangeUserPassworUrl":`/api/user/changeuserpassword`,
         "TogglingUserConnectionUrl":`/api/user/ToggleUserConnection/?email=`,
+        "DeactivatinUserConnectionUrl":`/api/user/DeactivateUserConnection/?username=`,
 
     },
     "redisUrl":{
