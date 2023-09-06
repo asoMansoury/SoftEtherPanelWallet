@@ -1,4 +1,5 @@
 export const CreateUserOnCisco = async (config,username,password,expireDate)=>{
+    console.log(username,password)
     console.log("CREATE_CISCO Flag : ",process.env.CREATE_CISCO)
     if(process.env.CREATE_CISCO == 'false' )
       return;
@@ -11,14 +12,13 @@ export const CreateUserOnCisco = async (config,username,password,expireDate)=>{
         readyTimeout: 60000
       }
     
-    var CreateUser = `echo "${password}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username}`;
-    
+    var CreateUser = `echo "${password.trim()}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username.trim()}`;
+    const trimmedCommand = CreateUser.replace(/\r?\n|\r/g, '');
     var host = {
         server:  serverConfig,
         commands:      [
-         "`This is a message that will be added to the full sessionText`",
-         "msg:This is a message that will be displayed during the process",
-         CreateUser,
+         `Generating new cisco User Command : ${trimmedCommand}`,
+         trimmedCommand,
         ],
         onCommandComplete:   function( command, response, sshObj) {
             //handle just one command or do it for all of the each time

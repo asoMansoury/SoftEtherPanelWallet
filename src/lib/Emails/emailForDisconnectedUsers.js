@@ -15,10 +15,10 @@ const transporter = nodemailer.createTransport({
 
 
 export async function emailForDisconnectedUsers(to,subject,agentEmail,selectedServer,user) {
-//   console.log("Send Email Flag : ",process.env.SEND_EMAIL)
-//   if(process.env.SEND_EMAIL == 'false' ){
-//     return;
-//   }
+  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
+  if(process.env.SEND_EMAIL == 'false' ){
+    return;
+  }
 
     try {
       const table = `
@@ -69,10 +69,10 @@ export async function emailForDisconnectedUsers(to,subject,agentEmail,selectedSe
 
 
   export async function emailForReconnectingUsers(to,subject,agentEmail,selectedServer,user) {
-    //   console.log("Send Email Flag : ",process.env.SEND_EMAIL)
-    //   if(process.env.SEND_EMAIL == 'false' ){
-    //     return;
-    //   }
+      console.log("Send Email Flag : ",process.env.SEND_EMAIL)
+      if(process.env.SEND_EMAIL == 'false' ){
+        return;
+      }
     
         try {
           const table = `

@@ -37,7 +37,6 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
             expires: { $gt: today }
         }).toArray();
 
-        console.log(allExpiredUsers)
         var CiscoServers = await GetServers(apiUrls.types.Cisco);
         var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
         for (const user of allExpiredUsers) {

@@ -16,8 +16,7 @@ export const DeleteUserCisco = async (config,username)=>{
     var host = {
         server:  serverConfig,
         commands:      [
-         "`This is a message that will be added to the full sessionText`",
-         "msg:This is a message that will be displayed during the process",
+         "`removing cisco user command`",
          CreateUser,
         ],
         onCommandComplete:   function( command, response, sshObj) {
