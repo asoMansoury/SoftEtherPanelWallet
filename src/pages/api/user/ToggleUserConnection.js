@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         } else {
             agentCode = isAgent.agentcode;
         }
-        var userBasket = await DeleteUserOfAgent(email,agentCode,username);
+        var userBasket = await DeleteUserOfAgent(email,agentCode,username,token.isAdmin);
 
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(200).json({ name: userBasket });

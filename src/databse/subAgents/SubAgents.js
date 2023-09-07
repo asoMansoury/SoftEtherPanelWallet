@@ -57,3 +57,33 @@ export async function GetSubAgentsByEmail(email) {
 }
 
 
+export async function GetAllAgents() {
+    try {
+        const connectionState = await client.connect();
+        const db = client.db('SoftEther');
+        const agentCollection = db.collection("Agents");
+
+        var tmp = [];
+
+        var allSubAgents = await agentCollection.find({}).sort({ _id: -1 }).toArray();
+        if (allSubAgents != null) {
+            allSubAgents.map((item, index) => {
+                tmp.push(new SubAgentDto(item.name, item.agentcode,
+                    item.agentprefix, item.introducerEmail,
+                    item.introducerAgentCode,item.email,item.agentcode));
+            })
+        }
+
+
+        return {
+            isValid: true,
+            subAgents: tmp
+        }
+    } catch (erros) {
+        return Promise.reject(erros);
+    } finally {
+        client.close();
+    }
+}
+
+

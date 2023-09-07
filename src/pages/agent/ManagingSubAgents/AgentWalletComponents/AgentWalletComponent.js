@@ -97,7 +97,6 @@ const AgentWalletComponent = (props) => {
             email:data.email
         }
         const result = await axios.post(apiUrls.agentUrl.refundSubAgentUrl,obj);
-        console.log(result);
         if(result.data.result.isValid==true){
             setError({
                 isValid:false,

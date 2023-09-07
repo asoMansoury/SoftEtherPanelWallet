@@ -18,8 +18,7 @@ export const CreateUserOnOpenVpn = async (config, selectedUser, expireDate) => {
     var host = {
         server: serverConfig,
         commands: [
-            "`This is a message that will be added to the full sessionText`",
-            "msg:This is a message that will be displayed during the process",
+            `This is a message that will be added ${CreateUserCommand}`,
             CreateUserCommand,
         ],
         onCommandComplete: function (command, response, sshObj) {
@@ -29,17 +28,17 @@ export const CreateUserOnOpenVpn = async (config, selectedUser, expireDate) => {
         onCommandProcessing: function (command, response, sshObj, stream) {
             console.log("onCommandProcessing is equal to : ", command, response, sshObj);
 
-            // Respond to any prompts encountered during the installation process
-            if (response.includes("Add a new client") && !isWriting) {
+            // // Respond to any prompts encountered during the installation process
+            // if (response.includes("Add a new client") && !isWriting) {
 
-                stream.write(`1\n`);
-                stream.write(`asoVpn9\n`);
-                isWriting = true;
+            //     stream.write(`1\n`);
+            //     stream.write(`asoVpn9\n`);
+            //     isWriting = true;
 
-                return;
-            }
+            //     return;
+            // }
 
-            return;
+            // return;
         }
     };
 

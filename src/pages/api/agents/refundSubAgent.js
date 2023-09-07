@@ -26,7 +26,7 @@ export default async function handler(req, res) {
             res.status(200).json({ name: "شما اجازه دسترسی به این سرویس را ندارید." });
             return;
         }
-        const result = await RefundSubAgent(refundMoney, agentcode, email, token.email);
+        const result = await RefundSubAgent(refundMoney, agentcode, email, token.email,token.isAdmin);
 
         // Return a response
         res.status(200).json({ result });

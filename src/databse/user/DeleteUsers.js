@@ -24,7 +24,7 @@ const client = new MongoClient(MONGO_URI, {
 
 
 
-export async function DeleteUserOfAgent(email, agentcode, username) {
+export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
     const today = formatDate(new Date());
 
     try {
@@ -41,7 +41,8 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
         var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
         for (const user of allExpiredUsers) {
             if (user.removedFromServer == false) {
-                user.removedByAgent = true;
+                user.removedByAgent = isAdmin == false ? true : false;
+                user.removedByAdmin = isAdmin == true ? true : false;
                 if (user.type === apiUrls.types.Cisco) {
                     var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                     DeleteUserCisco(selectedServer, user.username);
@@ -51,7 +52,7 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForDisconnectedUsers(user.email,"دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)",email,selectedServer,user);
+                    emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 } else if (user.type === apiUrls.types.SoftEther) {
                     var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
                     user.removedFromServer = true;
@@ -60,11 +61,12 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForDisconnectedUsers(user.email,"دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)",email,selectedServer,user);
+                    emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 }
 
             } else {
                 user.removedByAgent = false;
+                user.removedByAdmin = false;
                 if (user.type === apiUrls.types.Cisco) {
                     var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                     CreateUserOnCisco(selectedServer, user.username, user.password, user.expires);
@@ -74,7 +76,7 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForReconnectingUsers(user.email,"فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)",email,selectedServer,user);
+                    emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 } else if (user.type === apiUrls.types.SoftEther) {
                     var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
                     user.removedFromServer = false;
@@ -83,7 +85,7 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForReconnectingUsers(user.email,"فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)",email,selectedServer,user);
+                    emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 }
 
             }
@@ -99,7 +101,7 @@ export async function DeleteUserOfAgent(email, agentcode, username) {
 }
 
 
-export async function DeleteUserOfByClient( username) {
+export async function DeleteUserOfByClient(username) {
     const today = formatDate(new Date());
     try {
         const connectionState = await client.connect();

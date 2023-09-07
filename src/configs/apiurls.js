@@ -28,6 +28,7 @@ export const apiUrls = {
         "defineSubAgentUrl":`/api/agents/defineSubAgent`,
         "refundSubAgentUrl":`/api/agents/refundSubAgent`,
         "ChangeTelegramUrl":`/api/agents/changetelegram/?telegram=`,
+        "GetAllAgentsUrl":`/api/agents/getallAgent/`
     },
     "SubAgentUrl":{
         "GetAllSubAgentsUrl":`/api/subagent/getAllAgents`

@@ -16,6 +16,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { apiUrls } from 'src/configs/apiurls'
 import ManaginSubAgentComponent from './ManaginSubAgentComponent'
+import ManagingAgentComponent from './ManagingAgentComponent'
 
 
 const AppBarContent = props => {
@@ -26,14 +27,16 @@ const AppBarContent = props => {
 
   const { data: session, status } = useSession();
   const [cashAmount, setCashAmount] = useState(0);
-  const [isSubAgent,setIsSubAgent] = useState(true);
-  const [isAgent,setIsAgent] = useState(true);
+  const [isSubAgent, setIsSubAgent] = useState(true);
+  const [isAgent, setIsAgent] = useState(true);
+  const [isAdmin,setIsAdmin] = useState(false);
 
   useEffect(async () => {
     if (status == 'authenticated') {
       UpdateWalletFunc();
       setIsSubAgent(session.user.isSubAgent);
       setIsAgent(session.user.isAgent);
+      setIsAdmin(session.user.isAdmin);
     }
   }, [status]);
 
@@ -58,29 +61,36 @@ const AppBarContent = props => {
         {
           <div style={{ display: 'flex', flexDirection: 'row', marginTop: '8px' }}>
             {
-              !hidden && status == 'authenticated' &&  isAgent==true ?  (
+              !hidden && status == 'authenticated' && isAgent == true ? (
                 <Box>
                   <UserAppBarContent UpdateWalletFunc={UpdateWalletFunc} cashAmount={cashAmount}></UserAppBarContent>
                 </Box>
               ) : null}
             {
-              status == 'authenticated' && isSubAgent==false && isAgent==true ? (
+              status == 'authenticated' && isSubAgent == false && isAgent == true ? (
                 <Box style={{ marginRight: '10px' }}>
                   <ManaginSubAgentComponent title="مدیریت زیر مجموعه فروش" url="/agent/ManagingSubAgents" ></ManaginSubAgentComponent>
                 </Box>
               ) : null
             }
             {
-               status == 'authenticated' &&  isAgent==true ? (
+              status == 'authenticated' && isAgent == true ? (
                 <Box style={{ marginRight: '10px' }}>
                   <ManaginSubAgentComponent title="مدیریت کاربران" url="/agent/ManagingUsers" ></ManaginSubAgentComponent>
                 </Box>
               ) : null
             }
-                        {
-               status == 'authenticated' &&  isAgent==true ? (
+            {
+              status == 'authenticated' && isAgent == true ? (
                 <Box style={{ marginRight: '10px' }}>
                   <ManaginSubAgentComponent title="مشاهده پروفایل" url="/user/Profile/" ></ManaginSubAgentComponent>
+                </Box>
+              ) : null
+            }
+            {
+              status == 'authenticated' && isAdmin == true? (
+                <Box style={{ marginRight: '10px' }}>
+                  <ManagingAgentComponent title="مشاهده ایجنت های اصلی" url="/agent/ManagingAgents/"></ManagingAgentComponent>
                 </Box>
               ) : null
             }
