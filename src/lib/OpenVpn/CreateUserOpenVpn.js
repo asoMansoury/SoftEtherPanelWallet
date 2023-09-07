@@ -6,20 +6,20 @@ export const CreateUserOnOpenVpn = async (config, selectedUser, expireDate) => {
         return;
 
     var serverConfig = {
-        host: "91.107.129.236",
-        userName: "root",
-        password: "AdminAso@123",
-        port: "22",
+        host:         config.host,
+        userName:     config.username,
+        password:   config.password,
+        port: config.port,
         readyTimeout: 60000
     }
     
     var CreateUserCommand = `sudo useradd -m ${selectedUser.username} && echo '${selectedUser.username}:${selectedUser.password}' | sudo chpasswd`
-
+    const trimmedCommand = CreateUserCommand.replace(/\r?\n|\r/g, '');
     var host = {
         server: serverConfig,
         commands: [
-            `This is a message that will be added ${CreateUserCommand}`,
-            CreateUserCommand,
+            `This is a message that will be added ${trimmedCommand}`,
+            trimmedCommand,
         ],
         onCommandComplete: function (command, response, sshObj) {
             //handle just one command or do it for all of the each time

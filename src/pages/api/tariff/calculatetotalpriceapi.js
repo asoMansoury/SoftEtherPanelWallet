@@ -1,8 +1,8 @@
 
 import { getSession } from "next-auth/react";
-import { CalculateTotalPrice, CalculateTotalPriceModifed } from "src/databse/tariffagent/calculateTotalPrice";
+import { CalculateTotalPriceModifed } from "src/databse/tariffagent/calculateTotalPrice";
 import { getToken } from "next-auth/jwt"
-import { GetAgentByUserCode, IsAgentValid } from "src/databse/agent/getagentinformation";
+import {  IsAgentValid } from "src/databse/agent/getagentinformation";
 import { GetWalletUser } from "src/databse/Wallet/getWalletUser";
 import { GetCustomerByEmail } from "src/databse/customers/getcustomer";
 

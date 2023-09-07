@@ -22,8 +22,8 @@ export function ConvertMonthFromAgentFormat(agentInformation,tariffPlans,tariffC
         let result = agentInformation.agentTariffs.find(e=>e.tarrifcode==tariffCode && e.tariffplancode==tariffPlans[i].code);
         if(result!==undefined){
             tmpData.push(tariffPlans[i]);
-            i++;
         }
+        i++;
     }
     
     return tmpData;

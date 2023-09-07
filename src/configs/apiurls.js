@@ -34,6 +34,7 @@ export const apiUrls = {
         "GetAllSubAgentsUrl":`/api/subagent/getAllAgents`
     },
     "userUrl":{
+        "OpenTunneleNewUserUrl":`/api/user/OpenTunnel/createnewuserOpenVpn/`,
         "createNewUserUrl":`/api/user/createnewuser/`,
         "insertuserbasketUrl":`/api/user/insertuserbasketapi/`,
         "getusersbasket":`/api/user/getuserbasket/?uuid=`,

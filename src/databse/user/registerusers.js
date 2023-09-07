@@ -92,4 +92,38 @@ export async function RegisterUsersInDBForCisco(servers,user,type,agentInformati
     }
 }
 
+
+export async function RegisterUsersInDBForOpenVpnTunnel(servers,user,type,agentInformation,selectedServer){
+    if(type=='' || type ==null || type == undefined) 
+        type = apiUrls.types.SoftEther;
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Users');
+
+        var serverIdArray =[];
+        servers.map((item,index) =>{
+            let serverIdObj ={}
+            serverIdObj.servercode = item['servercode'];
+            if(item['servercode'] == selectedServer.servercode){
+                serverIdObj.policy = user.policy;
+                user.currentservercode= item['servercode'];
+                user.agentcode = agentInformation.agentcode;
+                serverIdArray.push(serverIdObj);
+            }
+        });
+        user['serverId']= serverIdArray;
+        user.type = type;
+        user.isfromagent = user.isfromagent;
+        user.removedFromServer = false;
+        const result = await collection.insertOne(user);
+        user._id = result._id;
+
+        return user;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
 export default RegisterUsersInDB;

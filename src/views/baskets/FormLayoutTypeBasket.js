@@ -143,7 +143,7 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
 
       } else {
         var monthResult = ConvertMonthFromAgentFormat(agentData, monthResponse.data.name, e.target.value);
-
+        console.log({monthResult})
         setMonths(monthResult);
         var planPriceResult = ConvertPriceFromAgentFormat(agentData, monthResponse.data.name, e.target.value);
         setPlanPrice(planPriceResult);
@@ -439,7 +439,9 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
         planSelectedNummber = 1;
         var finalPath = "/finalstep";
         if (typeVpn == apiUrls.types.Cisco)
-          finalPath = "/cisco//finalstep"
+          finalPath = "/cisco//finalstep";
+        if (typeVpn == apiUrls.types.OpenVpn)
+          finalPath = "/OpenTunnel//finalstep"
         router.push({
           pathname: finalPath, query: {
             tariffPlans: JSON.stringify(redisResponse.tariffPlans),
