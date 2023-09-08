@@ -9,48 +9,53 @@ import SoftEtherLearning from './SoftEtherPart/SoftEtherLearning'
 import { useEffect } from 'react'
 import axios from 'axios'
 import { apiUrls } from 'src/configs/apiurls'
+import OpenVPNLearning from './OpenVpn/OpenVPNLearning'
 
 export default function index() {
-    const [ciscoTutorial,setCiscoTutorial]= useState({});
-    const [softEtherTutorial,setSoftEtherTutorial]= useState({});
-      // ** State
-  const [value, setValue] = useState('1')
+    const [ciscoTutorial, setCiscoTutorial] = useState({});
+    const [softEtherTutorial, setSoftEtherTutorial] = useState({});
+    // ** State
+    const [value, setValue] = useState('1')
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue)
-  }
+    const handleChange = (event, newValue) => {
+        setValue(newValue)
+    }
 
-  useEffect(async ()=>{
-    var tutorials =await axios.get(apiUrls.TutorialUrls.GetTutorial);
-    setCiscoTutorial(tutorials.data.name.filter((z)=>z.type==apiUrls.types.Cisco)[0]);
-    setSoftEtherTutorial(tutorials.data.name.filter((z)=>z.type==apiUrls.types.SoftEther)[0]);
-  },[])
+    useEffect(async () => {
+        var tutorials = await axios.get(apiUrls.TutorialUrls.GetTutorial);
+        setCiscoTutorial(tutorials.data.name.filter((z) => z.type == apiUrls.types.Cisco)[0]);
+        setSoftEtherTutorial(tutorials.data.name.filter((z) => z.type == apiUrls.types.SoftEther)[0]);
+    }, [])
 
-  return (
-    <Grid container spacing={6}>
-        <Grid item xs={12}>
-            <Card>
-                <CardHeader title="رو آموزش مربوطه کلیک کنید" titleTypographyProps={{ variant: 'h6' }} />
-            </Card>
+    return (
+        <Grid container spacing={6}>
+            <Grid item xs={12}>
+                <Card>
+                    <CardHeader title="رو آموزش مربوطه کلیک کنید" titleTypographyProps={{ variant: 'h6' }} />
+                </Card>
+            </Grid>
+            <Grid item xs={12} lg={12}>
+                <Card>
+                    <TabContext value={value}>
+                        <TabList centered onChange={handleChange} aria-label='card navigation example'>
+                            <Tab value='1' label='OpenVpn' />
+                            <Tab value='2' label='سیسکو' />
+                            <Tab value='3' label='وی پی ان ایران' />
+                        </TabList>
+                        <CardContent sx={{ textAlign: 'center' }}>
+                            <TabPanel value='1' sx={{ p: 0 }}>
+                                <OpenVPNLearning softEtherTutorial={softEtherTutorial}></OpenVPNLearning>
+                            </TabPanel>
+                            <TabPanel value='2' sx={{ p: 0 }}>
+                                <CiscoLearning ciscoTutorial={ciscoTutorial}></CiscoLearning>
+                            </TabPanel>
+                            <TabPanel value='3' sx={{ p: 0 }}>
+                                <SoftEtherLearning softEtherTutorial={softEtherTutorial}></SoftEtherLearning>
+                            </TabPanel>
+                        </CardContent>
+                    </TabContext>
+                </Card>
+            </Grid>
         </Grid>
-        <Grid item xs={12} lg={12}>
-            <Card>
-                <TabContext value={value}>
-                    <TabList centered onChange={handleChange} aria-label='card navigation example'>
-                    <Tab value='1' label='وی پی ان ایران' />
-                    <Tab value='2' label='سیسکو' />
-                    </TabList>
-                    <CardContent sx={{ textAlign: 'center' }}>
-                    <TabPanel value='1' sx={{ p: 0 }}>
-                            <SoftEtherLearning softEtherTutorial = {softEtherTutorial}></SoftEtherLearning>
-                        </TabPanel>
-                        <TabPanel value='2' sx={{ p: 0 }}>
-                            <CiscoLearning ciscoTutorial = {ciscoTutorial}></CiscoLearning>
-                        </TabPanel>
-                    </CardContent>
-                </TabContext>
-            </Card>
-        </Grid>
-  </Grid>
-  )
+    )
 }

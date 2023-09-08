@@ -117,6 +117,11 @@ const navigation = () => {
   tmpMenues.push({
     sectionTitle: 'اکانت تستی'
   })
+  tmpMenues.push({
+    title: 'اکانت تست OpenVPN',
+    icon: HomeOutline,
+    path: '/testaccounts/OpenTunnel'
+  });
 
   tmpMenues.push({
     title: 'اکانت تست Cisco',
