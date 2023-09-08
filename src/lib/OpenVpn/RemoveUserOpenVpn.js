@@ -6,21 +6,19 @@ export const RemoveUserOpenVpn = async (config, selectedUser) => {
         return;
 
     var serverConfig = {
-        host: "91.107.129.236",
-        userName: "root",
-        password: "AdminAso@123",
-        port: "22",
+        host: config.host,
+        userName: config.username,
+        password: config.password,
+        port: config.port,
         readyTimeout: 60000
     }
-    var RemoveUserCommand = `sudo userdel -r ${selectedUser.username}`;
-
+    var RemoveUserCommand = `sudo userdel -r ${selectedUser.username} &&  rm -rf  /home/${selectedUser.username}`;
+    const trimmedCommand = RemoveUserCommand.replace(/\r?\n|\r/g, '');
     var host = {
         server: serverConfig,
         commands: [
-            "`This is a message that will be added to the full sessionText`",
-            "msg:This is a message that will be displayed during the process",
-            RemoveUserCommand,
-
+            `Removing User from Open Vpn by running : ${RemoveUserCommand}`,
+            trimmedCommand,
         ],
         onCommandComplete: function (command, response, sshObj) {
             //handle just one command or do it for all of the each time

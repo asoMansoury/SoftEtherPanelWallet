@@ -11,6 +11,8 @@ import { RemoveUserSoftEther } from 'src/lib/createuser/RemoveUserSoftEther';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
 import { emailForDisconnectedUsers, emailForReconnectingUsers } from 'src/lib/Emails/emailForDisconnectedUsers';
+import { RemoveUserOpenVpn } from 'src/lib/OpenVpn/RemoveUserOpenVpn';
+import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -39,6 +41,7 @@ export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
 
         var CiscoServers = await GetServers(apiUrls.types.Cisco);
         var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
+        var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
         for (const user of allExpiredUsers) {
             if (user.removedFromServer == false) {
                 user.removedByAgent = isAdmin == false ? true : false;
@@ -54,10 +57,20 @@ export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
                     await collection.updateOne(filter, updateOperation);
                     emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 } else if (user.type === apiUrls.types.SoftEther) {
-                    var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
+                    var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
                     user.removedFromServer = true;
                     //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
                     RemoveUserSoftEther(selectedSoftEtherServer, user);
+                    const filter = { _id: user._id };
+                    const updateOperation = { $set: user };
+                    await collection.updateOne(filter, updateOperation);
+                    emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+
+                }else if(user.type === apiUrls.types.OpenVpn){
+                    var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
+                    user.removedFromServer = true;
+                    //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                    RemoveUserOpenVpn(selectedOpenVpnServer, user);
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
@@ -81,7 +94,16 @@ export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
                     var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
                     user.removedFromServer = false;
                     //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
-                    CreateUserOnSoftEther(selectedServer, user, user.policy, user.expires);
+                    CreateUserOnSoftEther(selectedSoftEtherServer, user, user.policy, user.expires);
+                    const filter = { _id: user._id };
+                    const updateOperation = { $set: user };
+                    await collection.updateOne(filter, updateOperation);
+                    emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+                }else if (user.type === apiUrls.types.OpenVpn){
+                    var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
+                    user.removedFromServer = false;
+                    //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                    CreateUserOnOpenVpn(selectedOpenVpnServer, user,  user.expires);
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);

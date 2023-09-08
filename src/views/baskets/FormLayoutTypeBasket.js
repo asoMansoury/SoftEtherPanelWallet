@@ -143,7 +143,6 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
 
       } else {
         var monthResult = ConvertMonthFromAgentFormat(agentData, monthResponse.data.name, e.target.value);
-        console.log({monthResult})
         setMonths(monthResult);
         var planPriceResult = ConvertPriceFromAgentFormat(agentData, monthResponse.data.name, e.target.value);
         setPlanPrice(planPriceResult);

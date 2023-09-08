@@ -34,13 +34,13 @@ export async function DeleteExpiredUsersJob(date) {
             removedFromServer: false
         }).toArray();
 
-
+        console.log({allExpiredUsers});
         var CiscoServers = await GetServers(apiUrls.types.Cisco);
         var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
         var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
         for (const user of allExpiredUsers) {
             if (user.type === apiUrls.types.Cisco) {
-                var selectedServer = CiscoServers.filter(server => server.servercode == user.servercode)[0];
+                var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                 DeleteUserCisco(selectedServer, user.username);
                 user.removedFromServer = true;
 
@@ -49,7 +49,7 @@ export async function DeleteExpiredUsersJob(date) {
                 const updateOperation = { $set: user };
                 await collection.updateOne(filter, updateOperation);
             } else if (user.type === apiUrls.types.SoftEther) {
-                var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
+                var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
                 user.removedFromServer = true;
                 //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
                 RemoveUserSoftEther(selectedSoftEtherServer, user);
@@ -57,7 +57,7 @@ export async function DeleteExpiredUsersJob(date) {
                 const updateOperation = { $set: user };
                 await collection.updateOne(filter, updateOperation);
             } else if (user.type === apiUrls.types.OpenVpn) {
-                var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.servercode)[0];
+                var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
                 user.removedFromServer = true;
                 //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
                 RemoveUserOpenVpn(selectedOpenVpnServer, user);
