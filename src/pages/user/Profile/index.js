@@ -16,9 +16,9 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import FormControl from '@mui/material/FormControl'
 import { addCommas, digitsEnToFa } from '@persian-tools/persian-tools';
 import { apiUrls } from 'src/configs/apiurls';
+import { CopyToClipboard } from "react-copy-to-clipboard";
 export const index = () => {
     const { data: session, status } = useSession();
     const [profileSelector, setProfileSelector] = useState({
@@ -28,11 +28,12 @@ export const index = () => {
     const [disabledTelegramBtn, setDisabledTelegramBtn] = useState(false);
     const [password, setPassword] = useState("");
     const [telegram, setTelegram] = useState("");
-    const [ciscoUrl,setCiscoUrl]= useState("");
-    const [openVpn,setOpenVpn]= useState("");
+    const [ciscoUrl, setCiscoUrl] = useState("");
+    const [openVpn, setOpenVpn] = useState("");
+    const [softEtherVpn, setEtherOpnVpn] = useState("");
     const [validChange, setValidChange] = useState({
         isValid: true,
-        errorMsg:""
+        errorMsg: ""
     });
     useEffect(() => {
         if (status == 'authenticated') {
@@ -41,8 +42,9 @@ export const index = () => {
                 cashAmount: session.user.cashAmount,
                 isLoggedIn: true
             });
-            setCiscoUrl(apiUrls.domains.DomainUrl+"/testaccounts/"+session.user.agentcode);
-            setOpenVpn(apiUrls.domains.DomainUrl+"/testaccounts/iran/"+session.user.agentcode);
+            setCiscoUrl(apiUrls.domains.DomainUrl + "/testaccounts/" + session.user.agentcode);
+            setOpenVpn(apiUrls.domains.DomainUrl + "/testaccounts/OpenTunnel/" + session.user.agentcode);
+            setEtherOpnVpn(apiUrls.domains.DomainUrl + "/testaccounts/iran/" + session.user.agentcode);
         } else if (status == 'unauthenticated') {
 
         }
@@ -65,16 +67,16 @@ export const index = () => {
         e.preventDefault();
         var body = { password: password };
         var result = await axios.post(apiUrls.userUrl.ChangeUserPassworUrl, body);
-        if(result.data.result.isValid == true){
+        if (result.data.result.isValid == true) {
             setValidChange({
                 isValid: false,
-                errorMsg:"عملیات با موفقیت انجام گردید."
+                errorMsg: "عملیات با موفقیت انجام گردید."
             })
-        }else{
+        } else {
             setValidChange({
                 isValid: false,
-                errorMsg:result.data.errorMsg
-    
+                errorMsg: result.data.errorMsg
+
             })
         }
 
@@ -86,18 +88,18 @@ export const index = () => {
     async function btnChangeTelegramHandler(e) {
         e.preventDefault();
         setDisabledTelegramBtn(true);
-        var result = await axios.get(apiUrls.agentUrl.ChangeTelegramUrl+telegram);
-        console.log({result});
-        if(result.data.name.isValid == true){
+        var result = await axios.get(apiUrls.agentUrl.ChangeTelegramUrl + telegram);
+        console.log({ result });
+        if (result.data.name.isValid == true) {
             setValidChange({
                 isValid: false,
-                errorMsg:"عملیات با موفقیت انجام گردید."
+                errorMsg: "عملیات با موفقیت انجام گردید."
             })
-        }else{
+        } else {
             setValidChange({
                 isValid: false,
-                errorMsg:result.data.errorMsg
-    
+                errorMsg: result.data.errorMsg
+
             })
         }
 
@@ -126,14 +128,31 @@ export const index = () => {
                                     </Grid>
                                     <Divider></Divider>
                                     <Grid item xs={12} sm={12}>
-                                        <Alert severity='info'>آدرس اختصاصی شما برای اکانت تستی سیسکو   : {ciscoUrl}</Alert>
+                                        <CopyToClipboard
+                                            text={openVpn}
+                                            onCopy={() => alert("کپی شد")}>
+                                            <Alert severity='info'>برای کپی کردن آدرس اختصاصی OpenVpn اینجا کلیک کنید.</Alert>
+                                        </CopyToClipboard>
                                     </Grid>
+
                                     <Grid item xs={12} sm={12}>
-                                        <Alert severity='info'>آدرس اختصاصی شما برای اکانت تستی ایران   : {openVpn}</Alert>
+                                        <CopyToClipboard
+                                            text={ciscoUrl}
+                                            onCopy={() => alert("کپی شد")}>
+                                            <Alert severity='info'>برای کپی کردن آدرس اختصاصی سیسکو اینجا کلیک کنید.</Alert>
+                                        </CopyToClipboard>
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={12}>
+                                        <CopyToClipboard
+                                            text={softEtherVpn}
+                                            onCopy={() => alert("کپی شد")}>
+                                            <Alert severity='info'>برای کپی کردن آدرس اختصاصی وی پی ان ایران اینجا کلیک کنید.</Alert>
+                                        </CopyToClipboard>
                                     </Grid>
                                     <Divider></Divider>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField fullWidth label=' وارد کردن آدرس کانال تلگرام' placeholder='carterLeonard' onChange={(e)=>setTelegram(e.target.value)} value={telegram} />
+                                        <TextField fullWidth label=' وارد کردن آدرس کانال تلگرام' placeholder='carterLeonard' onChange={(e) => setTelegram(e.target.value)} value={telegram} />
                                     </Grid>
                                     <Grid item xs={12} sm={2}>
                                         <Button fullWidth label='تغییر آدرس تلگرام' type='submit' variant='contained' disabled={disabledTelegramBtn} onClick={btnChangeTelegramHandler}>تغییر آدرس تلگرام</Button>
