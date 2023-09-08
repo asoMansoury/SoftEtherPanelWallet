@@ -28,7 +28,6 @@ const client = new MongoClient(MONGO_URI, {
 
 export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
     const today = formatDate(new Date());
-
     try {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
@@ -38,7 +37,6 @@ export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
             agentcode: agentcode,
             expires: { $gt: today }
         }).toArray();
-
         var CiscoServers = await GetServers(apiUrls.types.Cisco);
         var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
         var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);

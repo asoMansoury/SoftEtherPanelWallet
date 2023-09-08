@@ -126,7 +126,7 @@ const RevokeSelectedUser = (props) => {
       uuid: uuid,
       prveUUID:selectedUserBasket.uuid
     });
-
+    
     
     const result = await axios.post(apiUrls.userUrl.revokeuserUrl,{
       username:userName,

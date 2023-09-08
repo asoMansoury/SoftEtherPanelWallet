@@ -6,6 +6,7 @@ import { GetMoneyFromOtherWallet } from 'src/databse/Wallet/UpdateWallet';
 import { CheckAgentWalet, GetWalletUser, GetWalletUserByCode } from 'src/databse/Wallet/getWalletUser';
 import { GetAgentByUserCode, IsAgentValid } from 'src/databse/agent/getagentinformation';
 import { GetCustomerAgentCode, GetCustomerByEmail } from 'src/databse/customers/getcustomer';
+import GetServerByCode from 'src/databse/server/getServerByCode';
 import GetServers from 'src/databse/server/getservers';
 import { getTariffs } from 'src/databse/tariff/getTariff';
 import { getTariffPrices } from 'src/databse/tariff/tariffPrice';
@@ -15,6 +16,8 @@ import { getTarrifPlans } from 'src/databse/tarrifplans/getTarrifPlans';
 import { PAID_CUSTOMER_STATUS } from 'src/databse/usersbasket/PaidEnum';
 import GetUsersBasketByUUID from 'src/databse/usersbasket/getusersbasket';
 import { UpdateUsersBasketForRevoke } from 'src/databse/usersbasket/insertusersbasket';
+import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
+import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { UpdateExpirationTimeSoftEther } from 'src/lib/createuser/UpdateExpirationTime';
 import { GenerateOneMonthExpiration, GenerateOneMonthExpirationStartDate, MONGO_URI, calculateEndDate } from 'src/lib/utils';
 
@@ -140,20 +143,35 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
         var nextExpirationDate = calculateEndDate(foundedUser.expires, selectedPlanType.duration);
         foundedUser.isRevoked = true;
         foundedUser.expires = nextExpirationDate;
-
+        foundedUser.removedFromServer = false;
 
         await userCollection.updateOne(
             { "username": username }, // Filter condition to match the document
             { $set: { "expires": nextExpirationDate, "isRevoked": true, "uuid": uuid } } // Update operation using $set to set the new value
         )
+
         if (foundedUser.type == apiUrls.types.SoftEther)
             UpdateSoftEtherUserExpiration(foundedUser, nextExpirationDate);
+        UpdateUsersWhichRemovedFromServer(foundedUser)
+
         foundedUser.isValid = true;
         return foundedUser;
     } catch (erros) {
         return Promise.reject(erros);
     } finally {
         //client.close();
+    }
+}
+
+async function UpdateUsersWhichRemovedFromServer(foundedUser){
+    if(foundedUser.removedFromServer==true){
+        if(foundedUser.type == apiUrls.types.OpenVpn){
+            var selectedServer =await GetServerByCode(foundedUser.currentservercode);
+            CreateUserOnOpenVpn(selectedServer,foundedUser);
+        }else if(foundedUser.type == apiUrls.types.Cisco){
+            var selectedServer =await GetServerByCode(foundedUser.currentservercode);
+            CreateUserOnCisco(selectedServer,foundedUser.username,foundedUser.password);
+        }
     }
 }
 
