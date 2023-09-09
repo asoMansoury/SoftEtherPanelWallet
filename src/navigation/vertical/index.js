@@ -31,6 +31,11 @@ const navigation = () => {
    
   if(profileSelector.isLoggedIn==true){
     tmpMenues.push({
+      title: 'خرید اکانت اپن وی پی',
+      icon: HomeOutline,
+      path: '/OpenTunnel'
+    });
+    tmpMenues.push({
       title: 'خرید اکانت ایران',
       icon: HomeOutline,
       path: '/openvpn'
@@ -40,6 +45,7 @@ const navigation = () => {
       icon: HomeOutline,
       path: '/cisco'
     });
+    
     tmpMenues.push({
       title: 'تمدید اکانت',
       icon: AccountClock,

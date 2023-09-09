@@ -182,6 +182,8 @@ export function ConvertCodeToTitle(typeCode) {
     return "سیسکو";
   else if (typeCode == apiUrls.types.SoftEther)
     return "وی پی ان ایران";
+  else if (typeCode == apiUrls.types.OpenVpn)
+    return "اپن وی پی ان"
 }
 
 
