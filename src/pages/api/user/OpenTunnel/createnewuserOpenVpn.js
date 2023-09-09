@@ -107,15 +107,14 @@ export default async function handler(req, res) {
       })
 
       UpdateUsersBasket(UUID, PAID_CUSTOMER_STATUS.PAID, true, userRegistered, usersBasketObj);
-
-
-      sendEmailCiscoClient(registerCustomer.email, newUsers, selectedServer, "لطفا پاسخ ندهید. رسید اکانت خریداری شده", currentDomain, registerCustomer);
+      var wrappedUsers= SettinOvpnUrlForUsers(selectedServer,newUsers);
+      sendEmail(registerCustomer.email, wrappedUsers, "لطفا پاسخ ندهید. رسید اکانت خریداری شده", currentDomain, registerCustomer);
       if (usersBasketObj.isSendToOtherEmail == true) {
         var otherObj = {
           email: usersBasketObj.sendEmailToOther
         };
         var otherToEmailCustomer = await RegisterCustomersForOthers(otherObj, apiUrls.types.OpenVpn, token.agentcode);
-        sendEmailCiscoClient(otherToEmailCustomer.email, newUsers, selectedServer, "لطفا پاسخ ندهید. رسید اکانت خریداری شده", currentDomain, otherToEmailCustomer);
+        sendEmail(otherToEmailCustomer.email, wrappedUsers, "لطفا پاسخ ندهید. رسید اکانت خریداری شده", currentDomain, otherToEmailCustomer);
       }
       res.status(200).json({
         name: {
@@ -139,7 +138,15 @@ export default async function handler(req, res) {
 
 }
 
+const SettinOvpnUrlForUsers = (selectedServer, users) => {
+  var result = [];
+  users.map((userItem, userIndex) => {
+    userItem.ovpnurl = selectedServer.ovpnurl;
+    result.push(userItem);
+  });
 
+  return result;
+}
 
 
 
