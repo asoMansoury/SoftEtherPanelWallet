@@ -24,9 +24,9 @@ export default async function handler(req, res) {
             return;
         }
       // Handle the POST request here
-      const { username,newType,selectedServer } = req.body;
+      const { username,newType,servercode } = req.body;
 
-      var result =await ConvertUsers(username,newType,selectedServer,token);
+      var result =await ConvertUsers(username,newType,servercode,token);
       if(result==null){
         res.status(200).json({ name: "عملیات با شکست مواجه شد، لطفا با پشتیبانی تماس بگیرید."});
         return;

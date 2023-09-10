@@ -113,6 +113,12 @@ const AgentUsersTable = (props) => {
     setUserConvert(row);
   }
 
+  function refreshConvertComponent(e){
+    e.preventDefault();
+    setUserConvert(null);
+    GetUsersData(email);
+  }
+
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -153,6 +159,7 @@ const AgentUsersTable = (props) => {
                 <TableCell style={{ width: '120px' }} align='center'>تاریخ اعتبار</TableCell>
                 <TableCell style={{ width: '80px' }} align='center'>وضعیت اکانت</TableCell>
                 <TableCell style={{ width: '120px' }} align='center'>عملیات</TableCell>
+                <TableCell style={{ width: '120px' }} align='center'>تبدیل اکانت</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -183,11 +190,11 @@ const AgentUsersTable = (props) => {
                       <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
                     </div>
                   </TableCell>
-                  {/* <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
+                  <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
                     <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnConvertUserHandler}>
                       <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>تبدیل</span>
                     </div>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -195,12 +202,12 @@ const AgentUsersTable = (props) => {
         </TableContainer>
 
         {
-          userConvert != undefined && userConvert != null && (
+          (userConvert != undefined && userConvert != null) && (
             <Grid item xs={12}>
               <Card>
                 <Grid container spacing={6}>
                   <Grid item xs={12}>
-                    <ConvertUsersComponent selectedUser={userConvert}></ConvertUsersComponent>
+                    <ConvertUsersComponent refreshComponent={refreshConvertComponent} selectedUser={userConvert}></ConvertUsersComponent>
                   </Grid>
                 </Grid>
               </Card>

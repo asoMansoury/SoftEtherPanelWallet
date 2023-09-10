@@ -20,9 +20,10 @@ import TextField from '@mui/material/TextField'
 import Card from '@mui/material/Card'
 import EditIcon from 'src/views/iconImages/editicon';
 import { useSession } from 'next-auth/react';
+import ConvertUsersComponent from 'src/pages/admin/Components/ConvertingUsersComponent';
 
-const createData = (username, typeTitle, expires, removedFromServer,servertitle) => {
-  return { username, typeTitle, expires, removedFromServer,servertitle }
+const createData = (username, typeTitle, expires, removedFromServer, servertitle,type) => {
+  return { username, typeTitle, expires, removedFromServer, servertitle ,type}
 }
 
 
@@ -33,7 +34,7 @@ const AgentUsersTable = (props) => {
   const [email, setEmail] = useState();
   const [rows, setRows] = useState([]);
   const [mainRows, setMainRows] = useState([]);
-
+  const [selectUser,setSelectUser] = useState();
   const [error, setError] = useState({
     isValid: true,
     errosMsg: "",
@@ -54,7 +55,7 @@ const AgentUsersTable = (props) => {
     var usersAccounts = await axios.get(apiUrls.userUrl.getsubagentpurchasedUrl + email);
     // getsubagentpurchasedUrl
     usersAccounts.data.name.map((item, index) => {
-      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer,item.servertitle));
+      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer, item.servertitle,item.type));
     })
     setRows(tmp);
     setMainRows(tmp)
@@ -99,6 +100,17 @@ const AgentUsersTable = (props) => {
     setLoading(false);
   }
 
+  const btnConvertUsersHandler = async(e)=>{
+    e.preventDefault();
+    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    setSelectUser(row);
+  }
+
+  async function refreshConvertComponent(e){
+    e.preventDefault();
+     setSelectUser(null);
+     GetUsersData(email);
+  }
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -139,6 +151,7 @@ const AgentUsersTable = (props) => {
                 <TableCell style={{ width: '120px' }} align='center'>تاریخ اعتبار</TableCell>
                 <TableCell style={{ width: '80px' }} align='center'>وضعیت اکانت</TableCell>
                 <TableCell style={{ width: '120px' }} align='center'>عملیات</TableCell>
+                <TableCell style={{ width: '120px' }} align='center'>تبدیل</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -169,12 +182,26 @@ const AgentUsersTable = (props) => {
                       <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
                     </div>
                   </TableCell>
+                  <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
+                    <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnConvertUsersHandler}>
+                      <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>تبدیل اکانت</span>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       </TableContainer>
+      <Grid item xs={12}>
+        <Card>
+          <Grid container spacing={6}>
+            <Grid item xs={12}>
+              <ConvertUsersComponent refreshComponent={refreshConvertComponent} selectedUser={selectUser}></ConvertUsersComponent>
+            </Grid>
+          </Grid>
+        </Card>
+      </Grid>
     </Paper>
   )
 }

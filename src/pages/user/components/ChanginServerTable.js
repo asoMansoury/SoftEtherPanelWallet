@@ -20,6 +20,7 @@ import { ConvertToPersianDateTime } from 'src/lib/utils';
 import EditIcon from 'src/views/iconImages/editicon';
 import TextField from '@mui/material/TextField'
 import { useSession } from 'next-auth/react';
+import ConvertUsersComponent from 'src/pages/admin/Components/ConvertingUsersComponent';
 
 const createData = (username, expires, userwithhub, type, typeTitle, removedFromServer, servertitle) => {
   return { username, expires, userwithhub, type, typeTitle, removedFromServer, servertitle }
@@ -33,6 +34,7 @@ const ChanginServerTable = (props) => {
   const [email, setEmail] = useState();
   const [rows, setRows] = useState([]);
   const [mainRows, setMainRows] = useState([]);
+  const [selectedUser, setSelectedUser] = useState();
   const [profileSelector, setProfileSelector] = useState({
     isLoggedIn: false
   });
@@ -59,6 +61,7 @@ const ChanginServerTable = (props) => {
 
   async function GetUsersData() {
     var tmp = [];
+    setRows([]);
     var usersAccounts = await axios.get(apiUrls.userUrl.getpurchasedUrl + session.user.email);
     usersAccounts.data.name.map((item, index) => {
       tmp.push(createData(item.username, item.expires, item.userwithhub, item.type, item.typeTitle, item.removedFromServer, item.servertitle));
@@ -82,6 +85,17 @@ const ChanginServerTable = (props) => {
     e.preventDefault();
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
     props.ToggleActivateUserHandler(row);
+    await GetUsersData();
+  }
+
+  async function ConvertingHandler(e) {
+    e.preventDefault();
+    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    setSelectedUser(row);
+  }
+
+  async function refreshConvertComponent(e) {
+    setSelectedUser(null);
     await GetUsersData();
   }
 
@@ -133,6 +147,7 @@ const ChanginServerTable = (props) => {
               <TableCell align='center'>تاریخ اعتبار</TableCell>
               <TableCell align='center'>وضعیت اکانت</TableCell>
               <TableCell align='center'>فعال/غیر فعال</TableCell>
+              <TableCell align='center'>تبدیل</TableCell>
               <TableCell align='center'>تغییر سرور</TableCell>
             </TableRow>
           </TableHead>
@@ -163,8 +178,14 @@ const ChanginServerTable = (props) => {
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ToggleActivateUserHandler}>
-                    
+
                     <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>{row.removedFromServer == false ? "غیر فعال" : "فعال کردن"}</Button>
+                  </div>
+                </TableCell>
+                <TableCell align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ConvertingHandler}>
+
+                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>تبدیل</Button>
                   </div>
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
@@ -189,6 +210,14 @@ const ChanginServerTable = (props) => {
           </TableFooter>
         </Table>
       </TableContainer>
+
+      <Grid item xs={12}>
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <ConvertUsersComponent refreshComponent={refreshConvertComponent} selectedUser={selectedUser}></ConvertUsersComponent>
+          </Grid>
+        </Grid>
+      </Grid>
     </Paper>
   )
 }
