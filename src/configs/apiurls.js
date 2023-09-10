@@ -51,6 +51,7 @@ export const apiUrls = {
         "ChangeUserPassworUrl":`/api/user/changeuserpassword`,
         "TogglingUserConnectionUrl":`/api/user/ToggleUserConnection/?email=`,
         "DeactivatinUserConnectionUrl":`/api/user/DeactivateUserConnection/?username=`,
+        "ConvertingUsersUrl":`/api/user/convertAccounts`
 
     },
     "redisUrl":{
