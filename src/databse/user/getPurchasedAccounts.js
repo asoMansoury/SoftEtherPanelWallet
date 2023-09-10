@@ -39,7 +39,7 @@ function wrappUsers(data, servers) {
     });
     return result;
 }
-async function GetPurchasedAccounts(email) {
+async function GetPurchasedAccounts(email,token) {
     try {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
@@ -47,14 +47,19 @@ async function GetPurchasedAccounts(email) {
 
         const agentDoc = await IsAgentValid(email);
         const servers = await GetAllServers();
-        if (agentDoc.isAgent == true) {
+        if(token.isAdmin==true){
             const data = (await collection.find({ agentcode: agentDoc.agentcode }).sort({ _id: -1 }).toArray());
             return wrappUsers(data, servers);
-        } else {
-            const data = (await collection.find({ email: { $regex: `^${email}$`, $options: "i" },removedByAgent:false }).sort({ _id: -1 }).toArray());
+        }else if(token.isAgent==true&& token.isSubAgent==false){
+            const data = (await collection.find({ agentcode: agentDoc.agentcode,removedByAdmin:{ $ne: true } }).sort({ _id: -1 }).toArray());
+            return wrappUsers(data, servers);
+        }else if(token.isAgent==true && token.isSubAgent==true){
+            const data = (await collection.find({ agentcode: agentDoc.agentcode,removedByAdmin:{ $ne: true },removedByAgent:{ $ne: true }  }).sort({ _id: -1 }).toArray());
+            return wrappUsers(data, servers);
+        }else{
+            const data = (await collection.find({ email: { $regex: `^${email}$`, $options: "i" },removedByAdmin:{ $ne: true },removedByAgent:{ $ne: true },removedBySubAgent:{ $ne: true } }).sort({ _id: -1 }).toArray());
             return wrappUsers(data, servers);
         }
-
 
     } catch (erros) {
         return Promise.reject(erros);
@@ -63,7 +68,7 @@ async function GetPurchasedAccounts(email) {
     }
 }
 
-export async function GetPurchasedAccountsForAgents(email) {
+export async function GetPurchasedAccountsForAgents(email,token) {
     try {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
@@ -71,11 +76,18 @@ export async function GetPurchasedAccountsForAgents(email) {
 
         const agentDoc = await IsAgentValid(email);
         const servers = await GetAllServers();
-        if (agentDoc.isAgent == true) {
+
+        if(token.isAdmin==true){
             const data = (await collection.find({ agentcode: agentDoc.agentcode }).sort({ _id: -1 }).toArray());
             return wrappUsers(data, servers);
-        } else {
-            const data = (await collection.find({ email: { $regex: `^${email}$`, $options: "i" } }).sort({ _id: -1 }).toArray());
+        }else if(token.isAgent==true&& token.isSubAgent==false){
+            const data = (await collection.find({ agentcode: agentDoc.agentcode,removedByAdmin:{ $ne: true } }).sort({ _id: -1 }).toArray());
+            return wrappUsers(data, servers);
+        }else if(token.isAgent==true && token.isSubAgent==true){
+            const data = (await collection.find({ agentcode: agentDoc.agentcode,removedByAdmin:{ $ne: true },removedByAgent:{ $ne: true }  }).sort({ _id: -1 }).toArray());
+            return wrappUsers(data, servers);
+        }else{
+            const data = (await collection.find({ email: { $regex: `^${email}$`, $options: "i" },removedByAdmin:{ $ne: true },removedByAgent:{ $ne: true },removedBySubAgent:{ $ne: true } }).sort({ _id: -1 }).toArray());
             return wrappUsers(data, servers);
         }
 

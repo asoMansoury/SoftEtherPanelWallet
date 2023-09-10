@@ -1,8 +1,6 @@
 import { getToken } from "next-auth/jwt";
-import { getSession } from "next-auth/react";
 import { IsAgentValid } from "src/databse/agent/getagentinformation";
 import DeleteUserOfAgent from "src/databse/user/DeleteUsers";
-import { GetPurchasedAccountsForAgents } from "src/databse/user/getPurchasedAccounts";
 
 export default async function handler(req, res) {
     if (req.method === "GET") {
@@ -30,7 +28,7 @@ export default async function handler(req, res) {
         } else {
             agentCode = isAgent.agentcode;
         }
-        var userBasket = await DeleteUserOfAgent(email,agentCode,username,token.isAdmin);
+        var userBasket = await DeleteUserOfAgent(email,agentCode,username,token);
 
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(200).json({ name: userBasket });

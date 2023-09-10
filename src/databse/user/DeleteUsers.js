@@ -24,9 +24,34 @@ const client = new MongoClient(MONGO_URI, {
 });
 
 
+function IsValidateForActivatingUser(token,user){
+    if (token.isAgent == true && token.isSubAgent == false) {
+        if (user.removedByAdmin == true) {
+            return {
+                isValid: false,
+                errorMsg: "شما دسترسی انجام عملیات مورد نظر را ندارید."
+            }
+        }
+    } else if (token.isAgent == true && token.isSubAgent == true) {
+        if (user.removedByAdmin == true || user.removedByAgent == true) {
+            return {
+                isValid: false,
+                errorMsg: "شما دسترسی انجام عملیات مورد نظر را ندارید."
+            }
+        }
+    }else if(token.isAgent == false && token.isSubAgent == false){
+        return {
+            isValid: false,
+            errorMsg: "شما دسترسی انجام عملیات مورد نظر را ندارید."
+        }
+    }
+    return {
+        isValid: true,
+        errorMsg: ""
+    }
+}
 
-
-export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
+export async function DeleteUserOfAgent(email, agentcode, username, token) {
     const today = formatDate(new Date());
     try {
         const connectionState = await client.connect();
@@ -42,8 +67,9 @@ export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
         var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
         for (const user of allExpiredUsers) {
             if (user.removedFromServer == false) {
-                user.removedByAgent = isAdmin == false ? true : false;
-                user.removedByAdmin = isAdmin == true ? true : false;
+                user.removedByAgent = token.isAgent == true && token.isSubAgent == false ? true : false;
+                user.removedBySubAgent = token.isSubAgent == true ? true : false;
+                user.removedByAdmin = token.isAdmin == true ? true : false;
                 if (user.type === apiUrls.types.Cisco) {
                     var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                     DeleteUserCisco(selectedServer, user.username);
@@ -64,7 +90,7 @@ export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
                     await collection.updateOne(filter, updateOperation);
                     emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
 
-                }else if(user.type === apiUrls.types.OpenVpn){
+                } else if (user.type === apiUrls.types.OpenVpn) {
                     var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
                     user.removedFromServer = true;
                     //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
@@ -76,8 +102,15 @@ export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
                 }
 
             } else {
+                if (token.isAdmin == false) {
+                    var validation = IsValidateForActivatingUser(token,user);
+                    if(validation.isValid==false){
+                        return validation;
+                    }
+                }
                 user.removedByAgent = false;
                 user.removedByAdmin = false;
+                user.removedBySubAgent = false;
                 if (user.type === apiUrls.types.Cisco) {
                     var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                     CreateUserOnCisco(selectedServer, user.username, user.password, user.expires);
@@ -97,11 +130,11 @@ export async function DeleteUserOfAgent(email, agentcode, username, isAdmin) {
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
                     emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
-                }else if (user.type === apiUrls.types.OpenVpn){
+                } else if (user.type === apiUrls.types.OpenVpn) {
                     var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
                     user.removedFromServer = false;
                     //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
-                    CreateUserOnOpenVpn(selectedOpenVpnServer, user,  user.expires);
+                    CreateUserOnOpenVpn(selectedOpenVpnServer, user, user.expires);
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);

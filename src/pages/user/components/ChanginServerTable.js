@@ -98,8 +98,8 @@ const ChanginServerTable = (props) => {
       <TableContainer component={Paper} sx={{
         maxHeight: 440, overflowX: 'auto', scrollbarWidth: 'thin',
         '&::-webkit-scrollbar': {
-          width: '40px',
-          height: '40px',
+          width: '10px',
+          height: '10px',
         },
         '&::-webkit-scrollbar-track': {
           background: '#f1f1f1',

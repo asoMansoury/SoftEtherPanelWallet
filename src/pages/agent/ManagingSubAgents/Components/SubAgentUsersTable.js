@@ -90,7 +90,7 @@ const SubAgentUsersTable = (props) => {
       setRows(tmpRow);
       setError({
         isValid: false,
-        errosMsg: result.data.name.errosMsg,
+        errosMsg: result.data.name.errorMsg,
         severity: "error"
       })
     } else {
