@@ -49,8 +49,6 @@ async function ConvertUsers(username,newType,selectedServer,Token){
                 users.push(user);
                 OpenVpnConvertedEmail(user.email,[],"تغییر نوع اکانت به اپن وی پی ان")
             }
-
-
         }else{
             return {
                 isValid:false,

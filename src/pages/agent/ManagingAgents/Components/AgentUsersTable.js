@@ -20,9 +20,10 @@ import TextField from '@mui/material/TextField'
 import Card from '@mui/material/Card'
 import EditIcon from 'src/views/iconImages/editicon';
 import { useSession } from 'next-auth/react';
+import ConvertUsersComponent from 'src/pages/admin/Components/ConvertingUsersComponent';
 
-const createData = (username, typeTitle, expires, removedFromServer,servertitle) => {
-  return { username, typeTitle, expires, removedFromServer,servertitle }
+const createData = (username, typeTitle, expires, removedFromServer, servertitle, type, servercode) => {
+  return { username, typeTitle, expires, removedFromServer, servertitle, type, servercode }
 }
 
 
@@ -33,7 +34,7 @@ const AgentUsersTable = (props) => {
   const [email, setEmail] = useState();
   const [rows, setRows] = useState([]);
   const [mainRows, setMainRows] = useState([]);
-
+  const [userConvert, setUserConvert] = useState();
   const [error, setError] = useState({
     isValid: true,
     errosMsg: "",
@@ -54,7 +55,7 @@ const AgentUsersTable = (props) => {
     var usersAccounts = await axios.get(apiUrls.userUrl.getsubagentpurchasedUrl + email);
     // getsubagentpurchasedUrl
     usersAccounts.data.name.map((item, index) => {
-      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer,item.servertitle));
+      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer, item.servertitle, item.type, item.servercode));
     })
     setRows(tmp);
     setMainRows(tmp)
@@ -76,6 +77,7 @@ const AgentUsersTable = (props) => {
 
   const btnManageUserHandler = async (e) => {
     e.preventDefault();
+    setUserConvert(null);
     setError({
       isValid: true,
       errosMsg: "",
@@ -97,6 +99,18 @@ const AgentUsersTable = (props) => {
       GetUsersData(email);
     }
     setLoading(false);
+  }
+
+  const btnConvertUserHandler = async (e) => {
+    e.preventDefault();
+    setUserConvert(null);
+    setError({
+      isValid: true,
+      errosMsg: "",
+      severity: "success"
+    })
+    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    setUserConvert(row);
   }
 
 
@@ -169,11 +183,31 @@ const AgentUsersTable = (props) => {
                       <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
                     </div>
                   </TableCell>
+                  {/* <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
+                    <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnConvertUserHandler}>
+                      <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>تبدیل</span>
+                    </div>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+
+        {
+          userConvert != undefined && userConvert != null && (
+            <Grid item xs={12}>
+              <Card>
+                <Grid container spacing={6}>
+                  <Grid item xs={12}>
+                    <ConvertUsersComponent selectedUser={userConvert}></ConvertUsersComponent>
+                  </Grid>
+                </Grid>
+              </Card>
+            </Grid>
+          )
+        }
+
       </TableContainer>
     </Paper>
   )

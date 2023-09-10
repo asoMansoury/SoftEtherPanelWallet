@@ -194,3 +194,16 @@ export function ValidateUIElements(element){
 export function isNumber(value) {
   return !isNaN(parseInt(value));
 }
+
+export function GetAllTypes(){
+  var Keys = Object.keys(apiUrls.types);
+  var tmp = Keys.map((item)=>{
+    var val =  apiUrls.types[item];
+    var obj = {
+      code : val,
+      title:ConvertCodeToTitle(val)
+    }
+    return obj;
+  });
+  return tmp;
+}

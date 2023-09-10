@@ -34,7 +34,8 @@ function wrappUsers(data, servers) {
             typeTitle: typeTitle,
             userwithhub: item.userwithhub,
             removedFromServer: item.removedFromServer,
-            servertitle: selectedServer.title
+            servertitle: selectedServer.title,
+            servercode:selectedServer.servercode
         }
     });
     return result;
