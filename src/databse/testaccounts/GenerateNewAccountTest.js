@@ -63,6 +63,8 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
         const documents = await collection.findOne({ email: email, type: type });
         if (documents == null) {
             var agent = await GetAgentByAgentCode(agentCode);
+            if(agent.isAgentValid==false)
+                agent = await GetAgentByAgentCode(process.env.DefaultAgentCodeForTesting);
             var selectedServer = await GetServerByCode(servercode);
             var insertTestAccount = await GenerateNewAccount(email, selectedServer, type, agentCode);
 
