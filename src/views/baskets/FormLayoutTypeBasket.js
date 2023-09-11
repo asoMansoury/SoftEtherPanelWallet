@@ -77,6 +77,11 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
     email: ""
   });
 
+  const [passwordUser, setPasswordUser] = useState({
+    checked: true,
+    password: ""
+  });
+
   useEffect(() => {
     planSelectedNummber = 1;
   }, [])
@@ -316,7 +321,12 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
   function emailToUserHandler(e) {
     e.preventDefault();
     setEmailToUser({ ...emailToUser, checked: !emailToUser.checked });
+  }
 
+
+  function passwordToUserHandler(e) {
+    e.preventDefault();
+    setPasswordUser({ ...passwordUser, checked: !passwordUser.checked });
   }
 
   const addToCart = (e) => {
@@ -326,6 +336,20 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
       isAddToCartValid: true,
       addToCartMsg: ""
     })
+    if(passwordUser.checked==true && passwordUser.password.length<=3){
+      setError({
+        ...error,
+        isAddToCartValid: false,
+        addToCartMsg: "کلمه عبور حداقل بایستی 4 کلمه باشد."
+      })
+      return;
+    }else {
+      setError({
+        ...error,
+        isAddToCartValid: false,
+        addToCartMsg: ""
+      })
+    }
     if (planSelectedNummber > 1) {
       setError({
         ...error,
@@ -417,6 +441,8 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
       type: typeVpn,
       isSendToOtherEmail: emailToUser.checked,
       sendEmailToOther: emailToUser.checked == true ? emailToUser.email : formData['email'],
+      isInputPasswrd:passwordUser.checked,
+      userPassword:passwordUser.password,
       servercode: selectedServer
     };
 
@@ -512,6 +538,31 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
               </Grid>
             }
           </Grid>
+          <Grid container spacing={5} style={{ marginTop: '10px', paddingRight: 'px' }}>
+            <Grid item xs={12} sm={2} >
+              <FormGroup>
+                <FormControlLabel control={<Checkbox checked={passwordUser.checked}
+                  onChange={passwordToUserHandler} />} label="میخواهم خودم پسورد وارد کنم." />
+              </FormGroup>
+            </Grid>
+            {
+              passwordUser.checked == true && (
+                <>
+                  <Grid item xs={12} sm={4} >
+                    <TextField name="passwordUser"
+                      type='email'
+                      value={passwordUser.password}
+                      onChange={(e) => setPasswordUser({
+                        ...passwordUser,
+                        password: e.target.value
+                      })}
+                      fullWidth label='کلیمه عبور' placeholder='کلمه عبور را وارد نمایید.' />
+                  </Grid>
+                </>
+              )
+            }
+          </Grid>
+
         </CardContent>
         <Divider sx={{ margin: 0 }} />
         {

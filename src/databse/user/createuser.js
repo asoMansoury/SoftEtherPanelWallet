@@ -12,13 +12,13 @@ const client = new MongoClient(MONGO_URI,{
     }
 });
 
-const createUserFunction = (userObj,duration) => {
+const createUserFunction = (userObj,duration,userBasketObj) => {
     
     return {
         
         // username:userObj.userprefix+number,
         username:userObj.userprefix+userObj.usernumber,
-        password: generateRandomNumberPassword(5),
+        password: userBasketObj.isInputPasswrd==true?userBasketObj.userPassword: generateRandomNumberPassword(4),
         usernumber: userObj.usernumber,
         tariffplancode:userObj.tariffplancode,
         usercounter: userObj.usercounter ,
@@ -85,7 +85,7 @@ async function CreateUser(userBasketObj){
                     email:userBasketObj.isSendToOtherEmail?userBasketObj.sendEmailToOther:userBasketObj.email,
                     isSendToOtherEmail:userBasketObj.isSendToOtherEmail
                 }
-                var generatedUser = createUserFunction(obj,selectedTarifPlan.duration)
+                var generatedUser = createUserFunction(obj,selectedTarifPlan.duration,userBasketObj)
                 userCreated.push(generatedUser);
             }else{
                 var userPrefix = generateUserPrefix(userBasketObj);
@@ -101,7 +101,7 @@ async function CreateUser(userBasketObj){
                     isfromagent:isFromAgent,
                     isSendToOtherEmail:userBasketObj.isSendToOtherEmail
                 }
-                userCreated.push(createUserFunction(obj,selectedTarifPlan.duration));
+                userCreated.push(createUserFunction(obj,selectedTarifPlan.duration,userBasketObj));
             }
             usernumber++;
             usercounter++;
