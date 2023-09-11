@@ -190,7 +190,8 @@ const ChanginServerTable = (props) => {
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangeServerHandler}>
-                    <EditIcon></EditIcon>
+
+                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>انتخاب سرور</Button>
                   </div>
                 </TableCell>
 

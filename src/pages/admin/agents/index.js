@@ -178,8 +178,21 @@ const Index = () => {
                     <CardHeader title='ثبت قیمت' titleTypographyProps={{ variant: 'h6' }} />
                     <Divider sx={{ margin: 0 }} />
                     <CardContent>
-                        <TableContainer sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }}>
-                            <Table stickyHeader sx={{ minWidth: 650 }} aria-label='simple table' style={{ userSelect: 'none' }}>
+                        <TableContainer sx={{
+                            maxHeight: 440, overflowX: 'auto', scrollbarWidth: 'thin',
+                            '&::-webkit-scrollbar': {
+                                width: '10px',
+                                height: '10px',
+                            },
+                            '&::-webkit-scrollbar-track': {
+                                background: '#f1f1f1',
+                            },
+                            '&::-webkit-scrollbar-thumb': {
+                                background: '#888',
+                                borderRadius: '10px',
+                            }
+                        }}>
+                            <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
                                 <TableHead>
                                     <TableRow>
                                         <TableCell align='center'>نوع اکانت</TableCell>

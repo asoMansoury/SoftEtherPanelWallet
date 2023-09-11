@@ -35,7 +35,20 @@ export const SubAgentsTable = props => {
     }
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }} component={Paper}>
+            <TableContainer sx={{
+                    maxHeight: 440, overflowX: 'auto', scrollbarWidth: 'thin',
+                    '&::-webkit-scrollbar': {
+                        width: '10px',
+                        height: '10px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        background: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        background: '#888',
+                        borderRadius: '10px',
+                    }
+                }} component={Paper}>
                 {
                     loading == false &&
                     <Alert severity="info">در حال بارگزاری اطلاعات لطفا منتظر بمانید...</Alert>

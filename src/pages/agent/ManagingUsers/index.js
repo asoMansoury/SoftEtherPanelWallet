@@ -60,8 +60,9 @@ const Index = () => {
                             loading &&
                             <Alert severity="info">در حال بارگزاری اطلاعات لطفا منتظر بمانید...</Alert>
                         }
-                        <AgentUsersTable email={agentInformation.customer.email}></AgentUsersTable>
+                        
                     </Card>
+                    <AgentUsersTable email={agentInformation.customer.email}></AgentUsersTable>
                 </Grid>
                 <Divider></Divider>
 

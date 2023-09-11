@@ -9,9 +9,8 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableFooter from '@mui/material/TableFooter'
 import TableContainer from '@mui/material/TableContainer'
-import axios from 'axios';
 import Paper from '@mui/material/Paper'
-
+import Grid from '@mui/material/Grid'
 export const SubAgentsTable = props => {
     const [rows, setRow] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -33,14 +32,39 @@ export const SubAgentsTable = props => {
         var row = JSON.parse(e.target.getAttribute("row"));
         props.btnManaginWalletHandler(row);
     }
+
+    function btnLoadingAgents(e) {
+       props.GetAllSubAgentsFunc();
+      }
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: 440, overflow: 'scroll', touchAction: 'pan-y' }} component={Paper}>
+            <Grid container spacing={6}>
+                <Grid item xs={1}></Grid>
+                <Grid item xs={2}>
+                    <Button size='small' onClick={btnLoadingAgents} type='submit' sx={{ mr: 2 }} variant='contained'>
+                        دریافت اطلاعات
+                    </Button>
+                </Grid>
+            </Grid>
+            <TableContainer sx={{
+                maxHeight: 440, overflowX: 'auto', scrollbarWidth: 'thin',
+                '&::-webkit-scrollbar': {
+                    width: '10px',
+                    height: '10px',
+                },
+                '&::-webkit-scrollbar-track': {
+                    background: '#f1f1f1',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                    background: '#888',
+                    borderRadius: '10px',
+                }
+            }} component={Paper}>
                 {
                     loading == false &&
                     <Alert severity="info">در حال بارگزاری اطلاعات لطفا منتظر بمانید...</Alert>
                 }
-                <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='لطفا از سرورهای زیر انتخاب نمایید.'>
+                <Table stickyHeader sx={{ minWidth: 400, touchAction: 'manipulation' }} style={{ userSelect: 'none' }} aria-label='لطفا از سرورهای زیر انتخاب نمایید.'>
                     <TableHead>
                         <TableRow>
                             <TableCell align='center'>شماره ردیف</TableCell>

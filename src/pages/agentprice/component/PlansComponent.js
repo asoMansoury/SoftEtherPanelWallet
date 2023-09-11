@@ -54,7 +54,20 @@ const PlansComponent = (props) => {
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Card>
-          <TableContainer sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }}>
+          <TableContainer sx={{
+                    maxHeight: 440, overflowX: 'auto', scrollbarWidth: 'thin',
+                    '&::-webkit-scrollbar': {
+                        width: '10px',
+                        height: '10px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        background: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        background: '#888',
+                        borderRadius: '10px',
+                    }
+                }}>
             <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
               <TableHead>
                 <TableRow>

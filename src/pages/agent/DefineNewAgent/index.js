@@ -192,8 +192,21 @@ const Index = () => {
                             <Divider sx={{ margin: 0 }} />
                             <AgentProfileComponent formDataHandler={formDataHandler} agentInformation={agentInformation} agentWallet={agentWallet}></AgentProfileComponent>
                             <Divider></Divider>
-                            <TableContainer sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }}>
-                                <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
+                            <TableContainer sx={{
+                                maxHeight: 440, overflowX: 'auto', scrollbarWidth: 'thin',
+                                '&::-webkit-scrollbar': {
+                                    width: '10px',
+                                    height: '10px',
+                                },
+                                '&::-webkit-scrollbar-track': {
+                                    background: '#f1f1f1',
+                                },
+                                '&::-webkit-scrollbar-thumb': {
+                                    background: '#888',
+                                    borderRadius: '10px',
+                                }
+                            }}>
+                                <Table stickyHeader sx={{ minWidth: 650, touchAction: 'manipulation' }} style={{ userSelect: 'none' }} aria-label='simple table'>
                                     <TableFooter>
                                         <TableRow style={{ paddingLeft: '100px' }}>
                                             {error.isValid == false && <Alert severity={error.severity}>{error.errorMsg}</Alert>}

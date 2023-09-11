@@ -113,109 +113,130 @@ const AgentUsersTable = (props) => {
     setUserConvert(row);
   }
 
-  function refreshConvertComponent(e){
+  function refreshConvertComponent(e) {
     e.preventDefault();
     setUserConvert(null);
+    GetUsersData(email);
+  }
+
+  function btnLoadingUsers(e) {
     GetUsersData(email);
   }
 
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-
-      <TableContainer component={Paper} sx={{ maxHeight: 440, overflow: 'scroll', touchAction: 'pan-y' }}>
-        <Grid item xs={12}>
-          {
-            error.isValid == false ? (
-              <Alert severity='error'>{error.errosMsg}</Alert>
-            ) : <></>
-          }
-        </Grid>
-        <Grid item xs={12}>
-          <Card>
-            {
-              loading &&
-              <Alert severity="info">در حال بارگزاری اطلاعات لطفا منتظر بمانید...</Alert>
-            }
-            <Grid container spacing={6}>
-              <Grid item xs={3}></Grid>
-              <Grid item xs={6}>
-                <TextField name="username"
-                  type='input'
-                  value={usernameForSearch}
-                  onChange={searchByUserNameHandler}
-                  fullWidth label='نام کاربر' placeholder='جسجتو اکانت بر اساس نام کاربری' />
-              </Grid>
-            </Grid>
-          </Card>
-        </Grid>
-        <TableContainer component={Paper} sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }}>
-          <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ width: '40px' }} align='center'>نوع اکانت</TableCell>
-                <TableCell style={{ width: '80px' }} align='center'>نام اکانت</TableCell>
-                <TableCell style={{ width: '80px' }} align='center'>نام سرور</TableCell>
-                <TableCell style={{ width: '120px' }} align='center'>تاریخ اعتبار</TableCell>
-                <TableCell style={{ width: '80px' }} align='center'>وضعیت اکانت</TableCell>
-                <TableCell style={{ width: '120px' }} align='center'>عملیات</TableCell>
-                <TableCell style={{ width: '120px' }} align='center'>تبدیل اکانت</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map(row => (
-                <TableRow
-                  key={row.name}
-                  sx={{
-                    '&:last-of-type td, &:last-of-type th': {
-                      border: 0
-                    }
-                  }}
-                >
-                  <TableCell style={{ width: '40px' }} align='center' component='th' scope='row'>
-                    {row.typeTitle}
-                  </TableCell>
-                  <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
-                    {row.username}
-                  </TableCell>
-                  <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
-                    {row.servertitle}
-                  </TableCell>
-                  <TableCell style={{ width: '120px' }} align='center' component='th' scope='row'>
-                    {ConvertToPersianDateTime(row.expires)}
-                  </TableCell>
-                  <TableCell style={{ width: '80px' }}>{row.removedFromServer == true ? "غیر فعال" : "فعال"}</TableCell>
-                  <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
-                    <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
-                      <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
-                    <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnConvertUserHandler}>
-                      <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>تبدیل</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
+      <Grid item xs={12}>
         {
-          (userConvert != undefined && userConvert != null) && (
-            <Grid item xs={12}>
-              <Card>
-                <Grid container spacing={6}>
-                  <Grid item xs={12}>
-                    <ConvertUsersComponent refreshComponent={refreshConvertComponent} selectedUser={userConvert}></ConvertUsersComponent>
-                  </Grid>
-                </Grid>
-              </Card>
-            </Grid>
-          )
+          error.isValid == false ? (
+            <Alert severity='error'>{error.errosMsg}</Alert>
+          ) : <></>
         }
+      </Grid>
+      <Grid item xs={12}>
+        <Card>
+          {
+            loading &&
+            <Alert severity="info">در حال بارگزاری اطلاعات لطفا منتظر بمانید...</Alert>
+          }
+          <Grid container spacing={6}>
+            <Grid item xs={1}></Grid>
+            <Grid item xs={6}>
+              <TextField name="username"
+                type='input'
+                value={usernameForSearch}
+                onChange={searchByUserNameHandler}
+                fullWidth label='نام کاربر' placeholder='جسجتو اکانت بر اساس نام کاربری' />
 
+            </Grid>
+            <Grid item xs={2}>
+              <Button size='small' onClick={btnLoadingUsers} type='submit' sx={{ mr: 2 }} variant='contained'>
+                دریافت اطلاعات
+              </Button>
+
+            </Grid>
+          </Grid>
+        </Card>
+      </Grid>
+      <TableContainer component={Paper} sx={{
+        maxHeight: 440, overflowX: 'auto', scrollbarWidth: 'thin',
+        '&::-webkit-scrollbar': {
+          width: '10px',
+          height: '10px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f1f1f1',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#888',
+          borderRadius: '10px',
+        }
+      }}>
+        <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='simple table'>
+          <TableHead>
+            <TableRow>
+              <TableCell style={{ width: '40px' }} align='center'>نوع اکانت</TableCell>
+              <TableCell style={{ width: '80px' }} align='center'>نام اکانت</TableCell>
+              <TableCell style={{ width: '80px' }} align='center'>نام سرور</TableCell>
+              <TableCell style={{ width: '120px' }} align='center'>تاریخ اعتبار</TableCell>
+              <TableCell style={{ width: '80px' }} align='center'>وضعیت اکانت</TableCell>
+              <TableCell style={{ width: '120px' }} align='center'>عملیات</TableCell>
+              <TableCell style={{ width: '120px' }} align='center'>تبدیل اکانت</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map(row => (
+              <TableRow
+                key={row.name}
+                sx={{
+                  '&:last-of-type td, &:last-of-type th': {
+                    border: 0
+                  }
+                }}
+              >
+                <TableCell style={{ width: '40px' }} align='center' component='th' scope='row'>
+                  {row.typeTitle}
+                </TableCell>
+                <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
+                  {row.username}
+                </TableCell>
+                <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
+                  {row.servertitle}
+                </TableCell>
+                <TableCell style={{ width: '120px' }} align='center' component='th' scope='row'>
+                  {ConvertToPersianDateTime(row.expires)}
+                </TableCell>
+                <TableCell style={{ width: '80px' }}>{row.removedFromServer == true ? "غیر فعال" : "فعال"}</TableCell>
+                <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
+                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
+                  </div>
+                </TableCell>
+                <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnConvertUserHandler}>
+                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>تبدیل</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </TableContainer>
+
+      {
+        (userConvert != undefined && userConvert != null) && (
+          <Grid item xs={12}>
+            <Card>
+              <Grid container spacing={6}>
+                <Grid item xs={12}>
+                  <ConvertUsersComponent refreshComponent={refreshConvertComponent} selectedUser={userConvert}></ConvertUsersComponent>
+                </Grid>
+              </Grid>
+            </Card>
+          </Grid>
+        )
+      }
+
     </Paper>
   )
 }

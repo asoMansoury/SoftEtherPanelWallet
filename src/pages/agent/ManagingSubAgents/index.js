@@ -43,12 +43,20 @@ const Index = () => {
         setDisableBtn(true);
         if (status === "authenticated") {
             if (session.user.isAgent == true) {
-                var getSubAgents = await axios.get(apiUrls.SubAgentUrl.GetAllSubAgentsUrl);
-                setAgentInformation(getSubAgents.data.agentInformation);
-                setSubAgents(getSubAgents.data.subAgents);
+              await  GetAllSubAgentsFunc();
             }
         }
     }, [status]);
+
+    async function GetAllSubAgentsFunc(){
+        setLoading(true);
+        setSubAgents([]);
+        setAgentInformation();
+        var getSubAgents = await axios.get(apiUrls.SubAgentUrl.GetAllSubAgentsUrl);
+        setAgentInformation(getSubAgents.data.agentInformation);
+        setSubAgents(getSubAgents.data.subAgents);
+        setLoading(false);
+    }
 
     async function btnShowDetailHandler(row) {
         setLoading(true);
@@ -77,9 +85,9 @@ const Index = () => {
             <Grid container spacing={6}>
                 <Grid item xs={12}>
                     <Card>
-                        <CardHeader title='اطلاعات نماینده فروش شما' titleTypographyProps={{ variant: 'h6' }} />
+                        <CardHeader title='مدیریت نماینده های فروش' titleTypographyProps={{ variant: 'h6' }} />
                         <Divider sx={{ margin: 0 }} />
-                        <SubAgentsTable subAgents={subAgents} btnShowDetailHandler={btnShowDetailHandler} btnManaginWalletHandler={btnManaginWalletHandler}></ SubAgentsTable>
+                        <SubAgentsTable GetAllSubAgentsFunc={GetAllSubAgentsFunc} subAgents={subAgents} btnShowDetailHandler={btnShowDetailHandler} btnManaginWalletHandler={btnManaginWalletHandler}></ SubAgentsTable>
                         <Divider></Divider>
                         {
                             loading &&

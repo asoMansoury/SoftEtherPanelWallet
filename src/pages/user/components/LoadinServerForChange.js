@@ -58,8 +58,21 @@ const LoadinServerForChange = (props) => {
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 800, overflow: 'scroll', touchAction: 'pan-y' }} component={Paper}>
-        <Table stickyHeader sx={{ minWidth: 650 }} style={{ userSelect: 'none' }} aria-label='لطفا از سرورهای زیر انتخاب نمایید.'>
+      <TableContainer sx={{
+        maxHeight: 440, overflowX: 'auto', scrollbarWidth: 'thin',
+        '&::-webkit-scrollbar': {
+          width: '10px',
+          height: '10px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f1f1f1',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#888',
+          borderRadius: '10px',
+        }
+      }} component={Paper}>
+        <Table stickyHeader sx={{ minWidth: 650, touchAction: 'manipulation' }} style={{ userSelect: 'none' }} aria-label='لطفا از سرورهای زیر انتخاب نمایید.'>
           <TableHead>
             <TableRow>
               <TableCell align='center'>عنوان سرور</TableCell>
