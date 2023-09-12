@@ -222,8 +222,8 @@ const LoginPage = () => {
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2'>
-                <Link passHref href='/cisco/'>
-                  <LinkStyled>خرید اکانت</LinkStyled>
+                <Link passHref href='/testaccounts/'>
+                  <LinkStyled>دریافت اکانت تست</LinkStyled>
                 </Link>
               </Typography>
             </Box>
