@@ -111,7 +111,7 @@ export async function sendEmailTest(to, users, subject,agentInformation) {
   try {
     const telegramLink =agentInformation.isAgentValid==true? `
     <p style="font-size: 16px; line-height: 1.5; color: #333; text-align: center;">
-        برای خرید اکانت روی لینک روبرو کلیک کنید. 
+        برای خرید اکانت و یا راهنمایی راه اندازی روی لینک روبرو کلیک کنید. 
         <a href="${agentInformation.agentInformation.telegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
           اینجا کلیک کنید
         </a>
@@ -293,7 +293,7 @@ export async function sendEmailCiscoClientTest(to, users, server, subject, agent
 
   const telegramLink =agentInformation.isAgentValid==true? `
   <p style="font-size: 16px; line-height: 1.5; color: #333; text-align: center;">
-      برای خرید اکانت روی لینک روبرو کلیک کنید. 
+  برای خرید اکانت و یا راهنمایی راه اندازی روی لینک روبرو کلیک کنید. 
       <a href="${agentInformation.agentInformation.telegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
         اینجا کلیک کنید
       </a>
