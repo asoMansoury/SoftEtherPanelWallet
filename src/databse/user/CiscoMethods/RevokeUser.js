@@ -142,9 +142,8 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
         var updatingUserBasket = UpdateUsersBasketForRevoke(uuid, PAID_CUSTOMER_STATUS.PAID, true);
 
         const today = new Date();
-        var nextExpirationDate =new Date(); 
+        var nextExpirationDate =new Date(foundedUser.expires); 
         var isRemovedFromServer= foundedUser.removedFromServer==true?true:false;
-
         if(today>foundedUser.expires){
             nextExpirationDate = calculateEndDate(formatDate(today), selectedPlanType.duration);
         }else{
@@ -153,7 +152,6 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
             foundedUser.expires = nextExpirationDate;
             foundedUser.removedFromServer = false;
         }
-
 
 
         await userCollection.updateOne(
