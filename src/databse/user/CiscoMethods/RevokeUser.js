@@ -19,7 +19,7 @@ import { UpdateUsersBasketForRevoke } from 'src/databse/usersbasket/insertusersb
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { UpdateExpirationTimeSoftEther } from 'src/lib/createuser/UpdateExpirationTime';
-import { GenerateOneMonthExpiration, GenerateOneMonthExpirationStartDate, MONGO_URI, calculateEndDate } from 'src/lib/utils';
+import { GenerateOneMonthExpiration, GenerateOneMonthExpirationStartDate, MONGO_URI, calculateEndDate, formatDate } from 'src/lib/utils';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -67,7 +67,7 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
                 var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);
                 //محاسبه موجود کیف پول ایجنت فروش
                 var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice;
-                if (checkHasCash < 0) {
+                if (parseInt(checkHasCash) < 0) {
                     return {
                         isValid: false,
                         message: "موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
@@ -83,7 +83,7 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
                         }
                     })
 
-            } if (isAgentValid.isAgent == true && isAgentValid.isSubAgent == true) {
+            }else  if (isAgentValid.isAgent == true && isAgentValid.isSubAgent == true) {
                 var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);
                 //محاسبه موجود کیف پول ایجنت فروش
                 var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice;
@@ -140,10 +140,19 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
         }
 
         var updatingUserBasket = UpdateUsersBasketForRevoke(uuid, PAID_CUSTOMER_STATUS.PAID, true);
-        var nextExpirationDate = calculateEndDate(foundedUser.expires, selectedPlanType.duration);
-        foundedUser.isRevoked = true;
-        foundedUser.expires = nextExpirationDate;
-        foundedUser.removedFromServer = false;
+
+        const today = new Date();
+        var nextExpirationDate =new Date(foundedUser.expires); 
+        var isRemovedFromServer= foundedUser.removedFromServer==true?true:false;
+        if(today>foundedUser.expires){
+            nextExpirationDate = calculateEndDate(formatDate(today), selectedPlanType.duration);
+        }else{
+            nextExpirationDate = calculateEndDate(foundedUser.expires, selectedPlanType.duration);
+            foundedUser.isRevoked = true;
+            foundedUser.expires = nextExpirationDate;
+            foundedUser.removedFromServer = false;
+        }
+
 
         await userCollection.updateOne(
             { "username": username }, // Filter condition to match the document
@@ -152,7 +161,7 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
 
         if (foundedUser.type == apiUrls.types.SoftEther)
             UpdateSoftEtherUserExpiration(foundedUser, nextExpirationDate);
-        UpdateUsersWhichRemovedFromServer(foundedUser)
+        UpdateUsersWhichRemovedFromServer(foundedUser,isRemovedFromServer)
 
         foundedUser.isValid = true;
         return foundedUser;
@@ -163,8 +172,8 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
     }
 }
 
-async function UpdateUsersWhichRemovedFromServer(foundedUser){
-    if(foundedUser.removedFromServer==true){
+async function UpdateUsersWhichRemovedFromServer(foundedUser,isRemovedFromServer){
+    if(isRemovedFromServer==true){
         if(foundedUser.type == apiUrls.types.OpenVpn){
             var selectedServer =await GetServerByCode(foundedUser.currentservercode);
             CreateUserOnOpenVpn(selectedServer,foundedUser);
