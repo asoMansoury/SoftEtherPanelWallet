@@ -21,6 +21,7 @@ import Card from '@mui/material/Card'
 import EditIcon from 'src/views/iconImages/editicon';
 import { useSession } from 'next-auth/react';
 import ConvertUsersComponent from 'src/pages/admin/Components/ConvertingUsersComponent';
+import UserDetail from './UserDetail';
 
 const createData = (username, typeTitle, expires, removedFromServer, servertitle, type) => {
   return { username, typeTitle, expires, removedFromServer, servertitle, type }
@@ -35,6 +36,11 @@ const AgentUsersTable = (props) => {
   const [rows, setRows] = useState([]);
   const [mainRows, setMainRows] = useState([]);
   const [selectUser, setSelectUser] = useState();
+  const [userDetail,setUserDetail] = useState({
+    isUserLoaded:false,
+    email:"",
+    password:""
+  })
   const [error, setError] = useState({
     isValid: true,
     errosMsg: "",
@@ -50,6 +56,7 @@ const AgentUsersTable = (props) => {
   const [loading, setLoading] = useState(false);
 
   const GetUsersData = async (email) => {
+    ClearForm();
     var tmp = [];
     setRows([]);
     setLoading(true);
@@ -64,10 +71,17 @@ const AgentUsersTable = (props) => {
     setLoading(false);
   }
 
-
+function ClearForm(){
+  setUserDetail({
+    isUserLoaded:false,
+    email:"",
+    password:""
+  })
+}
 
   const searchByUserNameHandler = (e) => {
     e.preventDefault();
+    ClearForm();
     setUserNameForSearch(e.target.value);
     var tmp = [];
     var findedElements = mainRows.filter(item => item.username.toLowerCase().includes(e.target.value.toLowerCase()));
@@ -78,6 +92,7 @@ const AgentUsersTable = (props) => {
 
   const btnManageUserHandler = async (e) => {
     e.preventDefault();
+    ClearForm();
     setError({
       isValid: true,
       errosMsg: "",
@@ -111,6 +126,34 @@ const AgentUsersTable = (props) => {
     e.preventDefault();
     setSelectUser(null);
     GetUsersData(email);
+    ClearForm();
+  }
+
+  const btnUserDetailHandler = async (e) => {
+    e.preventDefault();
+    setError({
+      isValid: true,
+      errosMsg: "",
+      severity: "success"
+    })
+    setLoading(true);
+    ClearForm();
+    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    const result = await axios.get(apiUrls.userUrl.ShowUserDetailUrl +  row.username)
+    if (result.data.isValid == false) {
+      setError({
+        isValid: false,
+        errosMsg: result.data.errorMsg,
+        severity: "error"
+      })
+    } else {
+      setUserDetail({
+        isUserLoaded:true,
+        email:result.data.userBasket.email,
+        password:result.data.userBasket.password
+      })
+    }
+    setLoading(false);
   }
 
   async function btnLoadingUsers(e) {
@@ -200,6 +243,11 @@ const AgentUsersTable = (props) => {
                 </TableCell>
                 <TableCell style={{ width: '80px' }}>{row.removedFromServer == true ? "غیر فعال" : "فعال"}</TableCell>
                 <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnUserDetailHandler}>
+                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>نمایش جزئیات</span>
+                  </div>
+                </TableCell>
+                <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
                     <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
                   </div>
@@ -219,6 +267,9 @@ const AgentUsersTable = (props) => {
           <Grid container spacing={6}>
             <Grid item xs={12}>
               <ConvertUsersComponent refreshComponent={refreshConvertComponent} selectedUser={selectUser}></ConvertUsersComponent>
+            </Grid>
+            <Grid item xs={12}>
+              <UserDetail userDetail={userDetail}></UserDetail>
             </Grid>
           </Grid>
         </Card>
