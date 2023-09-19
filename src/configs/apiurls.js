@@ -30,6 +30,7 @@ export const apiUrls = {
         "ChangeTelegramUrl":`/api/agents/changetelegram/?telegram=`,
         "GetAllAgentsUrl":`/api/agents/getallAgent/`,
         "GetAgentTestAccountsUrl":`/api/user/getagentusertests`,
+        "SendEmailToTestAccountsUrl":`/api/agents/SendEmailToTestAccounts`
     },
     "SubAgentUrl":{
         "GetAllSubAgentsUrl":`/api/subagent/getAllAgents`

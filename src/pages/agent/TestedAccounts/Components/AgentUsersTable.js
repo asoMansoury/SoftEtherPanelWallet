@@ -46,7 +46,8 @@ const AgentUsersTable = (props) => {
   const [error, setError] = useState({
     isValid: true,
     errosMsg: "",
-    severity: "error"
+    severity: "error",
+    isValidForEmail:false
   })
 
   useEffect(async () => {
@@ -81,6 +82,10 @@ const AgentUsersTable = (props) => {
     });
     setSelectUser({
       isSelectedUser: false
+    });
+    setError({
+      ...error,
+      isValidForEmail:false
     })
   }
 
@@ -94,6 +99,13 @@ const AgentUsersTable = (props) => {
 
   }
 
+  const RefreshPageHandler = (e)=>{
+    ClearForm();
+    setError({
+      ...error,
+      isValidForEmail:true
+    })
+  }
 
 
   const btnSendingEmail = async (e) => {
@@ -209,10 +221,13 @@ const AgentUsersTable = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
+      {error.isValidForEmail==true&&<Alert severity='success'>ایمیل ارسال گردید.</Alert>}
       {
+
         selectUser.isSelectedUser == true &&
         <>
-          <RichEditorComponent></RichEditorComponent>
+
+          <RichEditorComponent RefreshPageHandler={RefreshPageHandler} email={selectUser.email}></RichEditorComponent>
         </>
 
 
