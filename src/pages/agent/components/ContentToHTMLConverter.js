@@ -2,8 +2,9 @@ import { convertToHTML } from "draft-convert";
 import { convertFromRaw } from "draft-js";
 import { useEffect } from "react";
 import { useState } from "react";
+import React from 'react';
 
-export const ContentToHTMLConverter = (props) => {
+ const ContentToHTMLConverter = (props) => {
     const [htmlContent, setHtmlContent] = useState('');
 
     useEffect(() => {
@@ -22,3 +23,5 @@ export const ContentToHTMLConverter = (props) => {
         </div>
     );
 };
+
+export default ContentToHTMLConverter;
