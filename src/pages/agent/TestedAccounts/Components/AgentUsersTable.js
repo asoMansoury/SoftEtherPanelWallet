@@ -21,6 +21,7 @@ import Card from '@mui/material/Card'
 import EditIcon from 'src/views/iconImages/editicon';
 import { useSession } from 'next-auth/react';
 import select from 'src/@core/theme/overrides/select';
+import RichEditorComponent from '../../components/RichEditorComponent';
 
 const createData = (email, password, username, typeTitle, expires, removedFromServer, servertitle, type) => {
   return { email, username, password, typeTitle, expires, removedFromServer, servertitle, type }
@@ -210,9 +211,11 @@ const AgentUsersTable = (props) => {
       </TableContainer>
       {
         selectUser.isSelectedUser == true &&
-        <Grid item xs={12}>
-          {selectUser.email}
-        </Grid>
+        <>
+          <RichEditorComponent></RichEditorComponent>
+        </>
+
+
       }
 
     </Paper>
