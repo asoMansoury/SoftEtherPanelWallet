@@ -28,7 +28,8 @@ export const apiUrls = {
         "defineSubAgentUrl":`/api/agents/defineSubAgent`,
         "refundSubAgentUrl":`/api/agents/refundSubAgent`,
         "ChangeTelegramUrl":`/api/agents/changetelegram/?telegram=`,
-        "GetAllAgentsUrl":`/api/agents/getallAgent/`
+        "GetAllAgentsUrl":`/api/agents/getallAgent/`,
+        "GetAgentTestAccountsUrl":`/api/user/getagentusertests`,
     },
     "SubAgentUrl":{
         "GetAllSubAgentsUrl":`/api/subagent/getAllAgents`
@@ -40,6 +41,7 @@ export const apiUrls = {
         "getusersbasket":`/api/user/getuserbasket/?uuid=`,
         "getpurchasedUrl":`/api/user/getpurchasedaccounts/?email=`,
         "getsubagentpurchasedUrl":`/api/user/getsubagentpurchased/?email=`,
+
         "senToEmailUrl":`/api/user/senaccounttoemail/?email=`,
         "getUserInformationUrl":`/api/user/getUserInformation/?username=`,
         "getUserInformationByEmail":`/api/user/getUserInformationByEmail/?email=`,

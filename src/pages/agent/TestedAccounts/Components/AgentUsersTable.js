@@ -20,11 +20,10 @@ import TextField from '@mui/material/TextField'
 import Card from '@mui/material/Card'
 import EditIcon from 'src/views/iconImages/editicon';
 import { useSession } from 'next-auth/react';
-import ConvertUsersComponent from 'src/pages/admin/Components/ConvertingUsersComponent';
-import UserDetail from './UserDetail';
+import select from 'src/@core/theme/overrides/select';
 
-const createData = (username, typeTitle, expires, removedFromServer, servertitle, type) => {
-  return { username, typeTitle, expires, removedFromServer, servertitle, type }
+const createData = (email, password, username, typeTitle, expires, removedFromServer, servertitle, type) => {
+  return { email, username, password, typeTitle, expires, removedFromServer, servertitle, type }
 }
 
 
@@ -35,11 +34,13 @@ const AgentUsersTable = (props) => {
   const [email, setEmail] = useState();
   const [rows, setRows] = useState([]);
   const [mainRows, setMainRows] = useState([]);
-  const [selectUser, setSelectUser] = useState();
-  const [userDetail,setUserDetail] = useState({
-    isUserLoaded:false,
-    email:"",
-    password:""
+  const [selectUser, setSelectUser] = useState({
+    isSelectedUser: false
+  });
+  const [userDetail, setUserDetail] = useState({
+    isUserLoaded: false,
+    email: "",
+    password: ""
   })
   const [error, setError] = useState({
     isValid: true,
@@ -60,10 +61,10 @@ const AgentUsersTable = (props) => {
     var tmp = [];
     setRows([]);
     setLoading(true);
-    var usersAccounts = await axios.get(apiUrls.userUrl.getsubagentpurchasedUrl + email);
+    var usersAccounts = await axios.get(apiUrls.agentUrl.GetAgentTestAccountsUrl);
     // getsubagentpurchasedUrl
-    usersAccounts.data.name.map((item, index) => {
-      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer, item.servertitle, item.type));
+    usersAccounts.data.result.users.map((item, index) => {
+      tmp.push(createData(item.email, item.password, item.username, item.typeTitle, item.expires, item.removedFromServer, item.servertitle, item.type));
     })
     setRows(tmp);
     setMainRows(tmp)
@@ -71,13 +72,16 @@ const AgentUsersTable = (props) => {
     setLoading(false);
   }
 
-function ClearForm(){
-  setUserDetail({
-    isUserLoaded:false,
-    email:"",
-    password:""
-  })
-}
+  function ClearForm() {
+    setUserDetail({
+      isUserLoaded: false,
+      email: "",
+      password: ""
+    });
+    setSelectUser({
+      isSelectedUser: false
+    })
+  }
 
   const searchByUserNameHandler = (e) => {
     e.preventDefault();
@@ -90,76 +94,23 @@ function ClearForm(){
   }
 
 
-  const btnManageUserHandler = async (e) => {
+
+  const btnSendingEmail = async (e) => {
     e.preventDefault();
-    ClearForm();
     setError({
       isValid: true,
       errosMsg: "",
       severity: "success"
     })
     setLoading(true);
-    var tmpRow = rows;
-    setRows([]);
+    ClearForm();
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
-    const result = await axios.get(apiUrls.userUrl.TogglingUserConnectionUrl + email + "&username=" + row.username)
-    if (result.data.name.isValid == false) {
-      setRows(tmpRow);
-      setError({
-        isValid: false,
-        errosMsg: result.data.name.errosMsg,
-        severity: "error"
-      })
-    } else {
-      GetUsersData(email);
-    }
-    setLoading(false);
-  }
-
-  const btnConvertUsersHandler = async (e) => {
-    e.preventDefault();
-    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    row.isSelectedUser = true;
     setSelectUser(row);
   }
 
-  async function refreshConvertComponent(e) {
-    e.preventDefault();
-    setSelectUser(null);
-    GetUsersData(email);
-    ClearForm();
-  }
-
-  const btnUserDetailHandler = async (e) => {
-    e.preventDefault();
-    setError({
-      isValid: true,
-      errosMsg: "",
-      severity: "success"
-    })
-    setLoading(true);
-    ClearForm();
-    let row = JSON.parse(e.currentTarget.getAttribute('row'));
-    const result = await axios.get(apiUrls.userUrl.ShowUserDetailUrl +  row.username)
-    if (result.data.isValid == false) {
-      setError({
-        isValid: false,
-        errosMsg: result.data.errorMsg,
-        severity: "error"
-      })
-    } else {
-      setUserDetail({
-        isUserLoaded:true,
-        email:result.data.userBasket.email,
-        password:result.data.userBasket.password,
-        username:result.data.userBasket.user.username,
-        userpassword:result.data.userBasket.user.password
-      })
-    }
-    setLoading(false);
-  }
-
   async function btnLoadingUsers(e) {
-   await GetUsersData(email);
+    await GetUsersData(email);
 
   }
   return (
@@ -213,12 +164,12 @@ function ClearForm(){
           <TableHead>
             <TableRow>
               <TableCell style={{ width: '40px' }} align='center'>نوع اکانت</TableCell>
+              <TableCell style={{ width: '40px' }} align='center'>ایمیل</TableCell>
               <TableCell style={{ width: '80px' }} align='center'>نام اکانت</TableCell>
+              <TableCell style={{ width: '80px' }} align='center'>کلمه عبور</TableCell>
               <TableCell style={{ width: '80px' }} align='center'>نام سرور</TableCell>
-              <TableCell style={{ width: '120px' }} align='center'>تاریخ اعتبار</TableCell>
               <TableCell style={{ width: '80px' }} align='center'>وضعیت اکانت</TableCell>
-              <TableCell style={{ width: '120px' }} align='center'>عملیات</TableCell>
-              <TableCell style={{ width: '120px' }} align='center'>تبدیل</TableCell>
+              <TableCell style={{ width: '80px' }} align='center'>عملیات</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -234,29 +185,22 @@ function ClearForm(){
                 <TableCell style={{ width: '40px' }} align='center' component='th' scope='row'>
                   {row.typeTitle}
                 </TableCell>
+                <TableCell style={{ maxWidth: '120px' }} align='center' component='th' scope='row'>
+                  {row.email}
+                </TableCell>
                 <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
                   {row.username}
                 </TableCell>
                 <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
+                  {row.password}
+                </TableCell>
+                <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
                   {row.servertitle}
                 </TableCell>
-                <TableCell style={{ width: '120px' }} align='center' component='th' scope='row'>
-                  {ConvertToPersianDateTime(row.expires)}
-                </TableCell>
                 <TableCell style={{ width: '80px' }}>{row.removedFromServer == true ? "غیر فعال" : "فعال"}</TableCell>
-                <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
-                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnUserDetailHandler}>
-                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>نمایش جزئیات</span>
-                  </div>
-                </TableCell>
-                <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
-                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
-                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
-                  </div>
-                </TableCell>
-                <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
-                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnConvertUsersHandler}>
-                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>تبدیل اکانت</span>
+                <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnSendingEmail}>
+                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>ارسال ایمیل</span>
                   </div>
                 </TableCell>
               </TableRow>
@@ -264,18 +208,13 @@ function ClearForm(){
           </TableBody>
         </Table>
       </TableContainer>
-      <Grid item xs={12}>
-        <Card>
-          <Grid container spacing={6}>
-            <Grid item xs={12}>
-              <ConvertUsersComponent refreshComponent={refreshConvertComponent} selectedUser={selectUser}></ConvertUsersComponent>
-            </Grid>
-            <Grid item xs={12}>
-              <UserDetail userDetail={userDetail}></UserDetail>
-            </Grid>
-          </Grid>
-        </Card>
-      </Grid>
+      {
+        selectUser.isSelectedUser == true &&
+        <Grid item xs={12}>
+          {selectUser.email}
+        </Grid>
+      }
+
     </Paper>
   )
 }

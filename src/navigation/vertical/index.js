@@ -59,6 +59,8 @@ const navigation = () => {
     tmpMenues.push({
       sectionTitle: 'پنل کاربر'
     })
+
+
     if(profileSelector.isLoggedIn&&profileSelector.isAgent==true){
       tmpMenues.push(    {
         title: 'تعریف قیمت کاربران',
@@ -71,6 +73,12 @@ const navigation = () => {
 
 
     if(profileSelector.isLoggedIn&&profileSelector.isAgent==true){
+      tmpMenues.push({
+        title:"مشاهده تست های  داده شده",
+        icon:AccountMultiple,
+        path:'/agent/TestedAccounts/'
+      })
+
       tmpMenues.push({
         title:"تعریف زیرمجموعه فروش",
         icon:AccountMultiple,

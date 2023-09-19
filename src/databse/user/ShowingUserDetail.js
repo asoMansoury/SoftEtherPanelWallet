@@ -15,7 +15,11 @@ export async function GetUserDetails(username,agentcode) {
     try {
         var result = {
             isValid:false,
-            errorMsg:"کاربر وارد شده وجود ندارد."
+            errorMsg:"کاربر وارد شده وجود ندارد.",
+            user:{
+                username:"",
+                password:""
+            }
         }
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
@@ -33,6 +37,8 @@ export async function GetUserDetails(username,agentcode) {
         result.isValid = true;
         result.email = userDetail.email;
         result.password = userDetail.password;
+        result.user.username = user.username;
+        result.user.password = user.password;
         result.errorMsg = "";
         return result;
     } catch (erros) {

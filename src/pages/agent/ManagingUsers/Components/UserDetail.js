@@ -29,7 +29,9 @@ const UserDetail = (props) => {
     const [customer, setCustomer] = useState({
         isUserLoaded:false,
         email:"",
-        password:""
+        password:"",
+        username:"",
+        userpassword:""
     });
 
     useEffect(async () => {
@@ -51,23 +53,33 @@ const UserDetail = (props) => {
                         <Divider sx={{ margin: 0 }} />
                         <CardContent>
                             <Grid container spacing={6}>
-                                <Grid item xs={6}>
+                                <Grid item xs={12} sm={6}>
                                     <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                                        ایمیل
+                                        نام کاربری
                                     </Typography>
+                                    <Alert severity='info'>{customer.username}</Alert>
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
-                                    <Alert severity='info'>{customer.email}</Alert>
-                                </Grid>
-                                <Grid item xs={6}>
                                     <Typography variant='body2' sx={{ fontWeight: 600 }}>
                                         کلمه عبور
                                     </Typography>
+                                    <Alert severity='info'>{customer.userpassword}</Alert>
+                                </Grid>
+                            </Grid>
+                            <Divider></Divider>
+                            <Grid container spacing={6}>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                                        ایمیل
+                                    </Typography>
+                                    <Alert severity='info'>{customer.email}</Alert>
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
+                                    <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                                        کلمه عبور
+                                    </Typography>
                                     <Alert severity='info'>{customer.password}</Alert>
                                 </Grid>
-                                <Divider></Divider>
                             </Grid>
                         </CardContent>
                     </Card>
