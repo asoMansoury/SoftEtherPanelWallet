@@ -24,6 +24,7 @@ export const authOptions = {
             // Add logic here to look up the user from the credentials supplied
             //const user = { id: "1", name: "J Smith", email: "jsmith@example.com" }
             var userDoc = await Login(credentials);
+            console.log({userDoc});
             if(!userDoc){
                 throw new Error("Something went wrong");
             }
