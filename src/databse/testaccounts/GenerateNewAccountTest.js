@@ -130,17 +130,32 @@ export async function IsValidForCreatingNewTestAccount(email, type,servercode) {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type,servercode:servercode });
-        if (documents != null)
+        if(type==apiUrls.types.SoftEther){
+            const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type });
+            if (documents != null)
+                return {
+                    isValid: false,
+                    message: `برای ایمیل ${email} قبلا اکانت تستی صادر شده است.`
+                }
+    
             return {
-                isValid: false,
-                message: `برای ایمیل ${email} قبلا اکانت تستی صادر شده است.`
-            }
+                isValid: true,
+                message: ``
+            };
+        }else{
+            const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type,servercode:servercode });
+            if (documents != null)
+                return {
+                    isValid: false,
+                    message: `برای ایمیل ${email} قبلا اکانت تستی صادر شده است.`
+                }
+    
+            return {
+                isValid: true,
+                message: ``
+            };
+        }
 
-        return {
-            isValid: true,
-            message: ``
-        };
     } catch (erros) {
         return Promise.reject(erros);
     } finally {
