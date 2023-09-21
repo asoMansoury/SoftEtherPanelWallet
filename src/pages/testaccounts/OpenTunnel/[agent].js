@@ -119,7 +119,7 @@ const index = () => {
     }
 
     setIsEnabledConfirm(true);
-    var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + email + "&type=" + apiUrls.types.OpenVpn)).data;
+    var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + email + "&type=" + apiUrls.types.OpenVpn+"&servercode="+selectedServer)).data;
 
     if (isUserValid.name.isValid == true) {
       //بعد از اعتبارسنجی هایه بالا برای کاربر یک اکانت تستی درست می کنیم و به ایمیل او ارسال می کنیم.
@@ -147,7 +147,7 @@ const index = () => {
           <CardContent>
             <Grid container spacing={5}>
               <Grid item xs={12} sm={12}>
-                <Alert severity="error">اطلاعات اکانت تست به ایمیل شخصی شما تنها برای یکبار ارسال میگردد. لطفا ایمیل معتبر و شخصی خود را وارد نمایید.</Alert>
+              <Alert severity="error">اطلاعات اکانت یک روزه به تست  به ایمیل شخصی شما به ازای هر سرور تنها برای یکبار ارسال میگردد. لطفا ایمیل معتبر و شخصی خود را وارد نمایید.</Alert>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField name="email"

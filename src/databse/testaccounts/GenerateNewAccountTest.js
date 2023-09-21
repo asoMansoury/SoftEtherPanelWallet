@@ -60,7 +60,9 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        const documents = await collection.findOne({ email: email, type: type });
+        console.log(email,type,servercode);
+        const documents = await collection.findOne({ email: email, type: type,servercode:servercode });
+        console.log(documents)
         if (documents == null) {
             var agent = await GetAgentByAgentCode(agentCode);
             if(agent.isAgentValid==false)
@@ -121,14 +123,14 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
     }
 }
 
-export async function IsValidForCreatingNewTestAccount(email, type) {
+export async function IsValidForCreatingNewTestAccount(email, type,servercode) {
     if (type == '' || type == undefined)
         type = apiUrls.types.Cisco;
     try {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type });
+        const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type,servercode:servercode });
         if (documents != null)
             return {
                 isValid: false,
