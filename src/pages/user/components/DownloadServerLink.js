@@ -14,7 +14,7 @@ export default function DownloadServerLink(props) {
     if(row==null)
         return <></>
     else{
-        if(row.type==apiUrls.types.SoftEther){
+        if(row.type==apiUrls.types.SoftEther||row.type==apiUrls.types.OpenVpn){
             return (
                 <a className="download-img-con btn-for-select" target="_blank" rel="noreferrer" href={row.url} >
                     <DownloadIcon></DownloadIcon>

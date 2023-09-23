@@ -26,6 +26,7 @@ async function GetServers(type){
     }
 }
 
+
 export async function GetServersByTypeAndCode(type,code){
     if(type=='' || type == undefined)
         type = apiUrls.types.SoftEther;

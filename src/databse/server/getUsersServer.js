@@ -45,6 +45,14 @@ async function GetUsersServer(username){
                         tmpResult.push(item);
                     }
                 })
+            }else if(userDocs.type==apiUrls.types.OpenVpn){
+                var currentServerOfUser = documents.find(e=>e.servercode==userDocs.currentservercode);
+                documents.map((item,index)=>{
+                    if(item.isremoved==false
+                        && item.servercode != userDocs.currentservercode){
+                        tmpResult.push(item);
+                    }
+                })
             }
 
 
