@@ -39,6 +39,7 @@ const ConvertUsersComponent = (props) => {
 
     useEffect(async () => {
         if (props != undefined) {
+            setSelectedUser(null);
             if (props.selectedUser != undefined) {
                 var selectedTypesResult = GetAllTypes().filter((z => z.code != apiUrls.types.SoftEther && z.code != props.selectedUser.type));
                 setTypes(selectedTypesResult);

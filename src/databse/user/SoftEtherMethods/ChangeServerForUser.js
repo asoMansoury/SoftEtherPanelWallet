@@ -101,11 +101,10 @@ export async function ChangeServerForUserOpenVPN(servers, currentServerOfUser, f
 
                 // Delete username from this server
                 RemoveUserOpenVpn(serverItem, foundUser);
-            } else {
-                if (serverItem.isremoved == false) {
-                    // Generate username on selectedServer
-                    CreateUserOnOpenVpn(serverItem, foundUser, foundUser.expires);
-                }
+            } else if (serverItem.servercode == obj.servercode) {
+                foundNewServer = serverItem;
+                // Generate username on selectedServer
+                CreateUserOnOpenVpn(serverItem, foundUser, foundUser.expires);
             }
         });
         if (foundNewServer != null) {

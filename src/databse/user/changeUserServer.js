@@ -53,7 +53,7 @@ async function ChangeUserServer(obj) {
             var emailResult = await sendEmailCiscoClientTest(foundUser.email, tmpUsers, foundNewServer, "اطلاعات اکانت شما", agent)
             var emailToAgent = await sendEmailCiscoClientTest(agent.agentInformation.email, tmpUsers, foundNewServer, "اطلاعات اکانت جدید کاربر", agent);
         } else if (foundUser.type == apiUrls.types.OpenVpn) {
-            var servers = await GetServers(apiUrls.types.SoftEther);
+            var servers = await GetServers(apiUrls.types.OpenVpn);
             ChangeServerForUserOpenVPN(servers, currentServerOfUser, foundUser, obj);
             var sendingEmailResult = await sendEmailTest(foundUser.email, tmpUsers, "اطلاعات اکانت شما", agent)
             var sendingEmailResult = await sendEmailTest(agent.agentInformation.email, tmpUsers, "اطلاعات اکانت جدید کاربر", agent)

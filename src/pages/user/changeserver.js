@@ -86,13 +86,17 @@ const ChangeServer = () => {
     });
     setLoadingUsers(false);
   }
+
+  async function RefreshUserDataHandler(e){
+    setShowServerComponent(false);
+  }
   
   return (
     <Grid container spacing={6}>
         <Grid item xs={12}>
             <Card>
                 <CardHeader title='لیست اکانت ها برای تغییر سرور' titleTypographyProps={{ variant: 'h6' }} />
-                <ChanginServerTable LoadingUsers={loadingUsers} getUsersServerHandler={getUsersServerHandler} ToggleActivateUserHandler={ToggleActivateUserHandler}></ChanginServerTable>
+                <ChanginServerTable RefreshUserDataHandler={RefreshUserDataHandler} LoadingUsers={loadingUsers} getUsersServerHandler={getUsersServerHandler} ToggleActivateUserHandler={ToggleActivateUserHandler}></ChanginServerTable>
                 {
                         isWorking==true &&
                         <Alert severity="info">در حال لود اطلاعات. لطفا منتظر بمانید...</Alert>

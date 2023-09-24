@@ -11,6 +11,7 @@ import { sendEmailCiscoClient } from 'src/lib/emailsender';
 import { sendEmailCiscoChanged } from 'src/lib/Emails/CiscoEmails/ChangedTypeEmail';
 import { OpenVpnConvertedEmail } from 'src/lib/Emails/OpenVpnEmails/OpenVpnConvertedEmail';
 import { UpdateUser } from './UsersFunction/UpdateUser';
+import { GetAgentByAgentCode } from '../agent/getagentinformation';
 
 const client = new MongoClient(MONGO_URI,{
     serverApi:{
@@ -30,7 +31,7 @@ async function ConvertUsers(username,newType,newServerCode,Token){
         });
         var result =await  UpdateUser(user._id,newType,newServerCode);
         var prevServer = await GetServerByCode(user.currentservercode);
-
+        var agent = await GetAgentByAgentCode(user.agentcode);
         var servers = await GetServersByTypeAndCode(newType,newServerCode);
 
         var selectedNewServer =servers[0];
@@ -50,6 +51,7 @@ async function ConvertUsers(username,newType,newServerCode,Token){
                 user.type = apiUrls.types.Cisco;
                 users.push(user);
                 sendEmailCiscoChanged(user.email,users,selectedNewServer,"تغییر نوع اکانت به سیسکو");
+                sendEmailCiscoChanged(agent.agentInformation.email,users,selectedNewServer,"تغییر نوع اکانت به سیسکو");
             }else if(newType == apiUrls.types.OpenVpn){
                 CreateUserOnOpenVpn(selectedNewServer,user,user.expires);
                 user.ovpnurl = selectedNewServer.ovpnurl;
@@ -57,6 +59,7 @@ async function ConvertUsers(username,newType,newServerCode,Token){
                 var users = [];
                 users.push(user);
                 OpenVpnConvertedEmail(user.email,users,"تغییر نوع اکانت به اپن وی پی ان")
+                OpenVpnConvertedEmail(agent.agentInformation.email,users,"تغییر نوع اکانت به اپن وی پی ان")
             }
 
         }else{

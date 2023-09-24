@@ -66,6 +66,7 @@ const ChanginServerTable = (props) => {
   }, []);
 
   async function GetUsersData() {
+    setSelectedUser();
     var tmp = [];
     setRows([]);
     var usersAccounts = await axios.get(apiUrls.userUrl.getpurchasedUrl + session.user.email);
@@ -80,6 +81,8 @@ const ChanginServerTable = (props) => {
 
   async function BtnRefreshUserData(e){
     e.preventDefault();
+    setSelectedUser(null);
+    props.RefreshUserDataHandler(e);
     GetUsersData();
   }
 
@@ -115,7 +118,7 @@ const ChanginServerTable = (props) => {
     e.preventDefault();
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
     props.getUsersServerHandler(row);
-    await GetUsersData();
+    setRows([]);
   }
 
   return (
