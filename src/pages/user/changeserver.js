@@ -21,6 +21,7 @@ const ChangeServer = () => {
   const [selectedUser,setSelectedUser]=useState();
   const {  data:session,status } = useSession();
   const [isWorking , setIsWorking] = useState(false);
+  const [loadingUsers,setLoadingUsers]= useState(false);
   const [profileSelector,setProfileSelector] = useState({
     isLoggedIn:false
   });
@@ -77,11 +78,13 @@ const ChangeServer = () => {
     
     setShowServerComponent(false);
     var result =await axios.post(apiUrls.userUrl.changeUserServerUrl,{body:obj});
+    setLoadingUsers(false);
     setIsWorking(false);
     setErros({
       hasErros:true,
       erroMsg:result.data.name
     });
+    setLoadingUsers(false);
   }
   
   return (
@@ -89,7 +92,7 @@ const ChangeServer = () => {
         <Grid item xs={12}>
             <Card>
                 <CardHeader title='لیست اکانت ها برای تغییر سرور' titleTypographyProps={{ variant: 'h6' }} />
-                <ChanginServerTable getUsersServerHandler={getUsersServerHandler} ToggleActivateUserHandler={ToggleActivateUserHandler}></ChanginServerTable>
+                <ChanginServerTable LoadingUsers={loadingUsers} getUsersServerHandler={getUsersServerHandler} ToggleActivateUserHandler={ToggleActivateUserHandler}></ChanginServerTable>
                 {
                         isWorking==true &&
                         <Alert severity="info">در حال لود اطلاعات. لطفا منتظر بمانید...</Alert>

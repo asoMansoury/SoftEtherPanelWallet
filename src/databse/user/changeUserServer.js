@@ -6,7 +6,7 @@ import { ChangeUserGroupOnSoftEther } from 'src/lib/createuser/changeUserGroup';
 import GetServers from '../server/getservers';
 import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
 import { apiUrls } from 'src/configs/apiurls';
-import  { ChangeServerForUserCisco } from './SoftEtherMethods/ChangeServerForUser';
+import  { ChangeServerForUserCisco, ChangeServerForUserOpenVPN } from './SoftEtherMethods/ChangeServerForUser';
 import ChangeServerForUserSoftEther from './SoftEtherMethods/ChangeServerForUser';
 import GetUsersByUsernameAndPassword from './GetUsersByUsernameAndPassword';
 import { sendEmailCiscoClientTest, sendEmailTest } from 'src/lib/emailsender';
@@ -29,25 +29,38 @@ async function ChangeUserServer(obj){
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const userCollection = db.collection('Users');
-
+        console.log({obj});
 
         var foundUser =await userCollection.findOne({username:obj.username});
         var currentServerOfUser = await GetServerByCode(foundUser.currentservercode);
+        const foundNewServer =await GetServerByCode(obj.servercode);
         var agent = await GetAgentByAgentCode(foundUser.agentcode);
         var tmpUsers = []
         tmpUsers.push(foundUser);
 
         if(foundUser.type === apiUrls.types.SoftEther){
-            const foundNewServer =await GetServerByCode(obj.servercode);
             var servers =await GetServers(apiUrls.types.SoftEther);
             ChangeServerForUserSoftEther(servers,currentServerOfUser,foundUser,obj);
             var sendingEmailResult =await sendEmailTest(foundUser.email,tmpUsers,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",agent)
             
         }else if(foundUser.type === apiUrls.types.Cisco){
+
             var servers =await GetServers(apiUrls.types.Cisco);
             ChangeServerForUserCisco(servers,currentServerOfUser,foundUser,obj);
-            var emailResult = await  sendEmailCiscoClientTest(foundUser.email,tmpUsers,currentServerOfUser,"اطلاعات اکانت شما",agent)
+            var emailResult = await  sendEmailCiscoClientTest(foundUser.email,tmpUsers,foundNewServer,"اطلاعات اکانت شما",agent)
+            var emailToAgent = await sendEmailCiscoClientTest(agent.agentInformation.email,tmpUsers,foundNewServer,"اطلاعات اکانت جدید کاربر",agent);
+        }else if(foundUser.type==apiUrls.types.OpenVpn){
+            var servers =await GetServers(apiUrls.types.SoftEther);
+            ChangeServerForUserOpenVPN(servers,currentServerOfUser,foundUser,obj);
+            var sendingEmailResult =await sendEmailTest(foundUser.email,tmpUsers,"لطفا پاسخ ندهید(اطلاعات اکانت تستی)",agent)
         }
+        foundUser.currentservercode = obj.servercode;
+
+
+        // const filter = { _id: foundUser._id };
+        // const updateOperation = { $set: foundUser };
+        // var userUpdateOperation = await userCollection.updateOne(filter, updateOperation);
+        // console.log({userUpdateOperation});
 
 
         return foundUser;

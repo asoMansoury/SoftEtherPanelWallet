@@ -55,6 +55,12 @@ const ChanginServerTable = (props) => {
     errorMsg: ""
   })
 
+  useEffect(async()=>{
+    if(props.LoadingUsers==true){
+      GetUsersData();
+    }
+  },[props])
+
   useEffect(async () => {
 
   }, []);
@@ -70,6 +76,11 @@ const ChanginServerTable = (props) => {
     setRows(tmp);
     setMainRows(tmp);
     setEmail(session.user.email)
+  }
+
+  async function BtnRefreshUserData(e){
+    e.preventDefault();
+    GetUsersData();
   }
 
   const searchByUserNameHandler = (e) => {
@@ -126,13 +137,15 @@ const ChanginServerTable = (props) => {
         <Grid item xs={12}>
 
           <Grid container spacing={6}>
-            <Grid item xs={3}></Grid>
             <Grid item xs={6}>
               <TextField name="username"
                 type='input'
                 value={usernameForSearch}
                 onChange={searchByUserNameHandler}
                 fullWidth label='نام کاربر' placeholder='جسجتو اکانت بر اساس نام کاربری' />
+            </Grid>
+            <Grid item xs={2}>
+            <Button type='submit' sx={{ mr: 2 }} variant='contained' onClick={BtnRefreshUserData}  size='small'>بازیابی مجدد</Button>
             </Grid>
           </Grid>
         </Grid>
@@ -146,9 +159,10 @@ const ChanginServerTable = (props) => {
               <TableCell align='center'>نام سرور</TableCell>
               <TableCell align='center'>تاریخ اعتبار</TableCell>
               <TableCell align='center'>وضعیت اکانت</TableCell>
+              <TableCell align='center'>تغییر سرور</TableCell>
               <TableCell align='center'>فعال/غیر فعال</TableCell>
               <TableCell align='center'>تبدیل</TableCell>
-              <TableCell align='center'>تغییر سرور</TableCell>
+
             </TableRow>
           </TableHead>
           <TableBody>
@@ -177,6 +191,12 @@ const ChanginServerTable = (props) => {
                   {row.removedFromServer == true ? "غیر فعال است" : "فعال است"}
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangeServerHandler}>
+
+                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>انتخاب سرور</Button>
+                  </div>
+                </TableCell>
+                <TableCell align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ToggleActivateUserHandler}>
 
                     <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>{row.removedFromServer == false ? "غیر فعال" : "فعال کردن"}</Button>
@@ -188,12 +208,7 @@ const ChanginServerTable = (props) => {
                     <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>تبدیل</Button>
                   </div>
                 </TableCell>
-                <TableCell align='center' component='th' scope='row'>
-                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangeServerHandler}>
 
-                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>انتخاب سرور</Button>
-                  </div>
-                </TableCell>
 
               </TableRow>
             ))}
