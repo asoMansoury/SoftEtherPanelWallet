@@ -1,4 +1,5 @@
 import { getToken } from "next-auth/jwt";
+import { apiUrls } from "src/configs/apiurls";
 import { IsAgentValid } from "src/databse/agent/getagentinformation";
 import GetServerByCode from "src/databse/server/getServerByCode";
 import ChangeUserServer from "src/databse/user/changeUserServer";
@@ -41,7 +42,11 @@ export default async function handler(req, res) {
         item.username= item.userwithhub
       });
 
-      res.status(200).json({ name: `آدرس سرور جدید شما : ${newSelectedServer.ciscourl}`});
+      if(newSelectedServer.type==apiUrls.types.Cisco){
+        res.status(200).json({ name: `آدرس سرور جدید شما : ${newSelectedServer.ciscourl}`});
+      }else if(newSelectedServer.type==apiUrls.types.OpenVpn||newSelectedServer.type==apiUrls.types.SoftEther){
+        res.status(200).json({ name: `لینک دانلود سرور جدید ایمیل شد.`});
+      }
    }else {
         console.log("method not allow")
       res.status(405).json({ message: 'Method Not Allowed' });
