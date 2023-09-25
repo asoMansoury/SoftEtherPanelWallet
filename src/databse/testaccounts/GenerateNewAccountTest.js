@@ -60,13 +60,13 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        console.log(email,type,servercode);
         const documents = await collection.findOne({ email: email, type: type,servercode:servercode });
-        console.log(documents)
         if (documents == null) {
             var agent = await GetAgentByAgentCode(agentCode);
-            if(agent.isAgentValid==false)
+            if(agent.isAgentValid==false){
                 agent = await GetAgentByAgentCode(process.env.DefaultAgentCodeForTesting);
+                agentCode = process.env.DefaultAgentCodeForTesting.toString();
+            }
             var selectedServer = await GetServerByCode(servercode);
             var insertTestAccount = await GenerateNewAccount(email, selectedServer, type, agentCode);
 
