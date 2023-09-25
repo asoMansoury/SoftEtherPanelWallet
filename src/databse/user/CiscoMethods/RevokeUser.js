@@ -42,7 +42,6 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
         var customerCollection = db.collection('Customers');
         var foundedUser = await userCollection.findOne({ username: username });
         var customerAccount = await customerCollection.findOne({ email: foundedUser.email });
-
         if (foundedUser.isfromagent == false) {
             var tariffPrices = await getTariffPrices(type);
 
