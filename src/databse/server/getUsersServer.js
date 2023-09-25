@@ -22,19 +22,18 @@ async function GetUsersServer(username){
 
         const collection = db.collection('Servers');
         const documents = await collection.find({type:userDocs.type}).toArray();
-
         var tmpResult = [];
         if(userDocs!=null){
             if(userDocs.type==apiUrls.types.SoftEther){
                 if(userDocs.serverId.length>0){
                     userDocs.serverId.map((Item,index)=>{
     
-                        var foundServer = documents.find(e=>e.servercode==Item.servercode
-                                                            && e.isremoved === false
-                                                            && e.servercode!= userDocs.currentservercode);
-                        if(foundServer) {
-                            tmpResult.push(foundServer);
-                        }
+                        documents.map((item,index)=>{
+                            if(item.isremoved==false &&
+                                item.servercode != userDocs.currentservercode){
+                                    tmpResult.push(item);
+                                }
+                        })
                     });
                 }
             }else if(userDocs.type==apiUrls.types.Cisco){
