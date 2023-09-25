@@ -19,6 +19,7 @@ import { UpdateUsersBasketForRevoke } from 'src/databse/usersbasket/insertusersb
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { UpdateExpirationTimeSoftEther } from 'src/lib/createuser/UpdateExpirationTime';
+import { sendEmail, sendEmailCiscoClient } from 'src/lib/emailsender';
 import { GenerateOneMonthExpiration, GenerateOneMonthExpirationStartDate, MONGO_URI, calculateEndDate, formatDate } from 'src/lib/utils';
 
 
@@ -38,7 +39,10 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const userCollection = db.collection('Users');
+        var customerCollection = db.collection('Customers');
         var foundedUser = await userCollection.findOne({ username: username });
+        var customer = await customerCollection.findOne({ email: foundedUser.email });
+
         if (foundedUser.isfromagent == false) {
             var tariffPrices = await getTariffPrices(type);
 
@@ -83,7 +87,7 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
                         }
                     })
 
-            }else  if (isAgentValid.isAgent == true && isAgentValid.isSubAgent == true) {
+            } else if (isAgentValid.isAgent == true && isAgentValid.isSubAgent == true) {
                 var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);
                 //محاسبه موجود کیف پول ایجنت فروش
                 var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice;
@@ -142,11 +146,11 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
         var updatingUserBasket = UpdateUsersBasketForRevoke(uuid, PAID_CUSTOMER_STATUS.PAID, true);
 
         const today = new Date();
-        var nextExpirationDate =new Date(foundedUser.expires); 
-        var isRemovedFromServer= foundedUser.removedFromServer==true?true:false;
-        if(today>foundedUser.expires){
+        var nextExpirationDate = new Date(foundedUser.expires);
+        var isRemovedFromServer = foundedUser.removedFromServer == true ? true : false;
+        if (today > foundedUser.expires) {
             nextExpirationDate = calculateEndDate(formatDate(today), selectedPlanType.duration);
-        }else{
+        } else {
             nextExpirationDate = calculateEndDate(foundedUser.expires, selectedPlanType.duration);
             foundedUser.isRevoked = true;
             foundedUser.expires = nextExpirationDate;
@@ -161,9 +165,23 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
 
         if (foundedUser.type == apiUrls.types.SoftEther)
             UpdateSoftEtherUserExpiration(foundedUser, nextExpirationDate);
-        UpdateUsersWhichRemovedFromServer(foundedUser,isRemovedFromServer)
+        UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServer)
 
         foundedUser.isValid = true;
+        var selectedSever = await GetServerByCode(foundedUser.currentservercode);
+        var tmpEmails = [];
+        if (foundedUser.type === apiUrls.types.Cisco) {
+            tmpEmails.push(foundedUser);
+            sendEmailCiscoClient(foundedUser.email, tmpEmails, selectedSever, "اطلاعیه تمدیدیه اکانت", null, customer);
+        } else if (foundedUser.type == apiUrls.types.OpenVpn) {
+            foundedUser.ovpnurl = selectedSever.ovpnurl;
+            tmpEmails.push(foundedUser);
+            sendEmail(foundedUser.email, tmpEmails, "اطلاعیه تمدیده اکانت", null, customer);
+        } else if (foundedUser.type === apiUrls.types.SoftEther) {
+            foundedUser.ovpnurl = selectedSever.ovpnurl;
+            tmpEmails.push(foundedUser);
+            sendEmail(foundedUser.email, tmpEmails, "اطلاعیه تمدیده اکانت", null, customer);
+        }
         return foundedUser;
     } catch (erros) {
         return Promise.reject(erros);
@@ -172,14 +190,14 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
     }
 }
 
-async function UpdateUsersWhichRemovedFromServer(foundedUser,isRemovedFromServer){
-    if(isRemovedFromServer==true){
-        if(foundedUser.type == apiUrls.types.OpenVpn){
-            var selectedServer =await GetServerByCode(foundedUser.currentservercode);
-            CreateUserOnOpenVpn(selectedServer,foundedUser);
-        }else if(foundedUser.type == apiUrls.types.Cisco){
-            var selectedServer =await GetServerByCode(foundedUser.currentservercode);
-            CreateUserOnCisco(selectedServer,foundedUser.username,foundedUser.password);
+async function UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServer) {
+    if (isRemovedFromServer == true) {
+        if (foundedUser.type == apiUrls.types.OpenVpn) {
+            var selectedServer = await GetServerByCode(foundedUser.currentservercode);
+            CreateUserOnOpenVpn(selectedServer, foundedUser);
+        } else if (foundedUser.type == apiUrls.types.Cisco) {
+            var selectedServer = await GetServerByCode(foundedUser.currentservercode);
+            CreateUserOnCisco(selectedServer, foundedUser.username, foundedUser.password);
         }
     }
 }
