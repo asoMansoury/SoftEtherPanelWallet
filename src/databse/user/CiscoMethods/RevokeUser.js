@@ -41,7 +41,7 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
         const userCollection = db.collection('Users');
         var customerCollection = db.collection('Customers');
         var foundedUser = await userCollection.findOne({ username: username });
-        var customer = await customerCollection.findOne({ email: foundedUser.email });
+        var customerAccount = await customerCollection.findOne({ email: foundedUser.email });
 
         if (foundedUser.isfromagent == false) {
             var tariffPrices = await getTariffPrices(type);
@@ -172,15 +172,15 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
         var tmpEmails = [];
         if (foundedUser.type === apiUrls.types.Cisco) {
             tmpEmails.push(foundedUser);
-            sendEmailCiscoClient(foundedUser.email, tmpEmails, selectedSever, "اطلاعیه تمدیدیه اکانت", null, customer);
+            sendEmailCiscoClient(foundedUser.email, tmpEmails, selectedSever, "اطلاعیه تمدیدیه اکانت", null, customerAccount);
         } else if (foundedUser.type == apiUrls.types.OpenVpn) {
             foundedUser.ovpnurl = selectedSever.ovpnurl;
             tmpEmails.push(foundedUser);
-            sendEmail(foundedUser.email, tmpEmails, "اطلاعیه تمدیده اکانت", null, customer);
+            sendEmail(foundedUser.email, tmpEmails, "اطلاعیه تمدیده اکانت", null, customerAccount);
         } else if (foundedUser.type === apiUrls.types.SoftEther) {
             foundedUser.ovpnurl = selectedSever.ovpnurl;
             tmpEmails.push(foundedUser);
-            sendEmail(foundedUser.email, tmpEmails, "اطلاعیه تمدیده اکانت", null, customer);
+            sendEmail(foundedUser.email, tmpEmails, "اطلاعیه تمدیده اکانت", null, customerAccount);
         }
         return foundedUser;
     } catch (erros) {
