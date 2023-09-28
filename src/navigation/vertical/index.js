@@ -52,7 +52,7 @@ const navigation = () => {
       path: '/cisco/revoke'
     });
     tmpMenues.push({
-      title: 'تغییر سرور اکانت',
+      title: ' مدیریت اکانت',
       icon: AccountPlusOutline,
       path: '/user/changeserver'
     })
