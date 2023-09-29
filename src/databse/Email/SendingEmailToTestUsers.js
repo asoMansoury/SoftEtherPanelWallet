@@ -17,8 +17,9 @@ async function SendinEmailToTestUsers(email, content,token) {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('Customers');
+        const testedAccountCollection = db.collection('TestAccounts');
+        var testAccount = await testedAccountCollection.findOne({email:email});
         var Agent = await GetAgentByAgentCode(token.agentcode);
-        console.log({Agent})
         var telegramChannel = {
             hasTelegram:false,
             telegramId:"",
@@ -30,6 +31,11 @@ async function SendinEmailToTestUsers(email, content,token) {
             }
         }
         await SendEmailToTests(email, "پشتیبانی اکانت تستی", content,telegramChannel)
+        testAccount.hasSentEmail= true;
+        testedAccountCollection.updateOne(
+            { email: email },
+            { $set: {hasSentEmail:true} }
+        )
         return {
             isValid: true,
             errorMessage: "ایمیل ارسال گردید."
