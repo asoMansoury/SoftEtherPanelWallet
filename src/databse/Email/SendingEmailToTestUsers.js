@@ -20,6 +20,7 @@ async function SendinEmailToTestUsers(email, content,token) {
         const testedAccountCollection = db.collection('TestAccounts');
         var testAccount = await testedAccountCollection.findOne({email:email});
         var Agent = await GetAgentByAgentCode(token.agentcode);
+        console.log({content});
         var telegramChannel = {
             hasTelegram:false,
             telegramId:"",
