@@ -90,7 +90,8 @@ export const apiUrls = {
         "DeleteExpiresUsersApi":`/api/admin/deleteexpiredaccount`,
         "GetAgentInvoice":`/api/admin/getAgentInvoice/?username=`,
         "InvoiceWithAgent":`/api/admin/InvoiceWithAgent/?agentCode=`,
-        "DefineNewAgent":`/api/admin/DefineNewAgent`
+        "DefineNewAgent":`/api/admin/DefineNewAgent`,
+        "EnableIPV4Api":`/api/admin/EnableIPV4`
     },
     "TutorialUrls":{
         "GetTutorial":`/api/tutorial/gettutorial`

@@ -9,6 +9,7 @@ import AccountMultiple from 'mdi-material-ui/AccountMultiple'
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
+import { GetAgentForServerAdmin } from 'src/configs/AgentsForServer';
 const navigation = () => {
   const {  data:session,status } = useSession(); 
   const [profileSelector,setProfileSelector] = useState({
@@ -67,6 +68,14 @@ const navigation = () => {
         icon: AccountCogOutline,
         path: '/agentprice'
       });
+
+      if(GetAgentForServerAdmin(profileSelector.email).isValid==true){
+        tmpMenues.push(    {
+          title: 'مدیریت سرور',
+          icon: AccountCogOutline,
+          path: '/admin/Servers'
+        });
+      }
     }
 
 

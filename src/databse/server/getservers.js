@@ -57,6 +57,20 @@ export async function GetAllServers(){
     }
 }
 
+export async function GetAllEnabledServers(){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Servers');
+        const documents = await collection.find({isremoved: false}).toArray();
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
 export async function GetServersForTest(type){
     if(type=='' || type == undefined)
         type = apiUrls.types.SoftEther;
