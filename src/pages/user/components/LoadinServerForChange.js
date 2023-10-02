@@ -44,7 +44,6 @@ const LoadinServerForChange = (props) => {
   }, [status])
 
   useEffect(async () => {
-
     setRows(props.servers);
     setEmail(profileSelector.email)
   }, [props]);
@@ -103,11 +102,14 @@ const LoadinServerForChange = (props) => {
                     <DownloadServerLink row={row}></DownloadServerLink>
                   }
                 </TableCell>
-                <TableCell align='center' component='th' scope='row'>
-                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangeServerHandler}>
-                    <EditIcon></EditIcon>
-                  </div>
-                </TableCell>
+                {
+                  row.isCurrent == false && <TableCell align='center' component='th' scope='row'>
+                    <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangeServerHandler}>
+                      انتقال
+                    </div>
+                  </TableCell>
+                }
+
               </TableRow>
             ))}
           </TableBody>

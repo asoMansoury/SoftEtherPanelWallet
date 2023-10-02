@@ -13,6 +13,7 @@ export default async function handler(req, res) {
                 description: item.description,
                 title: item.title,
                 type: item.type,
+                isCurrent:item.isCurrent
             }
             if (item.type == apiUrls.types.SoftEther)
                 obj.url = item.ovpnurl;
