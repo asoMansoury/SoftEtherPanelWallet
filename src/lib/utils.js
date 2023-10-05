@@ -28,16 +28,39 @@ export const GenerateOneMonthExpiration = (durationMonth) => {
   const currentYear = currentDate.getFullYear();
 
   // Calculate the next month
-  const nextMonth = (currentMonth + durationMonth) % 12; // Add 1 to the current month, modulo 12 to handle year change
+  const nextMonth = (currentMonth + durationMonth) % 12; // Add durationMonth to the current month, modulo 12 to handle year change
 
   // Calculate the next year
-  const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear; // If current month is December, add 1 to the current year
+  const nextYear = nextMonth === 0 ? currentYear + 1 : currentYear; // If next month is January, add 1 to the current year
 
   // Create the new date one month later
-  const oneMonthLater = new Date(nextYear, nextMonth, currentDate.getDate(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds());
+  const oneMonthLater = new Date(
+    nextYear,
+    nextMonth,
+    currentDate.getDate(),
+    currentDate.getHours(),
+    currentDate.getMinutes(),
+    currentDate.getSeconds()
+  );
 
   // Format the date
-  const formattedDate = `${oneMonthLater.getFullYear()}/${(oneMonthLater.getMonth() + 1).toString().padStart(2, '0')}/${oneMonthLater.getDate().toString().padStart(2, '0')} ${oneMonthLater.getHours().toString().padStart(2, '0')}:${oneMonthLater.getMinutes().toString().padStart(2, '0')}:${oneMonthLater.getSeconds().toString().padStart(2, '0')}`;
+  const formattedDate = `${oneMonthLater.getFullYear()}/${(
+    oneMonthLater.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, '0')}/${oneMonthLater
+      .getDate()
+      .toString()
+      .padStart(2, '0')} ${oneMonthLater
+        .getHours()
+        .toString()
+        .padStart(2, '0')}:${oneMonthLater
+          .getMinutes()
+          .toString()
+          .padStart(2, '0')}:${oneMonthLater
+            .getSeconds()
+            .toString()
+            .padStart(2, '0')}`;
 
   return formattedDate;
 }
@@ -187,7 +210,7 @@ export function ConvertCodeToTitle(typeCode) {
 }
 
 
-export function ValidateUIElements(element){
+export function ValidateUIElements(element) {
 
 }
 
@@ -195,13 +218,13 @@ export function isNumber(value) {
   return !isNaN(parseInt(value));
 }
 
-export function GetAllTypes(){
+export function GetAllTypes() {
   var Keys = Object.keys(apiUrls.types);
-  var tmp = Keys.map((item)=>{
-    var val =  apiUrls.types[item];
+  var tmp = Keys.map((item) => {
+    var val = apiUrls.types[item];
     var obj = {
-      code : val,
-      title:ConvertCodeToTitle(val)
+      code: val,
+      title: ConvertCodeToTitle(val)
     }
     return obj;
   });
