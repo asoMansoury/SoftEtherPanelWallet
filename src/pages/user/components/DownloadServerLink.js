@@ -28,7 +28,7 @@ export default function DownloadServerLink(props) {
             )
         } else {
             return <CopyToClipboard
-                text={row.url}
+                text={row.url+":"+row.port}
                 onCopy={() => alert("کپی شد")}>
                 <Alert severity='info'>{row.url+":"+row.port}</Alert>
             </CopyToClipboard>
