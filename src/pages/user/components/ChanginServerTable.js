@@ -117,6 +117,7 @@ const ChanginServerTable = (props) => {
   async function ChangeServerHandler(e) {
     e.preventDefault();
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    setSelectedUser(null);
     props.getUsersServerHandler(row);
     setRows([]);
   }
@@ -163,8 +164,9 @@ const ChanginServerTable = (props) => {
               <TableCell align='center'>تاریخ اعتبار</TableCell>
               <TableCell align='center'>وضعیت اکانت</TableCell>
               <TableCell align='center'>تغییر سرور</TableCell>
-              <TableCell align='center'>فعال/غیر فعال</TableCell>
               <TableCell align='center'>تبدیل</TableCell>
+              <TableCell align='center'>فعال/غیر فعال</TableCell>
+
 
             </TableRow>
           </TableHead>
@@ -200,20 +202,18 @@ const ChanginServerTable = (props) => {
                   </div>
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ConvertingHandler}>
+
+                    <Button disabled={row.type == apiUrls.types.SoftEther} type='submit' sx={{ mr: 2 }} variant='contained' size='small'>تبدیل</Button>
+                  </div>
+                </TableCell>
+                <TableCell align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ToggleActivateUserHandler}>
 
                     <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>{row.removedFromServer == false ? "غیر فعال" : "فعال کردن"}</Button>
                   </div>
                 </TableCell>
-                {
-                  row.type != apiUrls.types.SoftEther &&
-                  <TableCell align='center' component='th' scope='row'>
-                    <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ConvertingHandler}>
 
-                      <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>تبدیل</Button>
-                    </div>
-                  </TableCell>
-                }
 
 
 
