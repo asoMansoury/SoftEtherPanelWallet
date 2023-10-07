@@ -127,22 +127,28 @@ const RevokeSelectedUser = (props) => {
       prveUUID:selectedUserBasket.uuid
     });
     
-    
-    const result = await axios.post(apiUrls.userUrl.revokeuserUrl,{
-      username:userName,
-      tariffplancode:selectedTariffPlanCode,
-      tariffcode:calculatedTariff.selectedTarifPlan.tarrifcode,
-      type:selectedUser.type,
-      uuid:uuid
-    });
-    setShowLoadingProgressForRevoke(false);
-    console.log(result);
-    if(result.data.result.isValid==false){
-      setRevokeMessage(result.data.result.message);
-      return;
+    try{
+      const result = await axios.post(apiUrls.userUrl.revokeuserUrl,{
+        username:userName,
+        tariffplancode:selectedTariffPlanCode,
+        tariffcode:calculatedTariff.selectedTarifPlan.tarrifcode,
+        type:selectedUser.type,
+        uuid:uuid
+      });
+      setShowLoadingProgressForRevoke(false);
+      console.log(result);
+      if(result.data.result.isValid==false){
+        setRevokeMessage(result.data.result.message);
+        return;
+      }
+      GetUserInformation(userName);
+      props.FinishRevokingHandler();
+    }catch(ex){
+      setRevokeMessage("اکانت تمدید شده است، اما برای بررسی وضعیت این اکانت حتما با مدیریت در تماس باشید.");
+      props.FinishRevokingHandler();
     }
-    GetUserInformation(userName);
-    props.FinishRevokingHandler();
+
+
   }
   
 
