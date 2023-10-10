@@ -111,7 +111,9 @@ function ClearForm(){
         severity: "error"
       })
     } else {
-      GetUsersData(email);
+      setTimeout(() => {
+        GetUsersData(email);
+      }, 2000);
     }
     setLoading(false);
   }

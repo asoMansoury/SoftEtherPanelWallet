@@ -55,8 +55,8 @@ export const apiUrls = {
         "TogglingUserConnectionUrl":`/api/user/ToggleUserConnection/?email=`,
         "DeactivatinUserConnectionUrl":`/api/user/DeactivateUserConnection/?username=`,
         "ConvertingUsersUrl":`/api/user/convertAccounts`,
+        "ChangeUserVpnPasswordUrl":`/api/user/changeUserVpnPassword`,
         "ShowUserDetailUrl":`/api/user/ShowingUserDetail/?username=`,
-
     },
     "redisUrl":{
         "setRedisApi":`/api/redis/setredis/`,

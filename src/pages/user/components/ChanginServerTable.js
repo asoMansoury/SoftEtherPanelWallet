@@ -21,6 +21,7 @@ import EditIcon from 'src/views/iconImages/editicon';
 import TextField from '@mui/material/TextField'
 import { useSession } from 'next-auth/react';
 import ConvertUsersComponent from 'src/pages/admin/Components/ConvertingUsersComponent';
+import ChangingUserPassword from 'src/pages/admin/Components/ChangingUserPassword';
 
 const createData = (username, expires, userwithhub, type, typeTitle, removedFromServer, servertitle) => {
   return { username, expires, userwithhub, type, typeTitle, removedFromServer, servertitle }
@@ -35,6 +36,7 @@ const ChanginServerTable = (props) => {
   const [rows, setRows] = useState([]);
   const [mainRows, setMainRows] = useState([]);
   const [selectedUser, setSelectedUser] = useState();
+  const [selectedUserPassword, setSelectedUserPassword] = useState();
   const [profileSelector, setProfileSelector] = useState({
     isLoggedIn: false
   });
@@ -108,8 +110,15 @@ const ChanginServerTable = (props) => {
     setSelectedUser(row);
   }
 
+  async function ChangingPasswordHandler(e) {
+    e.preventDefault();
+    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    setSelectedUserPassword(row);
+  }
+
   async function refreshConvertComponent(e) {
     setSelectedUser(null);
+    setSelectedUserPassword(null);
     await GetUsersData();
   }
 
@@ -164,6 +173,7 @@ const ChanginServerTable = (props) => {
               <TableCell align='center'>تاریخ اعتبار</TableCell>
               <TableCell align='center'>وضعیت اکانت</TableCell>
               <TableCell align='center'>تغییر سرور</TableCell>
+              <TableCell align='center'>مدیریت کلمه عبور</TableCell>
               <TableCell align='center'>تبدیل</TableCell>
               <TableCell align='center'>فعال/غیر فعال</TableCell>
 
@@ -202,8 +212,12 @@ const ChanginServerTable = (props) => {
                   </div>
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangingPasswordHandler}>
+                    <Button disabled={row.type == apiUrls.types.SoftEther} type='submit' sx={{ mr: 2 }} variant='contained' size='small'>مدیریت پسورد</Button>
+                  </div>
+                </TableCell>
+                <TableCell align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ConvertingHandler}>
-
                     <Button disabled={row.type == apiUrls.types.SoftEther} type='submit' sx={{ mr: 2 }} variant='contained' size='small'>تبدیل</Button>
                   </div>
                 </TableCell>
@@ -213,10 +227,6 @@ const ChanginServerTable = (props) => {
                     <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>{row.removedFromServer == false ? "غیر فعال" : "فعال کردن"}</Button>
                   </div>
                 </TableCell>
-
-
-
-
               </TableRow>
             ))}
           </TableBody>
@@ -238,6 +248,11 @@ const ChanginServerTable = (props) => {
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <ConvertUsersComponent refreshComponent={refreshConvertComponent} selectedUser={selectedUser}></ConvertUsersComponent>
+          </Grid>
+        </Grid>
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <ChangingUserPassword refreshComponent={refreshConvertComponent} selectedUser={selectedUserPassword}></ChangingUserPassword>
           </Grid>
         </Grid>
       </Grid>

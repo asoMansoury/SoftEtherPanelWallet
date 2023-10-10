@@ -21,6 +21,9 @@ async function SendinEmailToTestUsers(email, content,token) {
         var testAccount = await testedAccountCollection.findOne({email:email});
         var Agent = await GetAgentByAgentCode(token.agentcode);
         console.log({content});
+        if(content==null || content == "" || content == undefined){
+            content = "کاربر گرامی متوجه شدم که اکانت تستی دریافت کردید در صورتی که مشکلی در اتصال داشتید لطفا به کانال من که بالا ایمیل هست، پیام بدید که راهنماییتون کنم."
+        }
         var telegramChannel = {
             hasTelegram:false,
             telegramId:"",

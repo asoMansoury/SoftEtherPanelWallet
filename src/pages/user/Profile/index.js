@@ -155,7 +155,7 @@ export const index = () => {
                                         <TextField fullWidth label=' وارد کردن آدرس کانال تلگرام' placeholder='carterLeonard' onChange={(e) => setTelegram(e.target.value)} value={telegram} />
                                     </Grid>
                                     <Grid item xs={12} sm={2}>
-                                        <Button fullWidth label='تغییر آدرس تلگرام' type='submit' variant='contained' disabled={disabledTelegramBtn} onClick={btnChangeTelegramHandler}>تغییر آدرس تلگرام</Button>
+                                        <Button fullWidth label='تغییر آدرس تلگرام' type='submit' variant='آدرس تلگرام' disabled={disabledTelegramBtn} onClick={btnChangeTelegramHandler}>تغییر آدرس تلگرام</Button>
                                     </Grid>
 
                                     <Divider></Divider>
@@ -163,7 +163,7 @@ export const index = () => {
                                         <TextField fullWidth label='پسورد' placeholder='carterLeonard' onChange={passwordTxtHandler} value={password} />
                                     </Grid>
                                     <Grid item xs={12} sm={2}>
-                                        <Button fullWidth label='تغییر پسورد' type='submit' variant='contained' disabled={disabledBtn} onClick={btnChangeHandler}>تغییر پسورد</Button>
+                                        <Button fullWidth label='تغییر پسورد' type='submit' variant='تغییر پسورد' disabled={disabledBtn} onClick={btnChangeHandler}>تغییر پسورد</Button>
                                     </Grid>
                                     {
                                         !validChange.isValid &&
