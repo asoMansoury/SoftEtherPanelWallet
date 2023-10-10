@@ -8,6 +8,7 @@ import GetServerByCode from '../server/getServerByCode';
 import { GetAgentByAgentCode } from '../agent/getagentinformation';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { sendOpenVpnEmailTest } from 'src/lib/Emails/OpenVpnEmails/OpenVpnCreated';
+import { GetAgentForExtraTests } from 'src/configs/GetAgentForExtraTests';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -60,10 +61,11 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        const documents = await collection.findOne({ email: email, type: type,servercode:servercode });
-        if (documents == null) {
+        const documents = await collection.findOne({ email: email, type: type, servercode: servercode });
+        
+        if (documents == null || GetAgentForExtraTests(email).isValid==true) {
             var agent = await GetAgentByAgentCode(agentCode);
-            if(agent.isAgentValid==false){
+            if (agent.isAgentValid == false) {
                 agent = await GetAgentByAgentCode(process.env.DefaultAgentCodeForTesting);
                 agentCode = process.env.DefaultAgentCodeForTesting.toString();
             }
@@ -123,33 +125,40 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
     }
 }
 
-export async function IsValidForCreatingNewTestAccount(email, type,servercode) {
+export async function IsValidForCreatingNewTestAccount(email, type, servercode) {
     if (type == '' || type == undefined)
         type = apiUrls.types.Cisco;
     try {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        if(type==apiUrls.types.SoftEther){
+
+        if (GetAgentForExtraTests(email).isValid == true) {
+            return {
+                isValid: true,
+                message: ``
+            };
+        }
+        if (type == apiUrls.types.SoftEther) {
             const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type });
             if (documents != null)
                 return {
                     isValid: false,
                     message: `برای ایمیل ${email} قبلا اکانت تستی صادر شده است.`
                 }
-    
+
             return {
                 isValid: true,
                 message: ``
             };
-        }else{
-            const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type,servercode:servercode });
+        } else {
+            const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type, servercode: servercode });
             if (documents != null)
                 return {
                     isValid: false,
                     message: `برای ایمیل ${email} قبلا اکانت تستی صادر شده است.`
                 }
-    
+
             return {
                 isValid: true,
                 message: ``
