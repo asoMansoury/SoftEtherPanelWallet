@@ -10,7 +10,8 @@ export const apiUrls = {
         "OpenVpn":"OP1"
     },
     "telegramUrl":{
-        "changeserver":`/api/telegram/changeserver`
+        "changeserver":`/api/telegram/changeserver`,
+        "changeUserPasswordUrl":`/api/telegram/changeuserpassword`
     },
     "localUrl":{
         "getTariffsUrl": `/api/tariff/getatariff/?type=`,

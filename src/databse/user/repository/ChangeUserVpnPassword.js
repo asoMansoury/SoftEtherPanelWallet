@@ -22,6 +22,7 @@ async function ChangeUserVpnPassword(password,username){
         var user =await customerCollection.findOne({ 
             username: { $regex: `^${username}$`, $options: "i" }
         });
+        console.log({user});
         const selectedServer = await GetServerByTypeAndCode(user.type,user.currentservercode);
         if(user!=null) 
         {   
