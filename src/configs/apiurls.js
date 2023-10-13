@@ -9,6 +9,9 @@ export const apiUrls = {
         "SoftEther":"SF1",
         "OpenVpn":"OP1"
     },
+    "telegramUrl":{
+        "changeserver":`/api/telegram/changeserver`
+    },
     "localUrl":{
         "getTariffsUrl": `/api/tariff/getatariff/?type=`,
         "getTariffPlanUrl":`/api/tariff/getatariffplans/?type=`,

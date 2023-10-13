@@ -29,7 +29,6 @@ async function ChangeUserServer(obj) {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const userCollection = db.collection('Users');
-        console.log({ obj });
 
         var foundUser = await userCollection.findOne({ username: obj.username });
         var currentServerOfUser = await GetServerByCode(foundUser.currentservercode);
