@@ -105,4 +105,22 @@ export async function GetServersForTest(type){
     }
 }
 
+
+export async function GetServersForRestartServer(type){
+    if(type=='' || type == undefined)
+        type = apiUrls.types.SoftEther;
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Servers');
+        const documents = await collection.find({type:type,isremoved:false}).toArray();
+        
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
 export default GetServers;

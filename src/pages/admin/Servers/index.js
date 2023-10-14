@@ -29,12 +29,22 @@ const Index = () => {
 
   }
 
+  async function btnOpenVpnHandler(e){
+    var apiServer = await axios.get(apiUrls.AdminManagementUrls.OpenVPNApi);
+
+  }
+
   return (
     <Card>
       <Grid container spacing={6} style={{padding:'8px'}}>
         <Grid item xs={3}>
           <Button   size='large' onClick={btnServerHandler}  type='submit' sx={{ mr: 2 }} variant='contained'>
               فعال کردن
+          </Button>
+        </Grid>
+        <Grid item xs={3}>
+          <Button   size='large' onClick={btnOpenVpnHandler}  type='submit' sx={{ mr: 2 }} variant='contained'>
+              OpenVPN
           </Button>
         </Grid>
       </Grid>

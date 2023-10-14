@@ -1,6 +1,6 @@
 let isWriting = false;
 
-export const EnableIPV4Commands = async (config) => {
+export const RestartOpenVpn = async (config) => {
     console.log("CREATE_OpenVPN Flag : ", process.env.CREATE_OPENVPN)
     if (process.env.CREATE_OPENVPN == false)
         return;
@@ -13,16 +13,13 @@ export const EnableIPV4Commands = async (config) => {
         readyTimeout: 60000
     }
     
-    var EnableIPV4 = `sudo sysctl net.ipv4.ip_forward=1`;
-    var EnableMasquerade = `sudo iptables -t nat -A POSTROUTING ! -s 127.0.0.1 -j MASQUERADE`;
+    var EnableIPV4 = `/home/aso/openvpn.sh`;
     const trimmedCommand = EnableIPV4.replace(/\r?\n|\r/g, '');
-    const trimmedCommand2 = EnableMasquerade.replace(/\r?\n|\r/g, '');
     var host = {
         server: serverConfig,
         commands: [
             `This is a message that will be added ${trimmedCommand}`,
-            trimmedCommand,
-            trimmedCommand2
+            trimmedCommand
         ],
         onCommandComplete: function (command, response, sshObj) {
             //handle just one command or do it for all of the each time

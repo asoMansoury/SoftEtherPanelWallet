@@ -95,7 +95,8 @@ export const apiUrls = {
         "GetAgentInvoice":`/api/admin/getAgentInvoice/?username=`,
         "InvoiceWithAgent":`/api/admin/InvoiceWithAgent/?agentCode=`,
         "DefineNewAgent":`/api/admin/DefineNewAgent`,
-        "EnableIPV4Api":`/api/admin/EnableIPV4`
+        "EnableIPV4Api":`/api/admin/EnableIPV4`,
+        "OpenVPNApi":`/api/admin/OpenVpn`
     },
     "TutorialUrls":{
         "GetTutorial":`/api/tutorial/gettutorial`
