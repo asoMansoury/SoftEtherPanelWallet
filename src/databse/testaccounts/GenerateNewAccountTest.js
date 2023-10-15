@@ -140,7 +140,7 @@ export async function IsValidForCreatingNewTestAccount(email, type, servercode) 
             };
         }
         if (type == apiUrls.types.SoftEther) {
-            const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type });
+            const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type, servercode: servercode });
             if (documents != null)
                 return {
                     isValid: false,
