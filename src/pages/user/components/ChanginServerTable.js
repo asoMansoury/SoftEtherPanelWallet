@@ -175,7 +175,7 @@ const ChanginServerTable = (props) => {
               <TableCell align='center'>تغییر سرور</TableCell>
               <TableCell align='center'>مدیریت کلمه عبور</TableCell>
               <TableCell align='center'>تبدیل</TableCell>
-              <TableCell align='center'>فعال/غیر فعال</TableCell>
+              <TableCell align='center'>رستارت اکانت</TableCell>
 
 
             </TableRow>
@@ -224,7 +224,8 @@ const ChanginServerTable = (props) => {
                 <TableCell align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ToggleActivateUserHandler}>
 
-                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>{row.removedFromServer == false ? "غیر فعال" : "فعال کردن"}</Button>
+                    {/* <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>{row.removedFromServer == false ? "غیر فعال" : "فعال کردن"}</Button> */}
+                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>رستارت اکانت</Button>
                   </div>
                 </TableCell>
               </TableRow>

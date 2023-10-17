@@ -13,6 +13,12 @@ import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
 import { emailForDisconnectedUsers, emailForReconnectingUsers } from 'src/lib/Emails/emailForDisconnectedUsers';
 import { RemoveUserOpenVpn } from 'src/lib/OpenVpn/RemoveUserOpenVpn';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
+import { GetAgentByAgentCode } from '../agent/getagentinformation';
+import { GetWalletUserByCode } from '../Wallet/getWalletUser';
+import { CalculateTotalPrice, CalculateTotalPriceModifed } from '../tariffagent/calculateTotalPrice';
+import { getAgentTariff } from '../tariffagent/getAgentTariff';
+import { IncreaseWallet, IncreaseWalletV2 } from '../Wallet/IncreaseWallet';
+import { TransferedWalletLog } from '../Wallet/CreateWallet';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -24,7 +30,7 @@ const client = new MongoClient(MONGO_URI, {
 });
 
 
-function IsValidateForActivatingUser(token,user){
+function IsValidateForActivatingUser(token, user) {
     if (token.isAgent == true && token.isSubAgent == false) {
         if (user.removedByAdmin == true) {
             return {
@@ -39,7 +45,7 @@ function IsValidateForActivatingUser(token,user){
                 errorMsg: "شما دسترسی انجام عملیات مورد نظر را ندارید."
             }
         }
-    }else if(token.isAgent == false && token.isSubAgent == false){
+    } else if (token.isAgent == false && token.isSubAgent == false) {
         return {
             isValid: false,
             errorMsg: "شما دسترسی انجام عملیات مورد نظر را ندارید."
@@ -79,7 +85,7 @@ export async function DeleteUserOfAgent(email, agentcode, username, token) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+                    //emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 } else if (user.type === apiUrls.types.SoftEther) {
                     var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
                     user.removedFromServer = true;
@@ -88,7 +94,7 @@ export async function DeleteUserOfAgent(email, agentcode, username, token) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+                    //emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
 
                 } else if (user.type === apiUrls.types.OpenVpn) {
                     var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
@@ -98,13 +104,13 @@ export async function DeleteUserOfAgent(email, agentcode, username, token) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+                    //emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 }
 
             } else {
                 if (token.isAdmin == false) {
-                    var validation = IsValidateForActivatingUser(token,user);
-                    if(validation.isValid==false){
+                    var validation = IsValidateForActivatingUser(token, user);
+                    if (validation.isValid == false) {
                         return validation;
                     }
                 }
@@ -120,7 +126,7 @@ export async function DeleteUserOfAgent(email, agentcode, username, token) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+                    //emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 } else if (user.type === apiUrls.types.SoftEther) {
                     var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
                     user.removedFromServer = false;
@@ -129,7 +135,7 @@ export async function DeleteUserOfAgent(email, agentcode, username, token) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+                    //emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 } else if (user.type === apiUrls.types.OpenVpn) {
                     var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
                     user.removedFromServer = false;
@@ -138,7 +144,7 @@ export async function DeleteUserOfAgent(email, agentcode, username, token) {
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
-                    emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+                    //emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
                 }
 
             }
@@ -218,6 +224,67 @@ export async function DeleteUserOfByClient(username) {
     } finally {
         client.close();
     }
+}
+
+
+export async function DeleteUserByAdmin(username) {
+    const today = formatDate(new Date());
+    try {
+        const connectionState = await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Users');
+        const user = await collection.findOne({
+            username: username,
+            expires: { $gt: today }
+        });
+        user.removedByAgent =  false;
+        user.removedBySubAgent =  false;
+        user.removedByAdmin =  true ;
+
+
+        var agent = await GetWalletUserByCode(user.agentcode);
+        var plans = (await getAgentTariff(user.agentcode)).filter((z=>z.tariffplancode==user.tariffplancode&&
+                                                                      z.tarrifcode==user.policy &&
+                                                                      z.type==user.type));
+
+        var calculateTotalPrice = await CalculateTotalPriceModifed(user.agentcode,plans,user.type);
+        IncreaseWalletV2(user.email,calculateTotalPrice.ownerPrice);
+        TransferedWalletLog("aso.mansoury@gmail.com",user.agentcode,agent.email,calculateTotalPrice.ownerPrice,`برگشت مبلغ ${calculateTotalPrice.ownerPrice} به اکانت بابت لغو اکانت ${user.username}`);
+  
+        const filter = { _id: user._id };
+        const updateOperation = { $set: user };
+        await collection.updateOne(filter, updateOperation);
+
+
+        if (user.type === apiUrls.types.Cisco) {
+            var CiscoServers = await GetServers(apiUrls.types.Cisco);
+            var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
+            DeleteUserCisco(selectedServer, user.username);
+        } else if (user.type === apiUrls.types.SoftEther) {
+            var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
+            var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
+            //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+            RemoveUserSoftEther(selectedSoftEtherServer, user);
+        } else if (user.type === apiUrls.types.OpenVpn) {
+            var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
+            var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
+            RemoveUserOpenVpn(selectedOpenVpnServer, user);
+        }
+        
+
+
+
+        return [];
+    } catch (erros) {
+        return Promise.reject(erros);
+    } finally {
+        client.close();
+    }
+
+
+
+
+
 }
 
 

@@ -101,6 +101,32 @@ const AgentUsersTable = (props) => {
     setLoading(false);
   }
 
+  const btnDeleteUserHandler = async (e) => {
+    e.preventDefault();
+    setUserConvert(null);
+    setError({
+      isValid: true,
+      errosMsg: "",
+      severity: "success"
+    })
+    setLoading(true);
+    var tmpRow = rows;
+    setRows([]);
+    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    const result = await axios.get(apiUrls.AdminManagementUrls.DeletingAdminUserConnectionUrl + email + "&username=" + row.username)
+    if (result.data.name.isValid == false) {
+      setRows(tmpRow);
+      setError({
+        isValid: false,
+        errosMsg: result.data.name.errosMsg,
+        severity: "error"
+      })
+    } else {
+      GetUsersData(email);
+    }
+    setLoading(false);
+  }
+
   const btnConvertUserHandler = async (e) => {
     e.preventDefault();
     setUserConvert(null);
@@ -210,6 +236,9 @@ const AgentUsersTable = (props) => {
                 <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
                     <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
+                  </div>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnDeleteUserHandler}>
+                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>حذف ادمین</span>
                   </div>
                 </TableCell>
                 <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>

@@ -57,6 +57,7 @@ export const apiUrls = {
         "calculateRevokeUserUrl":`/api/user/Cisco/revokeprice`,
         "ChangeUserPassworUrl":`/api/user/changeuserpassword`,
         "TogglingUserConnectionUrl":`/api/user/ToggleUserConnection/?email=`,
+        "RestartUserConnectionUrl":`/api/user/RestartUserConnection/?username=`,
         "DeactivatinUserConnectionUrl":`/api/user/DeactivateUserConnection/?username=`,
         "ConvertingUsersUrl":`/api/user/convertAccounts`,
         "ChangeUserVpnPasswordUrl":`/api/user/changeUserVpnPassword`,
@@ -96,7 +97,8 @@ export const apiUrls = {
         "InvoiceWithAgent":`/api/admin/InvoiceWithAgent/?agentCode=`,
         "DefineNewAgent":`/api/admin/DefineNewAgent`,
         "EnableIPV4Api":`/api/admin/EnableIPV4`,
-        "OpenVPNApi":`/api/admin/OpenVpn`
+        "OpenVPNApi":`/api/admin/OpenVpn`,
+        "DeletingAdminUserConnectionUrl":`/api/admin/DeletingUserConnection/?email=`,
     },
     "TutorialUrls":{
         "GetTutorial":`/api/tutorial/gettutorial`
