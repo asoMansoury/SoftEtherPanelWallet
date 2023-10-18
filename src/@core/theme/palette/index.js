@@ -34,37 +34,37 @@ const DefaultPalette = (mode, themeColor) => {
     primary: {
       light: '#9E69FD',
       main: '#9155FD',
-      dark: '#804BDF',
+      dark: '#FFFFFF',
       contrastText: '#FFF'
     },
     secondary: {
       light: '#9C9FA4',
       main: '#8A8D93',
-      dark: '#777B82',
+      dark: '#FFFFFF',
       contrastText: '#FFF'
     },
     success: {
       light: '#6AD01F',
       main: '#56CA00',
-      dark: '#4CB200',
+      dark: '#FFFFFF',
       contrastText: '#FFF'
     },
     error: {
       light: '#FF6166',
       main: '#FF4C51',
-      dark: '#E04347',
+      dark: '#FFFFFF',
       contrastText: '#FFF'
     },
     warning: {
       light: '#FFCA64',
       main: '#FFB400',
-      dark: '#E09E00',
+      dark: '#FFFFFF',
       contrastText: '#FFF'
     },
     info: {
       light: '#32BAFF',
       main: '#16B1FF',
-      dark: '#139CE0',
+      dark: '#FFFFFF',
       contrastText: '#FFF'
     },
     grey: {
@@ -90,8 +90,8 @@ const DefaultPalette = (mode, themeColor) => {
     },
     divider: `rgba(${mainColor}, 0.12)`,
     background: {
-      paper: mode === 'light' ? '#FFF' : '#312D4B',
-      default: mode === 'light' ? '#F4F5FA' : '#28243D'
+      paper: mode === 'light' ? '#FFF' : '#1C1B24',
+      default: mode === 'light' ? '#F4F5FA' : '#1a212a'
     },
     action: {
       active: `rgba(${mainColor}, 0.54)`,

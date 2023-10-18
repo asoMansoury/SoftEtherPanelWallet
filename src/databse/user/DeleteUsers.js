@@ -248,8 +248,13 @@ export async function DeleteUserByAdmin(username) {
                                                                       z.type==user.type));
 
         var calculateTotalPrice = await CalculateTotalPriceModifed(user.agentcode,plans,user.type);
-        IncreaseWalletV2(user.email,calculateTotalPrice.ownerPrice);
-        TransferedWalletLog("aso.mansoury@gmail.com",user.agentcode,agent.email,calculateTotalPrice.ownerPrice,`برگشت مبلغ ${calculateTotalPrice.ownerPrice} به اکانت بابت لغو اکانت ${user.username}`);
+
+        await IncreaseWalletV2(user.email,calculateTotalPrice.ownerPrice).then((response=>{
+            if(response.isValid==true)
+                TransferedWalletLog("aso.mansoury@gmail.com",user.agentcode,agent.email,calculateTotalPrice.ownerPrice,`برگشت مبلغ ${calculateTotalPrice.ownerPrice} به اکانت بابت لغو اکانت ${user.username}`);
+            else
+                TransferedWalletLog("aso.mansoury@gmail.com",user.agentcode,agent.email,calculateTotalPrice.ownerPrice,`عدم موفقیت در برگشت مبلغ ${calculateTotalPrice.ownerPrice} به اکانت بابت لغو اکانت ${user.username}`);
+        }));
   
         const filter = { _id: user._id };
         const updateOperation = { $set: user };

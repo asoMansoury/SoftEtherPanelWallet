@@ -22,8 +22,8 @@ import EditIcon from 'src/views/iconImages/editicon';
 import { useSession } from 'next-auth/react';
 import ConvertUsersComponent from 'src/pages/admin/Components/ConvertingUsersComponent';
 
-const createData = (username, typeTitle, expires, removedFromServer, servertitle, type, servercode) => {
-  return { username, typeTitle, expires, removedFromServer, servertitle, type, servercode }
+const createData = (username, typeTitle, expires, removedFromServer, servertitle, type, servercode, removedBySubAgent, removedByAgent, removedByAdmin) => {
+  return { username, typeTitle, expires, removedFromServer, servertitle, type, servercode, removedBySubAgent, removedByAgent, removedByAdmin }
 }
 
 
@@ -53,9 +53,10 @@ const AgentUsersTable = (props) => {
     setRows([]);
     setLoading(true);
     var usersAccounts = await axios.get(apiUrls.userUrl.getsubagentpurchasedUrl + email);
+    console.log(usersAccounts.data.name);
     // getsubagentpurchasedUrl
     usersAccounts.data.name.map((item, index) => {
-      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer, item.servertitle, item.type, item.servercode));
+      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer, item.servertitle, item.type, item.servercode, item.removedBySubAgent, item.removedByAgent, item.removedByAdmin));
     })
     setRows(tmp);
     setMainRows(tmp)
@@ -237,9 +238,12 @@ const AgentUsersTable = (props) => {
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
                     <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
                   </div>
-                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnDeleteUserHandler}>
-                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>حذف ادمین</span>
-                  </div>
+                  {
+                    (row.removedByAgent==true || row.removedByAdmin==true) && <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnDeleteUserHandler}>
+                      <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>حذف ادمین</span>
+                    </div>
+                  }
+
                 </TableCell>
                 <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnConvertUserHandler}>
