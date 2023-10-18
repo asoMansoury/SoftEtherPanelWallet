@@ -53,7 +53,6 @@ const AgentUsersTable = (props) => {
     setRows([]);
     setLoading(true);
     var usersAccounts = await axios.get(apiUrls.userUrl.getsubagentpurchasedUrl + email);
-    console.log(usersAccounts.data.name);
     // getsubagentpurchasedUrl
     usersAccounts.data.name.map((item, index) => {
       tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer, item.servertitle, item.type, item.servercode, item.removedBySubAgent, item.removedByAgent, item.removedByAdmin));

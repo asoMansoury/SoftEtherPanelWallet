@@ -11,10 +11,11 @@ import TableFooter from '@mui/material/TableFooter'
 import TableContainer from '@mui/material/TableContainer'
 import Paper from '@mui/material/Paper'
 import Grid from '@mui/material/Grid'
+import { useSession } from 'next-auth/react';
 export const SubAgentsTable = props => {
     const [rows, setRow] = useState([]);
     const [loading, setLoading] = useState(false);
-
+    const { data: session, status } = useSession();
     useEffect(() => {
         if (props.subAgents != undefined) {
             setRow(props.subAgents);
@@ -33,9 +34,21 @@ export const SubAgentsTable = props => {
         props.btnManaginWalletHandler(row);
     }
 
+    async function btnIncreateAgentHandler(e) {
+        var row = JSON.parse(e.target.getAttribute("row"));
+        props.btnIncreateAgentHandler(row);
+    }
+
+    async function btnDecAgentHandler(e) {
+        var row = JSON.parse(e.target.getAttribute("row"));
+        props.btnDecAgentHandler(row);
+    }
+
+
+
     function btnLoadingAgents(e) {
-       props.GetAllSubAgentsFunc();
-      }
+        props.GetAllSubAgentsFunc();
+    }
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <Grid container spacing={6}>
@@ -100,6 +113,21 @@ export const SubAgentsTable = props => {
                                     <div className="delete-img-con btn-for-select" style={{ width: '120px', cursor: 'pointer', fontWeight: 'bolder', color: 'blue' }} row={JSON.stringify(row)} onClick={btnManaginWalletHandler}>
                                         مدیریت کیف پول ایجنت
                                     </div>
+                                    {
+                                        session.user.isAdmin == true && (
+                                            <div className="delete-img-con btn-for-select" style={{ width: '120px', cursor: 'pointer', fontWeight: 'bolder', color: 'blue' }} row={JSON.stringify(row)} onClick={btnIncreateAgentHandler}>
+                                                افزایش اعتبار
+                                            </div>
+                                        )
+                                    }
+                                    {
+                                        session.user.isAdmin == true && (
+                                            <div className="delete-img-con btn-for-select" style={{ width: '120px', cursor: 'pointer', fontWeight: 'bolder', color: 'blue' }} row={JSON.stringify(row)} onClick={btnDecAgentHandler}>
+                                                کاهش بدهی 
+                                            </div>
+                                        )
+                                    }
+
                                 </TableCell>
                             </TableRow>
                         ))}

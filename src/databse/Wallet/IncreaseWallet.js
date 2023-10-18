@@ -79,3 +79,44 @@ export async function IncreaseWalletV2(email,IncreaseAmounMoney){
         client.close();
     }
 }
+
+
+export async function IncreaseAgentWalletByAdmin(email,IncreaseAmounMoney){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+
+        const collection = db.collection('Wallet');
+        const query = {email: { $regex: `^${email}$`, $options: "i" } }
+        const update = { $inc: { cashAmount: parseInt(IncreaseAmounMoney),debitAmount:parseInt(IncreaseAmounMoney) } };
+        var wallet = await collection.updateOne(query,update);
+        return {
+            isValid:true
+        };
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
+
+export async function DecDebitAgentWalletByAdmin(email,IncreaseAmounMoney){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+
+        const collection = db.collection('Wallet');
+        const query = {email: { $regex: `^${email}$`, $options: "i" } }
+        console.log("hello")
+        const update = { $inc: { debitAmount:-parseInt(IncreaseAmounMoney) } };
+        var wallet = await collection.updateOne(query,update);
+        return {
+            isValid:true
+        };
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}

@@ -31,6 +31,8 @@ export const apiUrls = {
         "registerAgentPrice":`/api/agents/registeragentPrice`,
         "defineSubAgentUrl":`/api/agents/defineSubAgent`,
         "refundSubAgentUrl":`/api/agents/refundSubAgent`,
+        "increateAgentWallet":`/api/agents/increateAgentWallet`,
+        "decDebAgentWallet":`/api/agents/decreaseAgentWallet`,
         "ChangeTelegramUrl":`/api/agents/changetelegram/?telegram=`,
         "GetAllAgentsUrl":`/api/agents/getallAgent/`,
         "GetAgentTestAccountsUrl":`/api/user/getagentusertests`,
