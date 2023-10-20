@@ -63,7 +63,10 @@ async function ConvertUsers(username, newType, newServerCode, Token) {
                 OpenVpnConvertedEmail(user.email, users, "تغییر نوع اکانت به اپن وی پی ان")
                 OpenVpnConvertedEmail(agent.agentInformation.email, users, "تغییر نوع اکانت به اپن وی پی ان")
             }
-
+            return {
+                isValid: true,
+                errorMsg: "عملیات با موفقیت انجام گردید."
+            }
         } else {
             return {
                 isValid: false,
