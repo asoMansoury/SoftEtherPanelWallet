@@ -141,7 +141,7 @@ function ClearForm(){
     setLoading(true);
     ClearForm();
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
-    const result = await axios.get(apiUrls.userUrl.ShowUserDetailUrl +  row.username)
+    const result = await axios.get(apiUrls.userUrl.ShowUserDetailUrl +  row.username);
     if (result.data.isValid == false) {
       setError({
         isValid: false,
