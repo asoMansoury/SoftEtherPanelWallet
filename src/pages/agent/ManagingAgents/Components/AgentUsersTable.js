@@ -238,7 +238,7 @@ const AgentUsersTable = (props) => {
                     <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
                   </div>
                   {
-                    (row.removedByAgent==true || row.removedByAdmin==true) && <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnDeleteUserHandler}>
+                    (row.removedBySubAgent==true || row.removedByAgent==true || row.removedByAdmin==true) && <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnDeleteUserHandler}>
                       <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>حذف ادمین</span>
                     </div>
                   }
