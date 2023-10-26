@@ -52,7 +52,7 @@ export async function DeleteExpiredUsersJob(date) {
                 var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
                 user.removedFromServer = true;
                 //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
-                RemoveUserSoftEther(selectedSoftEtherServer, user);
+                RemoveUserOpenVpn(selectedSoftEtherServer, user);
                 const filter = { _id: user._id };
                 const updateOperation = { $set: user };
                 await collection.updateOne(filter, updateOperation);

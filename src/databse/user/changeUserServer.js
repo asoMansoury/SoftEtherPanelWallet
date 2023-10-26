@@ -1,10 +1,7 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
-import { GenerateOneMonthExpiration, GenerateRandomPassword, GenerateThreeMonthExpiration, MONGO_URI } from 'src/lib/utils';
-import { getTarrifPlans } from '../tarrifplans/getTarrifPlans';
+import { MONGO_URI } from 'src/lib/utils';
 import GetServerByCode from '../server/getServerByCode';
-import { ChangeUserGroupOnSoftEther } from 'src/lib/createuser/changeUserGroup';
 import GetServers from '../server/getservers';
-import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
 import { apiUrls } from 'src/configs/apiurls';
 import { ChangeServerForUserCisco, ChangeServerForUserOpenVPN } from './SoftEtherMethods/ChangeServerForUser';
 import ChangeServerForUserSoftEther from './SoftEtherMethods/ChangeServerForUser';
@@ -42,9 +39,11 @@ async function ChangeUserServer(obj) {
 
         if (foundUser.type === apiUrls.types.SoftEther) {
             var servers = await GetServers(apiUrls.types.SoftEther);
-            ChangeServerForUserSoftEther(servers, currentServerOfUser, foundUser, obj);
-            var sendingEmailResult = await sendEmailTest(foundUser.email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
-
+            // ChangeServerForUserSoftEther(servers, currentServerOfUser, foundUser, obj);
+            // var sendingEmailResult = await sendEmailTest(foundUser.email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
+            ChangeServerForUserCisco(servers, currentServerOfUser, foundUser, obj);
+            var emailResult = await sendEmailCiscoClientTest(foundUser.email, tmpUsers, foundNewServer, "اطلاعات اکانت شما", agent)
+            var emailToAgent = await sendEmailCiscoClientTest(agent.agentInformation.email, tmpUsers, foundNewServer, "اطلاعات اکانت جدید کاربر", agent);
         } else if (foundUser.type === apiUrls.types.Cisco) {
 
             var servers = await GetServers(apiUrls.types.Cisco);
@@ -93,7 +92,8 @@ export async function ChangeUserFreeServer(obj) {
 
         if (foundUser.type === apiUrls.types.SoftEther) {
             var servers = await GetServers(apiUrls.types.SoftEther);
-            ChangeServerForUserSoftEther(servers, currentServerOfUser, foundUser, obj)
+            // ChangeServerForUserSoftEther(servers, currentServerOfUser, foundUser, obj)
+            ChangeServerForUserCisco(servers, currentServerOfUser, foundUser, obj)
         } else if (foundUser.type === apiUrls.types.Cisco) {
             var servers = await GetServers(apiUrls.types.Cisco);
             ChangeServerForUserCisco(servers, currentServerOfUser, foundUser, obj)

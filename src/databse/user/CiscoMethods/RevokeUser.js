@@ -164,8 +164,8 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
             
             UpdateRevokingUser(username,nextExpirationDate,uuid);
             finalResult=foundedUser;
-            if (foundedUser.type == apiUrls.types.SoftEther)
-                UpdateSoftEtherUserExpiration(foundedUser, nextExpirationDate);
+            // if (foundedUser.type == apiUrls.types.SoftEther)
+            //     UpdateSoftEtherUserExpiration(foundedUser, nextExpirationDate);
             UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServer)
     
             foundedUser.isValid = true;
@@ -200,6 +200,9 @@ async function UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServe
             var selectedServer = await GetServerByCode(foundedUser.currentservercode);
             CreateUserOnOpenVpn(selectedServer, foundedUser);
         } else if (foundedUser.type == apiUrls.types.Cisco) {
+            var selectedServer = await GetServerByCode(foundedUser.currentservercode);
+            CreateUserOnCisco(selectedServer, foundedUser.username, foundedUser.password);
+        }else if(foundedUser.type == apiUrls.types.SoftEther){
             var selectedServer = await GetServerByCode(foundedUser.currentservercode);
             CreateUserOnCisco(selectedServer, foundedUser.username, foundedUser.password);
         }

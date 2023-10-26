@@ -92,8 +92,9 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                     password: selectedUser.password,
                     ovpnurl: selectedServer.ovpnurl
                 };
-                CreateUserOnSoftEther(selectedServer, customerAccount, "P1", selectedUser.expires);
-                var sendingEmailResult = await sendEmailTest(email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
+                CreateUserOnCisco(selectedServer,customerAccount, selectedUser.expires)
+                //-CreateUserOnSoftEther(selectedServer, customerAccount, "P1", selectedUser.expires);
+                var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
             } else {
                 var customerAccount = {
                     username: insertTestAccount.username,

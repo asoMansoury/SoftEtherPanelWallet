@@ -1,13 +1,12 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import { MONGO_URI } from 'src/lib/utils';
-import GetServers, { GetServersByTypeAndCode } from '../server/getservers';
+import  { GetServersByTypeAndCode } from '../server/getservers';
 import { apiUrls } from 'src/configs/apiurls';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { DeleteUserCisco } from 'src/lib/Cisco/deleteuser';
 import GetServerByCode from '../server/getServerByCode';
 import { RemoveUserOpenVpn } from 'src/lib/OpenVpn/RemoveUserOpenVpn';
-import { sendEmailCiscoClient } from 'src/lib/emailsender';
 import { sendEmailCiscoChanged } from 'src/lib/Emails/CiscoEmails/ChangedTypeEmail';
 import { OpenVpnConvertedEmail } from 'src/lib/Emails/OpenVpnEmails/OpenVpnConvertedEmail';
 import { UpdateUser } from './UsersFunction/UpdateUser';

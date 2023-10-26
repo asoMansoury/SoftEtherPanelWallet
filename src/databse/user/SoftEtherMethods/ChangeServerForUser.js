@@ -1,11 +1,8 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
-import { GenerateOneMonthExpiration, GenerateRandomPassword, GenerateThreeMonthExpiration, MONGO_URI } from 'src/lib/utils';
-import { ChangeUserGroupOnSoftEther } from 'src/lib/createuser/changeUserGroup';
+import { MONGO_URI } from 'src/lib/utils';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { DeleteUserCisco } from 'src/lib/Cisco/deleteuser';
 import GetServerByCode from 'src/databse/server/getServerByCode';
-import { RemoveUserSoftEther } from 'src/lib/createuser/RemoveUserSoftEther';
-import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
 import { RemoveUserOpenVpn } from 'src/lib/OpenVpn/RemoveUserOpenVpn';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 
@@ -32,10 +29,11 @@ async function ChangeServerForUserSoftEther(servers, currentServerOfUser, foundU
                     username: foundUser.username,
                     policy: 'D1'
                 }
-                RemoveUserSoftEther(serverItem, newObj);
+                RemoveUserOpenVpn(serverItem, newObj);
             } else if (serverItem.servercode == foundNewServer.servercode) {
-                var groupPolicy = foundUser.policy;
-                CreateUserOnSoftEther(foundNewServer, foundUser, groupPolicy, foundUser.expires)
+                //var groupPolicy = foundUser.policy;
+                //CreateUserOnSoftEther(foundNewServer, foundUser, groupPolicy, foundUser.expires);
+                CreateUserOnOpenVpn(foundNewServer, foundUser,)
             }
         });
 
@@ -43,7 +41,7 @@ async function ChangeServerForUserSoftEther(servers, currentServerOfUser, foundU
             $set: {
                 currentservercode: foundNewServer.servercode,
                 currenthubname: foundNewServer.HubName, // Update the 'isactive' field to 0
-                userwithhub: obj.username + "@" + foundNewServer.HubName, //
+                userwithhub: obj.username  //
             }
         });
 
