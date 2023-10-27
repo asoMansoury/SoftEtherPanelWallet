@@ -101,12 +101,7 @@ export default async function handler(req, res) {
 
 
       userRegistered.map((userItem, userIndex) => {
-        var expireDate = userItem.expires;
-        servers.map((server, index) => {
-          if (server.servercode == selectedServer.servercode)
-            
-            CreateUserOnCisco(server,userItem.username,userItem.password,userItem.expires);
-        });
+        CreateUserOnCisco(selectedServer,userItem.username,userItem.password,userItem.expires);
       })
 
       await UpdateUsersBasket(UUID, PAID_CUSTOMER_STATUS.PAID, true, userRegistered);
