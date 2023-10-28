@@ -191,7 +191,7 @@ const ChanginServerTable = (props) => {
                 }}
               >
                 <TableCell align='center' component='th' scope='row'>
-                  {row.type == apiUrls.types.SoftEther ? row.userwithhub : row.username}
+                  { row.username}
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
                   {row.typeTitle}
@@ -213,7 +213,7 @@ const ChanginServerTable = (props) => {
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangingPasswordHandler}>
-                    <Button disabled={row.type == apiUrls.types.SoftEther} type='submit' sx={{ mr: 2 }} variant='contained' size='small'>مدیریت پسورد</Button>
+                    <Button  type='submit' sx={{ mr: 2 }} variant='contained' size='small'>مدیریت پسورد</Button>
                   </div>
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>

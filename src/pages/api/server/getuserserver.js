@@ -15,8 +15,10 @@ export default async function handler(req, res) {
                 type: item.type,
                 isCurrent:item.isCurrent
             }
-            if (item.type == apiUrls.types.SoftEther)
-                obj.url = item.ovpnurl;
+            if (item.type == apiUrls.types.SoftEther){
+                obj.url = item.ciscourl;
+                obj.port = item.ciscoPort;
+            }
             else if (item.type == apiUrls.types.Cisco){
                 obj.url = item.ciscourl;
                 obj.port = item.ciscoPort;

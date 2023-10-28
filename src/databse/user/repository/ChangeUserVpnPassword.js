@@ -22,7 +22,6 @@ async function ChangeUserVpnPassword(password,username){
         var user =await customerCollection.findOne({ 
             username: { $regex: `^${username}$`, $options: "i" }
         });
-        console.log({user});
         const selectedServer = await GetServerByTypeAndCode(user.type,user.currentservercode);
         if(user!=null) 
         {   
@@ -35,7 +34,7 @@ async function ChangeUserVpnPassword(password,username){
             if(user.type==apiUrls.types.OpenVpn){
 
                 ChangeOpenVPNUserPassword(selectedServer,user);
-            }else if(user.type==apiUrls.types.Cisco){
+            }else if(user.type==apiUrls.types.Cisco||user.type==apiUrls.types.SoftEther){
                 ChangePasswordCisco(selectedServer,username,password);
             }
             return {

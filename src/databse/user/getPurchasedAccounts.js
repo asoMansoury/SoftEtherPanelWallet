@@ -26,6 +26,8 @@ function wrappUsers(data, servers) {
             typeTitle = "اپن وی پی ان"
 
         var selectedServer = servers.filter((z) => z.servercode == item.currentservercode)[0];
+        if(selectedServer==null)
+            selectedServer  = servers.filter((z)=>z.type===apiUrls.types.SoftEther)[0];
         return {
             email: item.email,
             username: item.username,

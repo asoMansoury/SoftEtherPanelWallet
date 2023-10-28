@@ -152,8 +152,8 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
             const today = new Date();
             var nextExpirationDate = new Date(foundedUser.expires);
             var isRemovedFromServer = foundedUser.removedFromServer == true ? true : false;
-            if (today > foundedUser.expires) {
-                nextExpirationDate = calculateEndDate(formatDate(today), selectedPlanType.duration);
+            if (today > nextExpirationDate) {
+                nextExpirationDate = calculateEndDate(formatDate(today), selectedPlanType.duration);              
             } else {
                 nextExpirationDate = calculateEndDate(foundedUser.expires, selectedPlanType.duration);
                 foundedUser.isRevoked = true;
@@ -164,8 +164,6 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
             
             UpdateRevokingUser(username,nextExpirationDate,uuid);
             finalResult=foundedUser;
-            // if (foundedUser.type == apiUrls.types.SoftEther)
-            //     UpdateSoftEtherUserExpiration(foundedUser, nextExpirationDate);
             UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServer)
     
             foundedUser.isValid = true;

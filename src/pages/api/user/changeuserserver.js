@@ -41,9 +41,8 @@ export default async function handler(req, res) {
       users.map((item,index)=>{
         item.username= item.userwithhub
       });
-
-      if(newSelectedServer.type==apiUrls.types.Cisco){
-        res.status(200).json({ name: `آدرس سرور جدید شما : ${newSelectedServer.ciscourl}`});
+      if(newSelectedServer.type==apiUrls.types.Cisco||newSelectedServer.type==apiUrls.types.SoftEther){
+        res.status(200).json({ name: `آدرس سرور جدید شما : ${newSelectedServer.ciscourl}:${newSelectedServer.ciscoPort}`});
       }else if(newSelectedServer.type==apiUrls.types.OpenVpn||newSelectedServer.type==apiUrls.types.SoftEther){
         res.status(200).json({ name: `لینک دانلود سرور جدید ایمیل شد.`});
       }

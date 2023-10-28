@@ -18,7 +18,7 @@ export async function UpdateRevokingUser(username,nextExpirationDate,uuid) {
         const UserCollection = db.collection('Users');
         var result = await UserCollection.updateOne(
             { "username": username }, // Filter condition to match the document
-            { $set: { "expires": nextExpirationDate, "isRevoked": true, "uuid": uuid } } // Update operation using $set to set the new value
+            { $set: { "expires": nextExpirationDate, "isRevoked": true, "uuid": uuid,removedFromServer:false } } // Update operation using $set to set the new value
         )
         return result;
     } catch (erros) {

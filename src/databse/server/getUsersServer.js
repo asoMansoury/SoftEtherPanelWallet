@@ -25,20 +25,16 @@ async function GetUsersServer(username) {
         var tmpResult = [];
         if (userDocs != null) {
             if (userDocs.type == apiUrls.types.SoftEther) {
-                if (userDocs.serverId.length > 0) {
-                    userDocs.serverId.map((Item, index) => {
-                        documents.map((item, index) => {
-                            if (item.isremoved == false &&
-                                item.servercode != userDocs.currentservercode) {
-                                item.isCurrent = false;
-                                tmpResult.push(item);
-                            } else {
-                                item.isCurrent = true;
-                                tmpResult.push(item);
-                            }
-                        })
-                    });
-                }
+                documents.map((item, index) => {
+                    if (item.isremoved == false &&
+                        item.servercode != userDocs.currentservercode) {
+                        item.isCurrent = false;
+                        tmpResult.push(item);
+                    } else {
+                        item.isCurrent = true;
+                        tmpResult.push(item);
+                    }
+                })
             } else if (userDocs.type == apiUrls.types.Cisco) {
                 var currentServerOfUser = documents.find(e => e.servercode == userDocs.currentservercode);
                 documents.map((item, index) => {

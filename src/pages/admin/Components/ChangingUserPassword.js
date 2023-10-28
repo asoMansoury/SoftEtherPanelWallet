@@ -31,7 +31,7 @@ import MenuItem from '@mui/material/MenuItem'
 const ChangingUserPassword = (props) => {
     const [selectedUser, setSelectedUser] = useState();
     const [password, setPassword] = useState();
-    const [enableBtn, setEnableBtn] = useState(true);
+    const [enableBtn, setEnableBtn] = useState(false);
 
     useEffect(async () => {
         if (props != undefined) {
@@ -45,7 +45,6 @@ const ChangingUserPassword = (props) => {
             username: selectedUser.username,
             password:password
         }
-        setEnableBtn(true);
         var result = await axios.post(apiUrls.userUrl.ChangeUserVpnPasswordUrl, obj);
         clearForm();
         props.refreshComponent(e);

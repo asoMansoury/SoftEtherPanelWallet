@@ -10,12 +10,13 @@ export default function DownloadServerLink(props) {
     const [row, setRow] = useState(null);
     useEffect(() => {
         setRow(props.row);
+        console.log(props.row)
     }, [props]);
 
     if (row == null)
         return <></>
     else {
-        if (row.type == apiUrls.types.SoftEther || row.type == apiUrls.types.OpenVpn) {
+        if ( row.type == apiUrls.types.OpenVpn) {
             return (
                 <a className="download-img-con btn-for-select" target="_blank" rel="noreferrer" href={row.url} >
                     <DownloadIcon></DownloadIcon>
@@ -26,6 +27,12 @@ export default function DownloadServerLink(props) {
                     </div>
                 </a>
             )
+        }else if(row.type == apiUrls.types.SoftEther){
+            return <CopyToClipboard
+                text={row.url+":"+row.port}
+                onCopy={() => alert("کپی شد")}>
+                <Alert severity='info'>{row.url+":"+row.port}</Alert>
+            </CopyToClipboard>
         } else {
             return <CopyToClipboard
                 text={row.url+":"+row.port}
