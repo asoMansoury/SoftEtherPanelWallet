@@ -92,7 +92,7 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                     password: selectedUser.password,
                     ovpnurl: selectedServer.ovpnurl
                 };
-                CreateUserOnCisco(selectedServer,customerAccount, selectedUser.expires)
+                CreateUserOnCisco(selectedServer, insertTestAccount.username, selectedUser.password);
                 //-CreateUserOnSoftEther(selectedServer, customerAccount, "P1", selectedUser.expires);
                 var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
             } else {
