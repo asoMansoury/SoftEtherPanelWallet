@@ -14,6 +14,7 @@ import OpenVPNLearning from './OpenVpn/OpenVPNLearning'
 export default function index() {
     const [ciscoTutorial, setCiscoTutorial] = useState({});
     const [softEtherTutorial, setSoftEtherTutorial] = useState({});
+    const [openVPNTutorial, setOpenVPNTutorial] = useState({});
     // ** State
     const [value, setValue] = useState('1')
 
@@ -25,6 +26,7 @@ export default function index() {
         var tutorials = await axios.get(apiUrls.TutorialUrls.GetTutorial);
         setCiscoTutorial(tutorials.data.name.filter((z) => z.type == apiUrls.types.Cisco)[0]);
         setSoftEtherTutorial(tutorials.data.name.filter((z) => z.type == apiUrls.types.SoftEther)[0]);
+        setOpenVPNTutorial(tutorials.data.name.filter((z) => z.type == apiUrls.types.OpenVpn)[0])
     }, [])
 
     return (
@@ -44,7 +46,7 @@ export default function index() {
                         </TabList>
                         <CardContent sx={{ textAlign: 'center' }}>
                             <TabPanel value='1' sx={{ p: 0 }}>
-                                <OpenVPNLearning softEtherTutorial={softEtherTutorial}></OpenVPNLearning>
+                                <OpenVPNLearning softEtherTutorial={openVPNTutorial}></OpenVPNLearning>
                             </TabPanel>
                             <TabPanel value='2' sx={{ p: 0 }}>
                                 <CiscoLearning ciscoTutorial={ciscoTutorial}></CiscoLearning>
