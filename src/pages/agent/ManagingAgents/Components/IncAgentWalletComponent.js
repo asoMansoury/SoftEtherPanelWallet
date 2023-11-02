@@ -60,8 +60,6 @@ const IncAgentWalletComponent = (props) => {
         e.preventDefault();
         if (isNumber(e.target.value) == false)
             return;
-        if (e.target.value > agentWallet.cashAmount)
-            e.target.value = agentWallet.cashAmount;
         setData({
             ...data,
             refundMoney: e.target.value
