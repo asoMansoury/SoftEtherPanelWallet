@@ -262,6 +262,7 @@ export async function DeleteUserByAdmin(username) {
         var calculateTotalPrice = await CalculateTotalPriceModifed(user.agentcode,plans,user.type);
 
         await IncreaseWalletV2(user.email,calculateTotalPrice.ownerPrice).then((response=>{
+            console.log({response});
             if(response.isValid==true)
                 TransferedWalletLog("aso.mansoury@gmail.com",user.agentcode,agent.email,calculateTotalPrice.ownerPrice,`برگشت مبلغ ${calculateTotalPrice.ownerPrice} به اکانت بابت لغو اکانت ${user.username}`);
             else

@@ -26,8 +26,7 @@ async function ChangeUserServer(obj) {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const userCollection = db.collection('Users');
-
-        var foundUser = await userCollection.findOne({ username: obj.username });
+        var foundUser = await userCollection.findOne({ username:{ $regex: `^${obj.username}$`, $options: "i" }  });
         var currentServerOfUser = await GetServerByCode(foundUser.currentservercode);
         const foundNewServer = await GetServerByCode(obj.servercode);
         var agent = await GetAgentByAgentCode(foundUser.agentcode);
