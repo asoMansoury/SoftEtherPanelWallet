@@ -82,7 +82,7 @@ const index = () => {
 
   async function LoadServers(){
     setIsEnabledConfirm(true);
-    var servers = await axios.get(apiUrls.server.getServersByTypeApi + apiUrls.types.OpenVpn);
+    var servers = await axios.get(apiUrls.server.getServersForTestApi + apiUrls.types.OpenVpn);
     var tmp = [];
     servers.data.name.map((item) => {
       tmp.push(item);

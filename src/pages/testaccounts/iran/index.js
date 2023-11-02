@@ -78,7 +78,7 @@ const index = () => {
 
   async function LoadServers(){
     setIsEnabledConfirm(true);
-    var servers = await axios.get(apiUrls.server.getServersByTypeApi + apiUrls.types.SoftEther);
+    var servers = await axios.get(apiUrls.server.getServersForTestApi + apiUrls.types.SoftEther);
     var tmp = [];
     servers.data.name.map((item) => {
       tmp.push(item);

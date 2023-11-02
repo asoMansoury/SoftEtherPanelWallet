@@ -11,6 +11,8 @@ import {  CalculateTotalPriceModifed } from '../tariffagent/calculateTotalPrice'
 import { getAgentTariff } from '../tariffagent/getAgentTariff';
 import {  IncreaseWalletV2 } from '../Wallet/IncreaseWallet';
 import { TransferedWalletLog } from '../Wallet/CreateWallet';
+import { GetAgentByAgentCode } from '../agent/getagentinformation';
+import { GetCustomerAgentCode } from '../customers/getcustomer';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -254,42 +256,45 @@ export async function DeleteUserByAdmin(username) {
         user.removedByAdmin =  true ;
 
 
-        var agent = await GetWalletUserByCode(user.agentcode);
-        var plans = (await getAgentTariff(user.agentcode)).filter((z=>z.tariffplancode==user.tariffplancode&&
-                                                                      z.tarrifcode==user.policy &&
-                                                                      z.type==user.type));
-
-        var calculateTotalPrice = await CalculateTotalPriceModifed(user.agentcode,plans,user.type);
-
-        await IncreaseWalletV2(user.email,calculateTotalPrice.ownerPrice).then((response=>{
-            console.log({response});
-            if(response.isValid==true)
-                TransferedWalletLog("aso.mansoury@gmail.com",user.agentcode,agent.email,calculateTotalPrice.ownerPrice,`برگشت مبلغ ${calculateTotalPrice.ownerPrice} به اکانت بابت لغو اکانت ${user.username}`);
-            else
-                TransferedWalletLog("aso.mansoury@gmail.com",user.agentcode,agent.email,calculateTotalPrice.ownerPrice,`عدم موفقیت در برگشت مبلغ ${calculateTotalPrice.ownerPrice} به اکانت بابت لغو اکانت ${user.username}`);
-        }));
-  
-        const filter = { _id: user._id };
-        const updateOperation = { $set: user };
-        await collection.updateOne(filter, updateOperation);
-
-
-        if (user.type === apiUrls.types.Cisco) {
-            var CiscoServers = await GetServers(apiUrls.types.Cisco);
-            var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
-            DeleteUserCisco(selectedServer, user.username);
-        } else if (user.type === apiUrls.types.SoftEther) {
-            var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
-            var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
-            //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
-            RemoveUserOpenVpn(selectedSoftEtherServer, user);
-        } else if (user.type === apiUrls.types.OpenVpn) {
-            var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
-            var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
-            RemoveUserOpenVpn(selectedOpenVpnServer, user);
+        var agentInfo = await GetCustomerAgentCode(user.agentcode);
+        if(agentInfo.isvalid==true){
+            var agent = await GetWalletUserByCode(user.agentcode);
+            var plans = (await getAgentTariff(user.agentcode)).filter((z=>z.tariffplancode==user.tariffplancode&&
+                                                                          z.tarrifcode==user.policy &&
+                                                                          z.type==user.type));
+    
+            var calculateTotalPrice = await CalculateTotalPriceModifed(user.agentcode,plans,user.type);
+    
+            await IncreaseWalletV2(agentInfo.email,calculateTotalPrice.ownerPrice).then((response=>{
+                if(response.isValid==true)
+                    TransferedWalletLog("aso.mansoury@gmail.com",user.agentcode,agent.email,calculateTotalPrice.ownerPrice,`برگشت مبلغ ${calculateTotalPrice.ownerPrice} به اکانت بابت لغو اکانت ${user.username}`);
+                else
+                    TransferedWalletLog("aso.mansoury@gmail.com",user.agentcode,agent.email,calculateTotalPrice.ownerPrice,`عدم موفقیت در برگشت مبلغ ${calculateTotalPrice.ownerPrice} به اکانت بابت لغو اکانت ${user.username}`);
+            }));
+      
+            const filter = { _id: user._id };
+            const updateOperation = { $set: user };
+            await collection.updateOne(filter, updateOperation);
+    
+    
+            if (user.type === apiUrls.types.Cisco) {
+                var CiscoServers = await GetServers(apiUrls.types.Cisco);
+                var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
+                DeleteUserCisco(selectedServer, user.username);
+            } else if (user.type === apiUrls.types.SoftEther) {
+                var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
+                var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.servercode)[0];
+                //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                RemoveUserOpenVpn(selectedSoftEtherServer, user);
+            } else if (user.type === apiUrls.types.OpenVpn) {
+                var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
+                var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
+                RemoveUserOpenVpn(selectedOpenVpnServer, user);
+            }
+            
+    
+    
         }
-        
-
 
 
         return [];

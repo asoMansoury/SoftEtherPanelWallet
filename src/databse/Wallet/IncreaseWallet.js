@@ -69,7 +69,6 @@ export async function IncreaseWalletV2(email,IncreaseAmounMoney){
         const query = {email: { $regex: `^${email}$`, $options: "i" } }
         const update = { $inc: { cashAmount: IncreaseAmounMoney } };
         var wallet = await collection.updateOne(query,update);
-
         return {
             isValid:true
         };

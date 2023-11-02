@@ -79,7 +79,7 @@ const index = () => {
 
   async function LoadServers(){
     setIsEnabledConfirm(true);
-    var servers = await axios.get(apiUrls.server.getServersByTypeApi + apiUrls.types.Cisco);
+    var servers = await axios.get(apiUrls.server.getServersForTestApi + apiUrls.types.Cisco);
     var tmp = [];
     servers.data.name.map((item) => {
       tmp.push(item);
