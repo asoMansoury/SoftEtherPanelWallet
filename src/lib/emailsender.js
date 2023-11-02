@@ -149,6 +149,11 @@ export async function sendEmailTest(to, users, subject, agentInformation) {
             ${tableRows}
           </tbody>
         </table>
+        <div>ّ
+          <a target="_blank" href="${process.env.BotTelegram}" style="cursor: pointer; font-weight: bold; color: blue; text-decoration: none;">
+            <span style="border-bottom: 1px solid transparent;">ربات پشتیبان(تغییر سرور و تغییر کلمه عبور) مخصوص اکانتهای خریداری شده اینجا کلیک کنید./span>
+          </a>
+        </div>
         <div dir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
           ${telegramLink}
         </div>
@@ -206,7 +211,14 @@ export async function sendEmailCiscoClient(to, users, server, subject, currentDo
   if (process.env.SEND_EMAIL == 'false') {
     return;
   }
-
+  const botTelegram = `
+  <p style="font-size: 16px;font-weight: bold; line-height: 1.5; color: #333; text-align: center;">
+  ربات تلگرام پشتیبان(مخصوص کاربرانی که اکانت تهیه کرده اند)
+      <a href="${process.env.BotTelegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+        اینجا کلیک کنید
+      </a>
+  </p>
+  `;
   try {
     const tableRows = users.map((user, index) =>
       `
@@ -239,6 +251,10 @@ export async function sendEmailCiscoClient(to, users, server, subject, currentDo
             <p style="margin-bottom: 8px; font-size: 16px;">اطلاعات شما برای ورود به سایت (لطفاً نام کاربری و کلمه عبور خود را به هیچ عنوان به کسی ندهید.)</p>
             <span style="font-size: 14px; color: #007bff;">نام کاربری: ${customer.email}</span><br>
             <span style="font-size: 14px; color: #007bff;">کلمه عبور: ${customer.password}</span>
+          </div>
+
+          <div dir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+          ${botTelegram}
           </div>
           <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
             <a target="_blank" href="http://sale.lachom.ir" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای ورود به وبسایت اینجا کلیک کنید</a>
@@ -305,6 +321,14 @@ export async function sendEmailCiscoClientTest(to, users, server, subject, agent
       </a>
   </p>
   `: "";
+  const botTelegram = `
+  <p style="font-size: 16px; line-height: 1.5; color: #333; text-align: center;">
+  ربات تلگرام پشتیبان(مخصوص کاربرانی که اکانت تهیه کرده اند)
+      <a href="${process.env.BotTelegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+        اینجا کلیک کنید
+      </a>
+  </p>
+  `;
   try {
     const tableRows = users.map((user, index) =>
       `
@@ -335,6 +359,14 @@ export async function sendEmailCiscoClientTest(to, users, server, subject, agent
             <p style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: red;">زمان وارد کردن آدرس سرور به هیچ عنوان هیچ کلمه اضافی وارد نکنید(دقیقا عین آدرس بدون پیشوند http://) وارد گردد.</p>
             ${telegramLink}
           </div>
+          <divdir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+          ${botTelegram}
+        </div>
+          <div>ّ
+          <a target="_blank" href="${process.env.BotTelegram}" style="cursor: pointer; font-weight: bold; color: blue; text-decoration: none;">
+          <span style="border-bottom: 1px solid transparent;">ربات پشتیبان(تغییر سرور و تغییر کلمه عبور) مخصوص اکانتهای خریداری شده اینجا کلیک کنید./span>
+          </a>
+      </div>
             <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
               <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
             </div>
