@@ -11,10 +11,13 @@ export default async function handler(req,res){
         const {type } = req.query;
 
         var servers = await GetServersForTestVersion2(type);
+        console.log({servers});
         const sortedArray = servers.sort((a, b) => {
             // Sort descending with true values before false values
             return b.usedForTest - a.usedForTest;
           });
+          console.log({servers});
+          console.log({sortedArray})
         var tmp = [];
         servers.map((item)=>{
             tmp.push({
