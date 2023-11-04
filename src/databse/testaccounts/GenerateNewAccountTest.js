@@ -73,17 +73,15 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
             var insertTestAccount = await GenerateNewAccount(email, selectedServer, type, agentCode);
             const selectedUser = await collection.findOne({ email: email, type: type });
             var tmpUsers = [];
-            if (type == apiUrls.types.Cisco) {
+            if (type == apiUrls.types.Cisco || type == apiUrls.types.SoftEther) {
                 selectedUser.username = insertTestAccount.username;
-            } else if (type == apiUrls.types.SoftEther) {
-                selectedUser.ovpnurl = selectedServer.ovpnurl
             } else if (type == apiUrls.types.OpenVpn) {
                 selectedUser.ovpnurl = selectedServer.ovpnurl
             }
 
-
+            tmpUsers.push(selectedUser);
             if (type == apiUrls.types.Cisco) {
-                tmpUsers.push(selectedUser);
+
                 CreateUserOnCisco(selectedServer, insertTestAccount.username, selectedUser.password);
                 var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
             } else if (type == apiUrls.types.SoftEther) {
@@ -93,12 +91,11 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                     ovpnurl: selectedServer.ovpnurl,
                     expires:selectedUser.expires
                 };
-                tmpUsers.push(customerAccount);
+
                 CreateUserOnCisco(selectedServer, customerAccount.username, customerAccount.password);
                 //-CreateUserOnSoftEther(selectedServer, customerAccount, "P1", selectedUser.expires);
                 var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
             } else {
-                tmpUsers.push(selectedUser);
                 var customerAccount = {
                     username: insertTestAccount.username,
                     password: selectedUser.password,
