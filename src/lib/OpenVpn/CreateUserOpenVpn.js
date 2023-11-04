@@ -2,8 +2,10 @@ let isWriting = false;
 
 export const CreateUserOnOpenVpn = async (config, selectedUser, expireDate) => {
     console.log("CREATE_OpenVPN Flag : ", process.env.CREATE_OPENVPN)
-    if (process.env.CREATE_OPENVPN == false)
+    if (process.env.CREATE_OPENVPN == false){
         return;
+    }
+    return;
 
     var serverConfig = {
         host:         config.host,

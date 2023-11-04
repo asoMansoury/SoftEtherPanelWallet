@@ -26,13 +26,14 @@ export const GenerateOneMonthExpiration = (durationMonth) => {
   // Get the current month and year
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
-
   // Calculate the next month
   const nextMonth = (currentMonth + durationMonth) % 12; // Add durationMonth to the current month, modulo 12 to handle year change
-
+  
+  var nextYear = currentYear;
   // Calculate the next year
-  const nextYear = nextMonth === 0 ? currentYear + 1 : currentYear; // If next month is January, add 1 to the current year
-
+  if((currentMonth>=9&& durationMonth>=3)||(currentMonth>=11&&durationMonth>=1))
+    nextYear = currentYear + 1 ;
+   // If next month is January, add 1 to the current year
   // Create the new date one month later
   const oneMonthLater = new Date(
     nextYear,
@@ -61,7 +62,7 @@ export const GenerateOneMonthExpiration = (durationMonth) => {
             .getSeconds()
             .toString()
             .padStart(2, '0')}`;
-
+  console.log({formattedDate});
   return formattedDate;
 }
 

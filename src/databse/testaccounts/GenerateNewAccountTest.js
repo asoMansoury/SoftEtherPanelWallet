@@ -61,7 +61,7 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        const documents = await collection.findOne({ email: email, type: type, servercode: servercode });
+        const documents = await collection.findOne({ email: email, type: type, servercode });
         
         if (documents == null || GetAgentForExtraTests(email).isValid==true) {
             var agent = await GetAgentByAgentCode(agentCode);
@@ -71,7 +71,6 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
             }
             var selectedServer = await GetServerByCode(servercode);
             var insertTestAccount = await GenerateNewAccount(email, selectedServer, type, agentCode);
-
             const selectedUser = await collection.findOne({ email: email, type: type });
             var tmpUsers = [];
             if (type == apiUrls.types.Cisco) {
@@ -92,6 +91,7 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                     password: selectedUser.password,
                     ovpnurl: selectedServer.ovpnurl
                 };
+                console.log(selectedServer)
                 CreateUserOnCisco(selectedServer, insertTestAccount.username, selectedUser.password);
                 //-CreateUserOnSoftEther(selectedServer, customerAccount, "P1", selectedUser.expires);
                 var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
