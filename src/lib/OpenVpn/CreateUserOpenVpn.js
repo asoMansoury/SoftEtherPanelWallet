@@ -5,7 +5,6 @@ export const CreateUserOnOpenVpn = async (config, selectedUser, expireDate) => {
     if (process.env.CREATE_OPENVPN == false){
         return;
     }
-    return;
 
     var serverConfig = {
         host:         config.host,

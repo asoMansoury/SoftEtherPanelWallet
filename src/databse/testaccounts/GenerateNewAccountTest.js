@@ -83,6 +83,7 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
 
             tmpUsers.push(selectedUser);
             if (type == apiUrls.types.Cisco) {
+                console.log(selectedServer)
                 CreateUserOnCisco(selectedServer, insertTestAccount.username, selectedUser.password);
                 var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
             } else if (type == apiUrls.types.SoftEther) {
@@ -101,6 +102,7 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                     password: selectedUser.password,
                     ovpnurl: selectedServer.ovpnurl
                 };
+                console.log(selectedServer)
                 CreateUserOnOpenVpn(selectedServer, customerAccount, selectedUser.expires);
                 var sendingEmailResult = await sendOpenVpnEmailTest(email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
             }
