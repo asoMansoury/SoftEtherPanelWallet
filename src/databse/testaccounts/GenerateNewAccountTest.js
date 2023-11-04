@@ -81,28 +81,30 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                 selectedUser.ovpnurl = selectedServer.ovpnurl
             }
 
-            tmpUsers.push(selectedUser);
+
             if (type == apiUrls.types.Cisco) {
-                console.log(selectedServer)
+                tmpUsers.push(selectedUser);
                 CreateUserOnCisco(selectedServer, insertTestAccount.username, selectedUser.password);
                 var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
             } else if (type == apiUrls.types.SoftEther) {
                 var customerAccount = {
                     username: insertTestAccount.username,
                     password: selectedUser.password,
-                    ovpnurl: selectedServer.ovpnurl
+                    ovpnurl: selectedServer.ovpnurl,
+                    expires:selectedUser.expires
                 };
-                console.log(selectedServer)
-                CreateUserOnCisco(selectedServer, insertTestAccount.username, selectedUser.password);
+                tmpUsers.push(customerAccount);
+                CreateUserOnCisco(selectedServer, customerAccount.username, customerAccount.password);
                 //-CreateUserOnSoftEther(selectedServer, customerAccount, "P1", selectedUser.expires);
                 var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
             } else {
+                tmpUsers.push(selectedUser);
                 var customerAccount = {
                     username: insertTestAccount.username,
                     password: selectedUser.password,
                     ovpnurl: selectedServer.ovpnurl
                 };
-                console.log(selectedServer)
+
                 CreateUserOnOpenVpn(selectedServer, customerAccount, selectedUser.expires);
                 var sendingEmailResult = await sendOpenVpnEmailTest(email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
             }
