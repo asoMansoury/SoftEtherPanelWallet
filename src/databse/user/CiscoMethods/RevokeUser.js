@@ -83,6 +83,7 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
     
                     const walletCollection = db.collection('Wallet');
                     UpdateTank(type, totalPrice.ownerPrice);
+                    TransferedWalletLog(customer.email,foundedUser.agentcode,customer.email,totalPrice.ownerPrice,`مبلغ ${totalPrice.ownerPrice} بابت تمدید اکانت ${foundedUser.username} از کیف پول کسر گردید.`)
                     var result = await walletCollection.updateOne({ email: { $regex: `^${customer.email}$`, $options: "i" } },
                         {
                             $set: {
