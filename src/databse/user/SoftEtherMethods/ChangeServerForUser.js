@@ -59,6 +59,7 @@ export async function ChangeServerForUserCisco(servers, currentServerOfUser, fou
     try {
         const db = client.db('SoftEther');
         const userCollection = db.collection('Users');
+        console.log({currentServerOfUser})
         servers.map((serverItem, index) => {
             if (serverItem.servercode == currentServerOfUser.servercode) {
 

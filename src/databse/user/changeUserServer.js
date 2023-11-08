@@ -1,10 +1,9 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import { MONGO_URI } from 'src/lib/utils';
-import GetServerByCode from '../server/getServerByCode';
+import GetServerByCode, { GetServerByCodeForChangingServer } from '../server/getServerByCode';
 import GetServers from '../server/getservers';
 import { apiUrls } from 'src/configs/apiurls';
 import { ChangeServerForUserCisco, ChangeServerForUserOpenVPN } from './SoftEtherMethods/ChangeServerForUser';
-import ChangeServerForUserSoftEther from './SoftEtherMethods/ChangeServerForUser';
 import GetUsersByUsernameAndPassword from './GetUsersByUsernameAndPassword';
 import { sendEmailCiscoClientTest, sendEmailTest } from 'src/lib/emailsender';
 import { GetAgentByAgentCode } from '../agent/getagentinformation';
@@ -27,7 +26,7 @@ async function ChangeUserServer(obj) {
         const db = client.db('SoftEther');
         const userCollection = db.collection('Users');
         var foundUser = await userCollection.findOne({ username:{ $regex: `^${obj.username}$`, $options: "i" }  });
-        var currentServerOfUser = await GetServerByCode(foundUser.currentservercode);
+        var currentServerOfUser = await GetServerByCodeForChangingServer(foundUser.currentservercode);
         const foundNewServer = await GetServerByCode(obj.servercode);
         var agent = await GetAgentByAgentCode(foundUser.agentcode);
         if (foundUser.type == apiUrls.types.OpenVpn || foundUser.type == apiUrls.types.SoftEther) {

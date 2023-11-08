@@ -23,4 +23,18 @@ async function GetServerByCode(code){
     }
 }
 
+export async function GetServerByCodeForChangingServer(code){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Servers');
+        const documents = await collection.findOne({servercode:code});
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
 export default GetServerByCode;
