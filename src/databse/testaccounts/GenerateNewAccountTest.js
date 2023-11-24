@@ -76,7 +76,8 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
             if (type == apiUrls.types.Cisco || type == apiUrls.types.SoftEther) {
                 selectedUser.username = insertTestAccount.username;
             } else if (type == apiUrls.types.OpenVpn) {
-                selectedUser.ovpnurl = selectedServer.ovpnurl
+                selectedUser.ovpnurl = selectedServer.ovpnurl;
+                selectedUser.username = insertTestAccount.username;
             }
 
             tmpUsers.push(selectedUser);
@@ -101,7 +102,7 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                     password: selectedUser.password,
                     ovpnurl: selectedServer.ovpnurl
                 };
-
+                console.log({customerAccount});
                 CreateUserOnOpenVpn(selectedServer, customerAccount, selectedUser.expires);
                 var sendingEmailResult = await sendOpenVpnEmailTest(email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
             }

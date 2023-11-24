@@ -118,8 +118,10 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
       servers.data.name.map((item) => {
         tmp.push(item);
       });
-      setSelectedServer(tmp[0].servercode);
-      setServers(tmp);
+      if(tmp[0]!=null ){
+        setSelectedServer(tmp[0].servercode);
+        setServers(tmp);
+      }
     }
   }, [typeVpn])
 
