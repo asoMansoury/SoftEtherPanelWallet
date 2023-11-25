@@ -21,7 +21,7 @@ async function GetUsersServer(username) {
         const userDocs = await usersCollection.findOne({ username: username });
 
         const collection = db.collection('Servers');
-        const documents = await collection.find({ type: userDocs.type }).toArray();
+        const documents = await collection.find({ type: userDocs.type,activeforchangeserver:true }).toArray();
         var tmpResult = [];
         if (userDocs != null) {
             if (userDocs.type == apiUrls.types.SoftEther) {

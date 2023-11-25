@@ -9,6 +9,7 @@ export default async function handler(req,res){
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     if(req.method === "GET"){
         var servers = await GetServers();
+        console.log({servers})
         res.status(200).json({name:servers});
     }
 }
