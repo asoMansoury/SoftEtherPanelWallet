@@ -3,7 +3,8 @@ import { MONGO_URI, formatDate } from 'src/lib/utils';
 import { apiUrls } from 'src/configs/apiurls';
 import { RestartUserCisco } from 'src/lib/Cisco/restartuser';
 import { RestartOpenVPNUser } from 'src/lib/OpenVpn/RestartOpenVPNUser';
-import GetServers from 'src/databse/server/getservers';
+import { GetServersByRemoved } from 'src/databse/server/getservers';
+
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -55,21 +56,23 @@ export async function RestartUserConnection(username) {
             username: username,
             expires: { $gt: today }
         }).toArray();
-
-        var CiscoServers = await GetServers(apiUrls.types.Cisco);
-        var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
-        var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
+        var CiscoServers = await GetServersByRemoved(apiUrls.types.Cisco,true);
+        var SoftEtherServers = await GetServersByRemoved(apiUrls.types.SoftEther,true);
+        var OpenVpnServers = await GetServersByRemoved(apiUrls.types.OpenVpn,true);
         for (const user of allExpiredUsers) {
             if (user.type === apiUrls.types.Cisco) {
                 var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
                 RestartUserCisco(selectedServer, user.username,user.password);
-            // } else if (user.type === apiUrls.types.SoftEther) {
-            //var selectedSoftEtherServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
-            //     RemoveUserSoftEther(selectedSoftEtherServer, user);
-
-            // } 
-            }else if (user.type === apiUrls.types.OpenVpn) {
+            }
+            if (user.type === apiUrls.types.SoftEther) {
+                var selectedSoftServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
+                RestartUserCisco(selectedSoftServer, user.username,user.password);
+            }
+            else if (user.type === apiUrls.types.OpenVpn) {
+                console.log({user})
+                console.log({OpenVpnServers});
                 var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
+                console.log({selectedOpenVpnServer})
                 RestartOpenVPNUser(selectedOpenVpnServer, user);
             }
 
