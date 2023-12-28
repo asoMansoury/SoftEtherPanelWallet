@@ -15,7 +15,6 @@ export default async function handler(req, res) {
           res.status(200).json({ name: "شما اجازه دسترسی به عملیات تعیین شده را ندارید."});
           return;
         }
-
         var userBasket = await RestartUserConnection(username);
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(200).json({ name: userBasket });

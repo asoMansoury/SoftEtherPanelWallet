@@ -53,8 +53,7 @@ export async function RestartUserConnection(username) {
         const db = client.db('SoftEther');
         const collection = db.collection('Users');
         const allExpiredUsers = await collection.find({
-            username: username,
-            expires: { $gt: today }
+            username: username
         }).toArray();
         var CiscoServers = await GetServersByRemoved(apiUrls.types.Cisco,true);
         var SoftEtherServers = await GetServersByRemoved(apiUrls.types.SoftEther,true);
@@ -67,12 +66,12 @@ export async function RestartUserConnection(username) {
             if (user.type === apiUrls.types.SoftEther) {
                 var selectedSoftServer = SoftEtherServers.filter(server => server.servercode == user.currentservercode)[0];
                 RestartUserCisco(selectedSoftServer, user.username,user.password);
+
             }
             else if (user.type === apiUrls.types.OpenVpn) {
-                console.log({user})
-                console.log({OpenVpnServers});
+
                 var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
-                console.log({selectedOpenVpnServer})
+
                 RestartOpenVPNUser(selectedOpenVpnServer, user);
             }
 

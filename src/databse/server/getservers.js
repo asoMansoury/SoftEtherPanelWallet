@@ -33,7 +33,7 @@ export async function GetServersByRemoved(type,isRemoved){
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('Servers');
-        const documents = await collection.find({type:type,isremoved: isRemoved}).toArray();
+        const documents = await collection.find({type:type}).toArray();
         return documents;
     }catch(erros){
         return Promise.reject(erros);
