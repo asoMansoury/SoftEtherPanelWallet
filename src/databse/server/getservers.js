@@ -97,7 +97,7 @@ export async function GetAllServers(){
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('Servers');
-        const documents = await collection.find({type:type}).toArray();
+        const documents = await collection.find({}).toArray();
         return documents;
     }catch(erros){
         return Promise.reject(erros);
