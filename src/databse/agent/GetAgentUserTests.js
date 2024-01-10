@@ -33,7 +33,8 @@ export async function GetAgentUserTests(Token) {
         var tmp = [];
         documents.map((item,index)=>{
             var selectedServer = servers.filter((z) => z.servercode == item.servercode)[0];
-            tmp.push(new UserTestsDTO(item.email,item.username,item.password,item.type,item.removedFromServer,item.agentCode,selectedServer.title,item.expires));
+            if(selectedServer!=undefined)
+                tmp.push(new UserTestsDTO(item.email,item.username,item.password,item.type,item.removedFromServer,item.agentCode,selectedServer.title,item.expires));
         })
         const result = {
             users: tmp,
