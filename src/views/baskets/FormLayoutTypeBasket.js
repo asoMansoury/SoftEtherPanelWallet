@@ -466,11 +466,12 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
         planSelectedNummber = 1;
         var finalPath = "/finalstep";
         if (typeVpn == apiUrls.types.Cisco)
-          finalPath = "/cisco//finalstep";
+          finalPath = "/cisco/finalstep";
         if (typeVpn == apiUrls.types.OpenVpn)
-          finalPath = "/OpenTunnel//finalstep";
-          if (typeVpn == apiUrls.types.OpenVpn)
-          finalPath = "/vpnhood//finalstep";
+          finalPath = "/OpenTunnel/finalstep";
+          if (typeVpn == apiUrls.types.VpnHood)
+          finalPath = "/vpnhood/finalstep";
+        console.log({finalPath});
         router.push({
           pathname: finalPath, query: {
             tariffPlans: JSON.stringify(redisResponse.tariffPlans),
