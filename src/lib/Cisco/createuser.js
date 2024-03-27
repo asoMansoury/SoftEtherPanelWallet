@@ -11,7 +11,7 @@ export const CreateUserOnCisco = async (config,username,password,expireDate)=>{
         readyTimeout: 60000
       }
     
-    var CreateUser = `echo "${password.trim()}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username.trim()}`;
+    var CreateUser = `sudo echo "${password.trim()}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username.trim()}`;
     const trimmedCommand = CreateUser.replace(/\r?\n|\r/g, '');
     var host = {
         server:  serverConfig,

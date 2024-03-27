@@ -7,7 +7,12 @@ export const apiUrls = {
     "types":{
         "Cisco": "OC1",
         "SoftEther":"SF1",
-        "OpenVpn":"OP1"
+        "OpenVpn":"OP1",
+        "VpnHood":"VP1"
+    },
+    "telegramUrl":{
+        "changeserver":`/api/telegram/changeserver`,
+        "changeUserPasswordUrl":`/api/telegram/changeuserpassword`
     },
     "localUrl":{
         "getTariffsUrl": `/api/tariff/getatariff/?type=`,
@@ -27,6 +32,8 @@ export const apiUrls = {
         "registerAgentPrice":`/api/agents/registeragentPrice`,
         "defineSubAgentUrl":`/api/agents/defineSubAgent`,
         "refundSubAgentUrl":`/api/agents/refundSubAgent`,
+        "increateAgentWallet":`/api/agents/increateAgentWallet`,
+        "decDebAgentWallet":`/api/agents/decreaseAgentWallet`,
         "ChangeTelegramUrl":`/api/agents/changetelegram/?telegram=`,
         "GetAllAgentsUrl":`/api/agents/getallAgent/`,
         "GetAgentTestAccountsUrl":`/api/user/getagentusertests`,
@@ -53,10 +60,11 @@ export const apiUrls = {
         "calculateRevokeUserUrl":`/api/user/Cisco/revokeprice`,
         "ChangeUserPassworUrl":`/api/user/changeuserpassword`,
         "TogglingUserConnectionUrl":`/api/user/ToggleUserConnection/?email=`,
+        "RestartUserConnectionUrl":`/api/user/RestartUserConnection/?username=`,
         "DeactivatinUserConnectionUrl":`/api/user/DeactivateUserConnection/?username=`,
         "ConvertingUsersUrl":`/api/user/convertAccounts`,
+        "ChangeUserVpnPasswordUrl":`/api/user/changeUserVpnPassword`,
         "ShowUserDetailUrl":`/api/user/ShowingUserDetail/?username=`,
-
     },
     "redisUrl":{
         "setRedisApi":`/api/redis/setredis/`,
@@ -65,6 +73,7 @@ export const apiUrls = {
     "server": {
         "getServersApi":`/api/server/getservers`,
         "getServersByTypeApi":`/api/server/getserversbytype?type=`,
+        "getServersForTestApi":`/api/server/getserversfortest?type=`,
         "changeServerApi":`/api/server/changeserver`,
         "getUsersServerApi":`/api/server/getuserserver?username=`
     },
@@ -90,7 +99,10 @@ export const apiUrls = {
         "DeleteExpiresUsersApi":`/api/admin/deleteexpiredaccount`,
         "GetAgentInvoice":`/api/admin/getAgentInvoice/?username=`,
         "InvoiceWithAgent":`/api/admin/InvoiceWithAgent/?agentCode=`,
-        "DefineNewAgent":`/api/admin/DefineNewAgent`
+        "DefineNewAgent":`/api/admin/DefineNewAgent`,
+        "EnableIPV4Api":`/api/admin/EnableIPV4`,
+        "OpenVPNApi":`/api/admin/OpenVpn`,
+        "DeletingAdminUserConnectionUrl":`/api/admin/DeletingUserConnection/?email=`,
     },
     "TutorialUrls":{
         "GetTutorial":`/api/tutorial/gettutorial`

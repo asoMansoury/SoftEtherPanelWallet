@@ -55,6 +55,9 @@ export async function sendEmail(to, users, subject, currentDomain, customer) {
           <span style="font-size: 14px; color: #007bff;">نام کاربری: ${customer.email}</span><br>
           <span style="font-size: 14px; color: #007bff;">کلمه عبور: ${customer.password}</span>
         </div>
+        <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+        <a target="_blank" href="http://sale.lachom.ir" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای ورود به وبسایت اینجا کلیک کنید</a>
+      </div>
         <div dir="rtl"  style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
           <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/OpenVpn/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
         </div>
@@ -103,20 +106,20 @@ export async function sendEmail(to, users, subject, currentDomain, customer) {
 }
 
 
-export async function sendEmailTest(to, users, subject,agentInformation) {
+export async function sendEmailTest(to, users, subject, agentInformation) {
   console.log("Send Email Flag : ", process.env.SEND_EMAIL)
   if (process.env.SEND_EMAIL == 'false') {
     return;
   }
   try {
-    const telegramLink =agentInformation.isAgentValid==true? `
+    const telegramLink = agentInformation.isAgentValid == true ? `
     <p style="font-size: 16px; line-height: 1.5; color: #333; text-align: center;">
         برای خرید اکانت و یا راهنمایی راه اندازی روی لینک روبرو کلیک کنید. 
         <a href="${agentInformation.agentInformation.telegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
           اینجا کلیک کنید
         </a>
     </p>
-    `:"";
+    `: "";
 
     const tableRows = users.map((user, index) =>
       `
@@ -129,7 +132,16 @@ export async function sendEmailTest(to, users, subject,agentInformation) {
         </td>
       </tr>
     `).join('');
-
+    var botTelegram = "";
+    if (process.env.IsBotEnable == false) {
+      botTelegram = `
+      <div>ّ
+        <a target="_blank" href="${process.env.BotTelegram}" style="cursor: pointer; font-weight: bold; color: blue; text-decoration: none;">
+          <span style="border-bottom: 1px solid transparent;">ربات پشتیبان(تغییر سرور و تغییر کلمه عبور) مخصوص اکانتهای خریداری شده اینجا کلیک کنید./span>
+        </a>
+      </div>
+      `;
+    }
 
     const table = `
       <div>
@@ -146,6 +158,8 @@ export async function sendEmailTest(to, users, subject,agentInformation) {
             ${tableRows}
           </tbody>
         </table>
+        ${botTelegram
+      }
         <div dir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
           ${telegramLink}
         </div>
@@ -203,6 +217,19 @@ export async function sendEmailCiscoClient(to, users, server, subject, currentDo
   if (process.env.SEND_EMAIL == 'false') {
     return;
   }
+  var botTelegram = "";
+  if (process.env.IsBotEnable == false) {
+    botTelegram = `
+    <p style="font-size: 16px;font-weight: bold; line-height: 1.5; color: #333; text-align: center;">
+    ربات تلگرام پشتیبان(مخصوص کاربرانی که اکانت تهیه کرده اند)
+        <a href="${process.env.BotTelegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+          اینجا کلیک کنید
+        </a>
+    </p>
+    `;
+  }
+
+
 
   try {
     const tableRows = users.map((user, index) =>
@@ -236,6 +263,13 @@ export async function sendEmailCiscoClient(to, users, server, subject, currentDo
             <p style="margin-bottom: 8px; font-size: 16px;">اطلاعات شما برای ورود به سایت (لطفاً نام کاربری و کلمه عبور خود را به هیچ عنوان به کسی ندهید.)</p>
             <span style="font-size: 14px; color: #007bff;">نام کاربری: ${customer.email}</span><br>
             <span style="font-size: 14px; color: #007bff;">کلمه عبور: ${customer.password}</span>
+          </div>
+
+          <div dir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+          ${botTelegram}
+          </div>
+          <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+            <a target="_blank" href="http://sale.lachom.ir" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای ورود به وبسایت اینجا کلیک کنید</a>
           </div>
             <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
               <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
@@ -291,14 +325,26 @@ export async function sendEmailCiscoClientTest(to, users, server, subject, agent
     return;
   }
 
-  const telegramLink =agentInformation.isAgentValid==true? `
+  const telegramLink = agentInformation.isAgentValid == true ? `
   <p style="font-size: 16px; line-height: 1.5; color: #333; text-align: center;">
   برای خرید اکانت و یا راهنمایی راه اندازی روی لینک روبرو کلیک کنید. 
       <a href="${agentInformation.agentInformation.telegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
         اینجا کلیک کنید
       </a>
   </p>
-  `:"";
+  `: "";
+
+  var botTelegram = "";
+  if (process.env.IsBotEnable == false) {
+    botTelegram = `
+    <p style="font-size: 16px;font-weight: bold; line-height: 1.5; color: #333; text-align: center;">
+    ربات تلگرام پشتیبان(مخصوص کاربرانی که اکانت تهیه کرده اند)
+        <a href="${process.env.BotTelegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+          اینجا کلیک کنید
+        </a>
+    </p>
+    `;
+  }
   try {
     const tableRows = users.map((user, index) =>
       `
@@ -329,6 +375,9 @@ export async function sendEmailCiscoClientTest(to, users, server, subject, agent
             <p style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: red;">زمان وارد کردن آدرس سرور به هیچ عنوان هیچ کلمه اضافی وارد نکنید(دقیقا عین آدرس بدون پیشوند http://) وارد گردد.</p>
             ${telegramLink}
           </div>
+          <divdir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+          ${botTelegram}
+        </div>
             <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
               <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
             </div>

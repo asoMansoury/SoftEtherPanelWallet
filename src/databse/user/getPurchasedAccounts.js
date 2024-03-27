@@ -26,6 +26,8 @@ function wrappUsers(data, servers) {
             typeTitle = "اپن وی پی ان"
 
         var selectedServer = servers.filter((z) => z.servercode == item.currentservercode)[0];
+        if(selectedServer==null)
+            selectedServer  = servers.filter((z)=>z.type===apiUrls.types.SoftEther)[0];
         return {
             email: item.email,
             username: item.username,
@@ -35,7 +37,10 @@ function wrappUsers(data, servers) {
             userwithhub: item.userwithhub,
             removedFromServer: item.removedFromServer,
             servertitle: selectedServer.title,
-            servercode:selectedServer.servercode
+            servercode:selectedServer.servercode,
+            removedBySubAgent:item.removedBySubAgent,
+            removedByAgent:item.removedByAgent,
+            removedByAdmin:item.removedByAdmin
         }
     });
     return result;
@@ -79,7 +84,7 @@ export async function GetPurchasedAccountsForAgents(email,token) {
         const servers = await GetAllServers();
 
         if(token.isAdmin==true){
-            const data = (await collection.find({ agentcode: agentDoc.agentcode }).sort({ _id: -1 }).toArray());
+            const data = (await collection.find({ agentcode: agentDoc.agentcode,removedByAdmin:{ $ne: true } }).sort({ _id: -1 }).toArray());
             return wrappUsers(data, servers);
         }else if(token.isAgent==true&& token.isSubAgent==false){
             const data = (await collection.find({ agentcode: agentDoc.agentcode,removedByAdmin:{ $ne: true } }).sort({ _id: -1 }).toArray());

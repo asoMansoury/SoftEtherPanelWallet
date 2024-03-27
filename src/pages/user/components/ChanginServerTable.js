@@ -21,6 +21,7 @@ import EditIcon from 'src/views/iconImages/editicon';
 import TextField from '@mui/material/TextField'
 import { useSession } from 'next-auth/react';
 import ConvertUsersComponent from 'src/pages/admin/Components/ConvertingUsersComponent';
+import ChangingUserPassword from 'src/pages/admin/Components/ChangingUserPassword';
 
 const createData = (username, expires, userwithhub, type, typeTitle, removedFromServer, servertitle) => {
   return { username, expires, userwithhub, type, typeTitle, removedFromServer, servertitle }
@@ -35,6 +36,7 @@ const ChanginServerTable = (props) => {
   const [rows, setRows] = useState([]);
   const [mainRows, setMainRows] = useState([]);
   const [selectedUser, setSelectedUser] = useState();
+  const [selectedUserPassword, setSelectedUserPassword] = useState();
   const [profileSelector, setProfileSelector] = useState({
     isLoggedIn: false
   });
@@ -56,10 +58,17 @@ const ChanginServerTable = (props) => {
   })
 
   useEffect(async () => {
+    if (props.LoadingUsers == true) {
+      GetUsersData();
+    }
+  }, [props])
+
+  useEffect(async () => {
 
   }, []);
 
   async function GetUsersData() {
+    setSelectedUser();
     var tmp = [];
     setRows([]);
     var usersAccounts = await axios.get(apiUrls.userUrl.getpurchasedUrl + session.user.email);
@@ -70,6 +79,13 @@ const ChanginServerTable = (props) => {
     setRows(tmp);
     setMainRows(tmp);
     setEmail(session.user.email)
+  }
+
+  async function BtnRefreshUserData(e) {
+    e.preventDefault();
+    setSelectedUser(null);
+    props.RefreshUserDataHandler(e);
+    GetUsersData();
   }
 
   const searchByUserNameHandler = (e) => {
@@ -94,8 +110,15 @@ const ChanginServerTable = (props) => {
     setSelectedUser(row);
   }
 
+  async function ChangingPasswordHandler(e) {
+    e.preventDefault();
+    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    setSelectedUserPassword(row);
+  }
+
   async function refreshConvertComponent(e) {
     setSelectedUser(null);
+    setSelectedUserPassword(null);
     await GetUsersData();
   }
 
@@ -103,8 +126,9 @@ const ChanginServerTable = (props) => {
   async function ChangeServerHandler(e) {
     e.preventDefault();
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    setSelectedUser(null);
     props.getUsersServerHandler(row);
-    await GetUsersData();
+    setRows([]);
   }
 
   return (
@@ -126,13 +150,15 @@ const ChanginServerTable = (props) => {
         <Grid item xs={12}>
 
           <Grid container spacing={6}>
-            <Grid item xs={3}></Grid>
             <Grid item xs={6}>
               <TextField name="username"
                 type='input'
                 value={usernameForSearch}
                 onChange={searchByUserNameHandler}
                 fullWidth label='نام کاربر' placeholder='جسجتو اکانت بر اساس نام کاربری' />
+            </Grid>
+            <Grid item xs={2}>
+              <Button type='submit' sx={{ mr: 2 }} variant='contained' onClick={BtnRefreshUserData} size='small'>بازیابی مجدد</Button>
             </Grid>
           </Grid>
         </Grid>
@@ -146,9 +172,12 @@ const ChanginServerTable = (props) => {
               <TableCell align='center'>نام سرور</TableCell>
               <TableCell align='center'>تاریخ اعتبار</TableCell>
               <TableCell align='center'>وضعیت اکانت</TableCell>
-              <TableCell align='center'>فعال/غیر فعال</TableCell>
-              <TableCell align='center'>تبدیل</TableCell>
               <TableCell align='center'>تغییر سرور</TableCell>
+              <TableCell align='center'>مدیریت کلمه عبور</TableCell>
+              <TableCell align='center'>تبدیل</TableCell>
+              <TableCell align='center'>رستارت اکانت</TableCell>
+
+
             </TableRow>
           </TableHead>
           <TableBody>
@@ -162,7 +191,7 @@ const ChanginServerTable = (props) => {
                 }}
               >
                 <TableCell align='center' component='th' scope='row'>
-                  {row.type == apiUrls.types.SoftEther ? row.userwithhub : row.username}
+                  { row.username}
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
                   {row.typeTitle}
@@ -177,24 +206,27 @@ const ChanginServerTable = (props) => {
                   {row.removedFromServer == true ? "غیر فعال است" : "فعال است"}
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
-                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ToggleActivateUserHandler}>
-
-                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>{row.removedFromServer == false ? "غیر فعال" : "فعال کردن"}</Button>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangeServerHandler}>
+                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>انتخاب سرور</Button>
+                  </div>
+                </TableCell>
+                <TableCell align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangingPasswordHandler}>
+                    <Button  type='submit' sx={{ mr: 2 }} variant='contained' size='small'>مدیریت پسورد</Button>
                   </div>
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ConvertingHandler}>
-
-                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>تبدیل</Button>
+                    <Button disabled={row.type == apiUrls.types.SoftEther} type='submit' sx={{ mr: 2 }} variant='contained' size='small'>تبدیل</Button>
                   </div>
                 </TableCell>
                 <TableCell align='center' component='th' scope='row'>
-                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ChangeServerHandler}>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer' }} row={JSON.stringify(row)} onClick={ToggleActivateUserHandler}>
 
-                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>انتخاب سرور</Button>
+                    {/* <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>{row.removedFromServer == false ? "غیر فعال" : "فعال کردن"}</Button> */}
+                    <Button type='submit' sx={{ mr: 2 }} variant='contained' size='small'>رستارت اکانت</Button>
                   </div>
                 </TableCell>
-
               </TableRow>
             ))}
           </TableBody>
@@ -216,6 +248,11 @@ const ChanginServerTable = (props) => {
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <ConvertUsersComponent refreshComponent={refreshConvertComponent} selectedUser={selectedUser}></ConvertUsersComponent>
+          </Grid>
+        </Grid>
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <ChangingUserPassword refreshComponent={refreshConvertComponent} selectedUser={selectedUserPassword}></ChangingUserPassword>
           </Grid>
         </Grid>
       </Grid>

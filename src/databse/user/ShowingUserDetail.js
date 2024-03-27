@@ -11,7 +11,7 @@ const client = new MongoClient(MONGO_URI, {
 
 
 
-export async function GetUserDetails(username,agentcode) {
+export async function GetUserDetails(username,agentcode,agnetEmail) {
     try {
         var result = {
             isValid:false,
@@ -26,17 +26,24 @@ export async function GetUserDetails(username,agentcode) {
         const collection = db.collection('Customers');
         const UserCollection = db.collection('Users');
         var user = await UserCollection.findOne({username:username});
+        console.log({user});
         if(user==null)
             return result;
 
         var userDetail =await collection.findOne({email:user.email});
-        if(userDetail.agentcode!=agentcode){
-            result.errorMsg = "مجاز به عملیات انجام نمی باشید."
-            return result;
+        if(userDetail.email != agnetEmail){
+            if(userDetail.agentcode!=agentcode){
+                result.errorMsg = "مجاز به عملیات انجام نمی باشید."
+                return result;
+            }
+            result.email = userDetail.email;
+            result.password = userDetail.password;
+        }else{
+
         }
+
         result.isValid = true;
-        result.email = userDetail.email;
-        result.password = userDetail.password;
+
         result.user.username = user.username;
         result.user.password = user.password;
         result.errorMsg = "";

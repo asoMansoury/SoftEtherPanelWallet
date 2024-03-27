@@ -17,7 +17,17 @@ export async function OpenVpnConvertedEmail(to, users, subject) {
   if (process.env.SEND_EMAIL == 'false') {
     return;
   }
-
+  var botTelegram = "";
+  if(process.env.IsBotEnable==false){
+    botTelegram = `
+    <p style="font-size: 16px;font-weight: bold; line-height: 1.5; color: #333; text-align: center;">
+    ربات تلگرام پشتیبان(مخصوص کاربرانی که اکانت تهیه کرده اند)
+        <a href="${process.env.BotTelegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+          اینجا کلیک کنید
+        </a>
+    </p>
+    `;
+  }
   try {
 
     const tableRows = users.map((user, index) =>
@@ -48,6 +58,10 @@ export async function OpenVpnConvertedEmail(to, users, subject) {
               ${tableRows}
             </tbody>
           </table>
+
+          <div dir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+          ${botTelegram}
+        </div>
           <div dir="rtl"  style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
             <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/OpenVpn/" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان ایران اینجا کلیک کنید</a>
           </div>

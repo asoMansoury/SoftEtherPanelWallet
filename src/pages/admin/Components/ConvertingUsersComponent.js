@@ -39,12 +39,18 @@ const ConvertUsersComponent = (props) => {
 
     useEffect(async () => {
         if (props != undefined) {
+            setSelectedUser(null);
             if (props.selectedUser != undefined) {
-                var selectedTypesResult = GetAllTypes().filter((z => z.code != apiUrls.types.SoftEther && z.code != props.selectedUser.type));
-                setTypes(selectedTypesResult);
-                setSelectedUser(props.selectedUser);
-                setSelectedType(selectedTypesResult[0].code);
-                LoadServers(selectedTypesResult[0].code)
+                if(props.selectedUser.type!=apiUrls.types.SoftEther){
+                    var selectedTypesResult = GetAllTypes().filter((z => z.code != apiUrls.types.SoftEther && z.code != props.selectedUser.type));
+                    setTypes(selectedTypesResult);
+                    setSelectedUser(props.selectedUser);
+                    setSelectedType(selectedTypesResult[0].code);
+                    LoadServers(selectedTypesResult[0].code)
+                }else{
+                    setSelectedUser(null);
+                }
+
             }
         }
     }, [props]);

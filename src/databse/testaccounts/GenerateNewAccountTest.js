@@ -8,6 +8,7 @@ import GetServerByCode from '../server/getServerByCode';
 import { GetAgentByAgentCode } from '../agent/getagentinformation';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { sendOpenVpnEmailTest } from 'src/lib/Emails/OpenVpnEmails/OpenVpnCreated';
+import { GetAgentForExtraTests } from 'src/configs/GetAgentForExtraTests';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -60,42 +61,48 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        const documents = await collection.findOne({ email: email, type: type });
-        if (documents == null) {
+        const documents = await collection.findOne({ email: email, type: type, servercode });
+        
+        if (documents == null || GetAgentForExtraTests(email).isValid==true) {
             var agent = await GetAgentByAgentCode(agentCode);
-            if(agent.isAgentValid==false)
+            if (agent.isAgentValid == false) {
                 agent = await GetAgentByAgentCode(process.env.DefaultAgentCodeForTesting);
+                agentCode = process.env.DefaultAgentCodeForTesting.toString();
+            }
             var selectedServer = await GetServerByCode(servercode);
             var insertTestAccount = await GenerateNewAccount(email, selectedServer, type, agentCode);
-
             const selectedUser = await collection.findOne({ email: email, type: type });
             var tmpUsers = [];
-            if (type == apiUrls.types.Cisco) {
+            if (type == apiUrls.types.Cisco || type == apiUrls.types.SoftEther) {
                 selectedUser.username = insertTestAccount.username;
-            } else if (type == apiUrls.types.SoftEther) {
-                selectedUser.ovpnurl = selectedServer.ovpnurl
             } else if (type == apiUrls.types.OpenVpn) {
-                selectedUser.ovpnurl = selectedServer.ovpnurl
+                selectedUser.ovpnurl = selectedServer.ovpnurl;
+                selectedUser.username = insertTestAccount.username;
             }
 
             tmpUsers.push(selectedUser);
             if (type == apiUrls.types.Cisco) {
+
                 CreateUserOnCisco(selectedServer, insertTestAccount.username, selectedUser.password);
                 var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
             } else if (type == apiUrls.types.SoftEther) {
                 var customerAccount = {
                     username: insertTestAccount.username,
                     password: selectedUser.password,
-                    ovpnurl: selectedServer.ovpnurl
+                    ovpnurl: selectedServer.ovpnurl,
+                    expires:selectedUser.expires
                 };
-                CreateUserOnSoftEther(selectedServer, customerAccount, "P1", selectedUser.expires);
-                var sendingEmailResult = await sendEmailTest(email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
+
+                CreateUserOnCisco(selectedServer, customerAccount.username, customerAccount.password);
+                //-CreateUserOnSoftEther(selectedServer, customerAccount, "P1", selectedUser.expires);
+                var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
             } else {
                 var customerAccount = {
                     username: insertTestAccount.username,
                     password: selectedUser.password,
                     ovpnurl: selectedServer.ovpnurl
                 };
+                console.log({customerAccount});
                 CreateUserOnOpenVpn(selectedServer, customerAccount, selectedUser.expires);
                 var sendingEmailResult = await sendOpenVpnEmailTest(email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
             }
@@ -121,24 +128,46 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
     }
 }
 
-export async function IsValidForCreatingNewTestAccount(email, type) {
+export async function IsValidForCreatingNewTestAccount(email, type, servercode) {
     if (type == '' || type == undefined)
         type = apiUrls.types.Cisco;
     try {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
-        const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type });
-        if (documents != null)
-            return {
-                isValid: false,
-                message: `برای ایمیل ${email} قبلا اکانت تستی صادر شده است.`
-            }
 
-        return {
-            isValid: true,
-            message: ``
-        };
+        if (GetAgentForExtraTests(email).isValid == true) {
+            return {
+                isValid: true,
+                message: ``
+            };
+        }
+        if (type == apiUrls.types.SoftEther) {
+            const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type, servercode: servercode });
+            if (documents != null)
+                return {
+                    isValid: false,
+                    message: `برای ایمیل ${email} قبلا اکانت تستی صادر شده است.`
+                }
+
+            return {
+                isValid: true,
+                message: ``
+            };
+        } else {
+            const documents = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" }, type: type, servercode: servercode });
+            if (documents != null)
+                return {
+                    isValid: false,
+                    message: `برای ایمیل ${email} قبلا اکانت تستی صادر شده است.`
+                }
+
+            return {
+                isValid: true,
+                message: ``
+            };
+        }
+
     } catch (erros) {
         return Promise.reject(erros);
     } finally {

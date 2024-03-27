@@ -1,13 +1,10 @@
-import { Redis } from "ioredis";
 import RegisterCustomers, { RegisterCustomersForOthers } from "src/databse/customers/registercustomers";
 import GetServers from "src/databse/server/getservers";
 import CreateUser from "src/databse/user/createuser";
 import RegisterUsersInDB from "src/databse/user/registerusers";
 import GetUsersBasketByUUID from "src/databse/usersbasket/getusersbasket";
-import { CreateUserOnSoftEther } from "src/lib/createuser/createuser";
 import { sendEmail } from "src/lib/emailsender";
-import { ConvertToPersianDateTime, REDIS_URL } from "src/lib/utils";
-import { SendMailToCustomers } from "./SenMail";
+import { ConvertToPersianDateTime } from "src/lib/utils";
 import { UpdateUsersBasket } from "src/databse/usersbasket/insertusersbasket";
 import { PAID_CUSTOMER_STATUS } from "src/databse/usersbasket/PaidEnum";
 import { apiUrls } from "src/configs/apiurls";
@@ -15,19 +12,17 @@ import { getToken } from "next-auth/jwt";
 import { IsAgentValid } from "src/databse/agent/getagentinformation";
 import { CalculateWallet } from "src/databse/Wallet/UpdateWallet";
 import { GetCustomerByEmail } from "src/databse/customers/getcustomer";
+import { CreateUserOnOpenVpn } from "src/lib/OpenVpn/CreateUserOpenVpn";
+import { CreateUserOnCisco } from "src/lib/Cisco/createuser";
+import { sendEmailCiscoChanged } from "src/lib/Emails/CiscoEmails/ChangedTypeEmail";
 
 
-const SettinOvpnUrlForUsers = (servers, users) => {
+
+const SettinCiscoConfigForUsers = (selectedServer, users) => {
   var result = [];
   users.map((userItem, userIndex) => {
-    const serverCode = userItem.serverId.filter(server => server.policy !== "D1").map(server => server.servercode);
-    if (serverCode.length > 0) {
-      serverCode.map((itemCode, indexCode) => {
-        var selectedServer = servers.filter(server => server.servercode === itemCode)[0];
-        userItem.ovpnurl = selectedServer.ovpnurl;
-        result.push(userItem);
-      })
-    }
+    userItem.ciscourl = selectedServer.ciscourl+":"+selectedServer.ciscoPort;
+    result.push(userItem);
   });
 
   return result;
@@ -106,12 +101,7 @@ export default async function handler(req, res) {
 
 
       userRegistered.map((userItem, userIndex) => {
-        var expireDate = userItem.expires;
-        servers.map((server, index) => {
-          var groupPolicy = server.servercode == selectedServer.servercode ? userItem.policy : server.policy;
-          if (server.servercode == selectedServer.servercode)
-            CreateUserOnSoftEther(server, userItem, groupPolicy, expireDate);
-        });
+        CreateUserOnCisco(selectedServer,userItem.username,userItem.password,userItem.expires);
       })
 
       await UpdateUsersBasket(UUID, PAID_CUSTOMER_STATUS.PAID, true, userRegistered);
@@ -122,23 +112,25 @@ export default async function handler(req, res) {
 
         servers.map((server, index) => {
           if (server.servercode == selectedServer.servercode) {
-            userItem.username = userItem.username + '@' + server.HubName;
+            userItem.username = userItem.username;
             activedUserForSendingEmail.push(userItem);
           }
         });
       });
 
-      var wrappedUsers = SettinOvpnUrlForUsers(servers, activedUserForSendingEmail)
-
-      sendEmail(registerCustomer.email, wrappedUsers, "لطفا پاسخ ندهید. رسید اکانت خریداری شده", currentDomain, registerCustomer);
+      var wrappedUsers = SettinCiscoConfigForUsers(selectedServer, activedUserForSendingEmail)
+      sendEmailCiscoChanged(registerCustomer.email, wrappedUsers, selectedServer, "لطفا پاسخ ندهید. رسید اکانت خریداری شده");
       if (usersBasketObj.isSendToOtherEmail == true) {
         var otherObj = {
           email: usersBasketObj.sendEmailToOther
         };
-        var otherToEmailCustomer = await RegisterCustomersForOthers(otherObj, apiUrls.types.Cisco, token.agentcode);
-        sendEmail(otherToEmailCustomer.email, wrappedUsers, "لطفا پاسخ ندهید. رسید اکانت خریداری شده", currentDomain, otherToEmailCustomer);
+        var otherToEmailCustomer = await RegisterCustomersForOthers(otherObj, apiUrls.types.SoftEther, token.agentcode);
+        sendEmailCiscoChanged(otherToEmailCustomer.email, wrappedUsers, selectedServer, "لطفا پاسخ ندهید. رسید اکانت خریداری شده");
 
       }
+      console.log({
+        wrappedUsers
+      })
       res.status(200).json({
         name: {
           basket: usersBasketObj,

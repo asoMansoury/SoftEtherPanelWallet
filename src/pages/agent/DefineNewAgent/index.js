@@ -92,10 +92,10 @@ const Index = () => {
     }
 
     function ValidateFormData() {
-        if (formData.email || formData.cashAmount == 0 || formData.password || formData.agentcode == "", formData.agentprefix == "" || formData.name == "") {
+        if (formData.email || formData.cashAmount == 0 || formData.password == "" || formData.agentcode == "", formData.agentprefix == "" || formData.name == "") {
             setError({
                 isValid: false,
-                errorMsg: "اطلاعات به صورت کامل پر نشده است",
+                errorMsg: "اطلاعات نماینده فروش به صورت کامل پر نشده است",
                 severity: 'error'
             });
             setDisableBtn(false);

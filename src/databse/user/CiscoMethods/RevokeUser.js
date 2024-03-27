@@ -19,7 +19,10 @@ import { UpdateUsersBasketForRevoke } from 'src/databse/usersbasket/insertusersb
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { UpdateExpirationTimeSoftEther } from 'src/lib/createuser/UpdateExpirationTime';
+import { sendEmail, sendEmailCiscoClient } from 'src/lib/emailsender';
 import { GenerateOneMonthExpiration, GenerateOneMonthExpirationStartDate, MONGO_URI, calculateEndDate, formatDate } from 'src/lib/utils';
+import UpdateRevokingUser from '../repository/RevokeUser';
+import { TransferedWalletLog } from 'src/databse/Wallet/CreateWallet';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -38,133 +41,151 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
         const userCollection = db.collection('Users');
-        var foundedUser = await userCollection.findOne({ username: username });
-        if (foundedUser.isfromagent == false) {
-            var tariffPrices = await getTariffPrices(type);
-
-            var selectedTarifPlane = tariffPrices.filter((item) => item.tariffplancode == tariffplancode
-                && item.tarrifcode == tariffcode)[0];
-
-            var tariffs = await getTariffs(type);
-            var selectedTariff = tariffs.filter((item) => item.code == tariffcode)[0];
-
-            var months = await getTarrifPlans(type);
-            var selectedPlanType = months.filter((item) => item.code == tariffplancode)[0];
-
-        } else if (foundedUser.isfromagent == true) {
-
-            var isAgentValid = await IsAgentValid(token.email);
-            var customer = await GetCustomerAgentCode(foundedUser.agentcode);
-            var getAgentPricePlans = await getAgentPlans(foundedUser.agentcode, foundedUser.type);
-            var agentPlans = getAgentPricePlans.filter((item) => item.tariffplancode == tariffplancode
-                && item.tarrifcode == tariffcode);
-
-            var totalPrice = await CalculateTotalPriceModifed(foundedUser.agentcode, agentPlans, foundedUser.type);
-            var months = await getTarrifPlans(foundedUser.type);
-            var selectedPlanType = months.filter((item) => item.code == tariffplancode)[0];
-            //زمانی است که ایجنت لاگین کرده و می خواهد یک مشتری را تمدید کند و در این حالت از کیف پول مشتری کم خواهیم کرد.
-            if (isAgentValid.isAgent == true && isAgentValid.isSubAgent != true) {
-                var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);
-                //محاسبه موجود کیف پول ایجنت فروش
-                var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice;
-                if (parseInt(checkHasCash) < 0) {
-                    return {
-                        isValid: false,
-                        message: "موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
-                    };
-                }
-
-                const walletCollection = db.collection('Wallet');
-                UpdateTank(type, totalPrice.ownerPrice);
-                var result = await walletCollection.updateOne({ email: { $regex: `^${customer.email}$`, $options: "i" } },
-                    {
-                        $set: {
-                            cashAmount: checkHasCash,
-                        }
-                    })
-
-            }else  if (isAgentValid.isAgent == true && isAgentValid.isSubAgent == true) {
-                var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);
-                //محاسبه موجود کیف پول ایجنت فروش
-                var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice;
-                if (checkHasCash < 0) {
-                    return {
-                        isValid: false,
-                        message: "موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
-                    };
-                }
-                var totalPriceParentAgent = await CalculateTotalPriceModifed(isAgentValid.introducerAgentCode, agentPlans, foundedUser.type);
-                var differMoney = totalPrice.ownerPrice - totalPriceParentAgent.ownerPrice;
-                UpdateTank(type, totalPriceParentAgent.ownerPrice);
-                await DecreaseWallet(agentWallet.email, totalPrice.ownerPrice)
-                await IncreaseWalletV2(isAgentValid.introducerEmail, differMoney);
-            } else {
-                //زمانی است که مشتری ما وارد پنل خود شده است و میخواهد اکانت خود را تمدید کنید.
-                //ابتدا چک می کنیم که آیا این مشتری کیف پول تعریف شده است یا خیر
-                var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);//کیف پول مربوط به ایجنت اصلی مشتری عادی
-                var isAgentValid = await IsAgentValid(agentWallet.email);
-                var customerAgentIsDefined = await CheckAgentWalet(foundedUser.email, foundedUser.type);
-                if (customerAgentIsDefined.isValidWallet == false) {
-                    return {
-                        isValid: false,
-                        message: "موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
-                    };
-                }
-
-                //محاسبه موجود کیف پول کاربر عادی 
-                var checkHasCash = customerAgentIsDefined.cashAmount - totalPrice.agentPrice;
-                if (checkHasCash < 0) {
-                    return {
-                        isValid: false,
-                        message: "موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
-                    };
-                }
-                await DecreaseWallet(customerAgentIsDefined.email, totalPrice.agentPrice);//کسر کیف پول از حساب مشتری عادی به میزان تعریف شده برای او
-
+        var customerCollection = db.collection('Customers');
+        var finalResult = null;
+        await userCollection.findOne({ username: username }).then(async (foundedUser)=>{
+            var customerAccount = await customerCollection.findOne({ email: foundedUser.email });
+            if (foundedUser.isfromagent == false) {
+                var tariffPrices = await getTariffPrices(type);
+    
+                var selectedTarifPlane = tariffPrices.filter((item) => item.tariffplancode == tariffplancode
+                    && item.tarrifcode == tariffcode)[0];
+    
+                var tariffs = await getTariffs(type);
+                var selectedTariff = tariffs.filter((item) => item.code == tariffcode)[0];
+    
+                var months = await getTarrifPlans(type);
+                var selectedPlanType = months.filter((item) => item.code == tariffplancode)[0];
+    
+            } else if (foundedUser.isfromagent == true) {
+    
+                var isAgentValid = await IsAgentValid(token.email);
+                var customer = await GetCustomerAgentCode(foundedUser.agentcode);
+                var getAgentPricePlans = await getAgentPlans(foundedUser.agentcode, foundedUser.type);
+                var agentPlans = getAgentPricePlans.filter((item) => item.tariffplancode == tariffplancode
+                    && item.tarrifcode == tariffcode);
+    
+                var totalPrice = await CalculateTotalPriceModifed(foundedUser.agentcode, agentPlans, foundedUser.type);
+                var months = await getTarrifPlans(foundedUser.type);
+                var selectedPlanType = months.filter((item) => item.code == tariffplancode)[0];
+    
+                //زمانی است که ایجنت لاگین کرده و می خواهد یک مشتری را تمدید کند و در این حالت از کیف پول مشتری کم خواهیم کرد.
                 if (isAgentValid.isAgent == true && isAgentValid.isSubAgent != true) {
-                    var differMoney = totalPrice.agentPrice - totalPrice.ownerPrice;//محسابه مابه تفاوت مشتری عادی به ایجنت اصلی
-                    await IncreaseWalletV2(agentWallet.email, differMoney);// اضافه کردن به حساب ایجنت اصلی به میزان مابه تفاوت تعریف شده برای او و مشتری زیر مجموعه اش
+                    var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);
+                    //محاسبه موجود کیف پول ایجنت فروش
+                    var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice;
+                    if (parseInt(checkHasCash) < 0) {
+                        return {
+                            isValid: false,
+                            message: "موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
+                        };
+                    }
+    
+                    const walletCollection = db.collection('Wallet');
                     UpdateTank(type, totalPrice.ownerPrice);
-
+                    TransferedWalletLog(customer.email,foundedUser.agentcode,customer.email,totalPrice.ownerPrice,`مبلغ ${totalPrice.ownerPrice} بابت تمدید اکانت ${foundedUser.username} از کیف پول کسر گردید.`)
+                    var result = await walletCollection.updateOne({ email: { $regex: `^${customer.email}$`, $options: "i" } },
+                        {
+                            $set: {
+                                cashAmount: checkHasCash,
+                            }
+                        })
+    
                 } else if (isAgentValid.isAgent == true && isAgentValid.isSubAgent == true) {
-                    var differMoney = totalPrice.agentPrice - totalPrice.ownerPrice;//محسابه مابه تفاوت مشتری عادی به ایجنت اصلی
-                    await IncreaseWalletV2(agentWallet.email, differMoney);// اضافه کردن به حساب ایجنت اصلی به میزان مابه تفاوت تعریف شده برای او و مشتری زیر مجموعه اش
-
+                    var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);
+                    //محاسبه موجود کیف پول ایجنت فروش
+                    var checkHasCash = agentWallet.cashAmount - totalPrice.ownerPrice;
+                    if (checkHasCash < 0) {
+                        return {
+                            isValid: false,
+                            message: "موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
+                        };
+                    }
                     var totalPriceParentAgent = await CalculateTotalPriceModifed(isAgentValid.introducerAgentCode, agentPlans, foundedUser.type);
-                    var differMoneyForParentAgent = totalPrice.ownerPrice - totalPriceParentAgent.ownerPrice;
-                    await IncreaseWalletV2(isAgentValid.introducerEmail, differMoneyForParentAgent);
-
+                    var differMoney = totalPrice.ownerPrice - totalPriceParentAgent.ownerPrice;
                     UpdateTank(type, totalPriceParentAgent.ownerPrice);
+                    await DecreaseWallet(agentWallet.email, totalPrice.ownerPrice);
+                    await IncreaseWalletV2(isAgentValid.introducerEmail, differMoney);
+                    TransferedWalletLog(agentWallet.email, foundedUser.agentcode, isAgentValid.introducerEmail, differMoney, "برگشت مبلغ به ایجینت اصلی بابت تمدید اکانت توسط زیرمجموعه")
+                } else {
+                    //زمانی است که مشتری ما وارد پنل خود شده است و میخواهد اکانت خود را تمدید کنید.
+                    //ابتدا چک می کنیم که آیا این مشتری کیف پول تعریف شده است یا خیر
+                    var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);//کیف پول مربوط به ایجنت اصلی مشتری عادی
+                    var isAgentValid = await IsAgentValid(agentWallet.email);
+                    var customerAgentIsDefined = await CheckAgentWalet(foundedUser.email, foundedUser.type);
+                    if (customerAgentIsDefined.isValidWallet == false) {
+                        return {
+                            isValid: false,
+                            message: "موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
+                        };
+                    }
+    
+                    //محاسبه موجود کیف پول کاربر عادی 
+                    var checkHasCash = customerAgentIsDefined.cashAmount - totalPrice.agentPrice;
+                    if (checkHasCash < 0) {
+                        return {
+                            isValid: false,
+                            message: "موجودی کیف پول شما برای خرید اکانت کافی نمی باشد. لطفا با مدیریت تماس بگیرید."
+                        };
+                    }
+                    await DecreaseWallet(customerAgentIsDefined.email, totalPrice.agentPrice);//کسر کیف پول از حساب مشتری عادی به میزان تعریف شده برای او
+    
+                    if (isAgentValid.isAgent == true && isAgentValid.isSubAgent != true) {
+                        var differMoney = totalPrice.agentPrice - totalPrice.ownerPrice;//محسابه مابه تفاوت مشتری عادی به ایجنت اصلی
+                        await IncreaseWalletV2(agentWallet.email, differMoney);// اضافه کردن به حساب ایجنت اصلی به میزان مابه تفاوت تعریف شده برای او و مشتری زیر مجموعه اش
+                        UpdateTank(type, totalPrice.ownerPrice);
+                        TransferedWalletLog(foundedUser.email, "", agentWallet.email, differMoney, "برگشت مبلغ به ایجینت اصلی بابت تمدید اکانت توسط زیرمجموعه")
+                    } else if (isAgentValid.isAgent == true && isAgentValid.isSubAgent == true) {
+                        var differMoney = totalPrice.agentPrice - totalPrice.ownerPrice;//محسابه مابه تفاوت مشتری عادی به ایجنت اصلی
+                        await IncreaseWalletV2(agentWallet.email, differMoney);// اضافه کردن به حساب ایجنت فروشنده به میزان مابه تفاوت تعریف شده برای او و مشتری زیر مجموعه اش
+                        TransferedWalletLog(foundedUser.email, "", agentWallet.email, differMoney, "برگشت مبلغ به ایجینت اصلی بابت تمدید اکانت توسط مشتری عادی")
+                        var totalPriceParentAgent = await CalculateTotalPriceModifed(isAgentValid.introducerAgentCode, agentPlans, foundedUser.type);
+                        var differMoneyForParentAgent = totalPrice.ownerPrice - totalPriceParentAgent.ownerPrice;
+                        await IncreaseWalletV2(isAgentValid.introducerEmail, differMoneyForParentAgent);
+                        TransferedWalletLog(foundedUser.email, "", isAgentValid.introducerEmail, differMoneyForParentAgent, "برگشت مبلغ به ایجینت اصلی بابت تمدید اکانت توسط  مشتری عادی زیرمجموعه")
+                        UpdateTank(type, totalPriceParentAgent.ownerPrice);
+                    }
                 }
             }
-        }
+    
+            var updatingUserBasket = UpdateUsersBasketForRevoke(uuid, PAID_CUSTOMER_STATUS.PAID, true);
+    
+            const today = new Date();
+            var nextExpirationDate = new Date(foundedUser.expires);
+            var isRemovedFromServer = foundedUser.removedFromServer == true ? true : false;
+            if (today > nextExpirationDate) {
+                nextExpirationDate = calculateEndDate(formatDate(today), selectedPlanType.duration);              
+            } else {
+                nextExpirationDate = calculateEndDate(foundedUser.expires, selectedPlanType.duration);
+                foundedUser.isRevoked = true;
+                foundedUser.expires = nextExpirationDate;
+                foundedUser.removedFromServer = false;
+            }
+    
+            
+            UpdateRevokingUser(username,nextExpirationDate,uuid);
+            finalResult=foundedUser;
+            UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServer)
+    
+            foundedUser.isValid = true;
+            var selectedSever = await GetServerByCode(foundedUser.currentservercode);
+            var tmpEmails = [];
+            if (foundedUser.type === apiUrls.types.Cisco) {
+                tmpEmails.push(foundedUser);
+                sendEmailCiscoClient(foundedUser.email, tmpEmails, selectedSever, "اطلاعیه تمدیدیه اکانت", null, customerAccount);
+            } else if (foundedUser.type == apiUrls.types.OpenVpn) {
+                foundedUser.ovpnurl = selectedSever.ovpnurl;
+                tmpEmails.push(foundedUser);
+                sendEmail(foundedUser.email, tmpEmails, "اطلاعیه تمدیده اکانت", null, customerAccount);
+            } else if (foundedUser.type === apiUrls.types.SoftEther) {
+                foundedUser.ovpnurl = selectedSever.ovpnurl;
+                tmpEmails.push(foundedUser);
+                sendEmail(foundedUser.email, tmpEmails, "اطلاعیه تمدیده اکانت", null, customerAccount);
+            }
+            return foundedUser;
+        });
 
-        var updatingUserBasket = UpdateUsersBasketForRevoke(uuid, PAID_CUSTOMER_STATUS.PAID, true);
-
-        const today = new Date();
-        var nextExpirationDate =new Date(foundedUser.expires); 
-        var isRemovedFromServer= foundedUser.removedFromServer==true?true:false;
-        if(today>foundedUser.expires){
-            nextExpirationDate = calculateEndDate(formatDate(today), selectedPlanType.duration);
-        }else{
-            nextExpirationDate = calculateEndDate(foundedUser.expires, selectedPlanType.duration);
-            foundedUser.isRevoked = true;
-            foundedUser.expires = nextExpirationDate;
-            foundedUser.removedFromServer = false;
-        }
-
-
-        await userCollection.updateOne(
-            { "username": username }, // Filter condition to match the document
-            { $set: { "expires": nextExpirationDate, "isRevoked": true, "uuid": uuid } } // Update operation using $set to set the new value
-        )
-
-        if (foundedUser.type == apiUrls.types.SoftEther)
-            UpdateSoftEtherUserExpiration(foundedUser, nextExpirationDate);
-        UpdateUsersWhichRemovedFromServer(foundedUser,isRemovedFromServer)
-
-        foundedUser.isValid = true;
-        return foundedUser;
+        return finalResult;
     } catch (erros) {
         return Promise.reject(erros);
     } finally {
@@ -172,14 +193,17 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
     }
 }
 
-async function UpdateUsersWhichRemovedFromServer(foundedUser,isRemovedFromServer){
-    if(isRemovedFromServer==true){
-        if(foundedUser.type == apiUrls.types.OpenVpn){
-            var selectedServer =await GetServerByCode(foundedUser.currentservercode);
-            CreateUserOnOpenVpn(selectedServer,foundedUser);
-        }else if(foundedUser.type == apiUrls.types.Cisco){
-            var selectedServer =await GetServerByCode(foundedUser.currentservercode);
-            CreateUserOnCisco(selectedServer,foundedUser.username,foundedUser.password);
+async function UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServer) {
+    if (isRemovedFromServer == true) {
+        if (foundedUser.type == apiUrls.types.OpenVpn) {
+            var selectedServer = await GetServerByCode(foundedUser.currentservercode);
+            CreateUserOnOpenVpn(selectedServer, foundedUser);
+        } else if (foundedUser.type == apiUrls.types.Cisco) {
+            var selectedServer = await GetServerByCode(foundedUser.currentservercode);
+            CreateUserOnCisco(selectedServer, foundedUser.username, foundedUser.password);
+        }else if(foundedUser.type == apiUrls.types.SoftEther){
+            var selectedServer = await GetServerByCode(foundedUser.currentservercode);
+            CreateUserOnCisco(selectedServer, foundedUser.username, foundedUser.password);
         }
     }
 }

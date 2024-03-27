@@ -181,7 +181,7 @@ const AgentUsersTable = (props) => {
               <TableCell style={{ width: '80px' }} align='center'>نام اکانت</TableCell>
               <TableCell style={{ width: '80px' }} align='center'>کلمه عبور</TableCell>
               <TableCell style={{ width: '80px' }} align='center'>نام سرور</TableCell>
-              <TableCell style={{ width: '80px' }} align='center'>وضعیت اکانت</TableCell>
+              <TableCell style={{ width: '80px' }} align='center'>تاریخ اعتبار</TableCell>
               <TableCell style={{ width: '80px' }} align='center'>عملیات</TableCell>
             </TableRow>
           </TableHead>
@@ -210,7 +210,7 @@ const AgentUsersTable = (props) => {
                 <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
                   {row.servertitle}
                 </TableCell>
-                <TableCell style={{ width: '80px' }}>{row.removedFromServer == true ? "غیر فعال" : "فعال"}</TableCell>
+                <TableCell style={{ width: '80px' }}>{ConvertToPersianDateTime(row.expires)}</TableCell>
                 <TableCell style={{ width: '80px' }} align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnSendingEmail}>
                     <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>ارسال ایمیل</span>

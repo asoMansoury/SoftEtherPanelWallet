@@ -38,7 +38,8 @@ const AccountsTable = (props) => {
       // props.users.map((item,index)=>{
       //   item.expires = ConvertToPersianDateTime(item.expires);
       // })
-      setData(props.users)
+      setData(props.users);
+
     }
 
     if(props.basket!=undefined) {

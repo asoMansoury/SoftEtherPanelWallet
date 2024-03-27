@@ -111,7 +111,9 @@ function ClearForm(){
         severity: "error"
       })
     } else {
-      GetUsersData(email);
+      setTimeout(() => {
+        GetUsersData(email);
+      }, 2000);
     }
     setLoading(false);
   }
@@ -139,7 +141,7 @@ function ClearForm(){
     setLoading(true);
     ClearForm();
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
-    const result = await axios.get(apiUrls.userUrl.ShowUserDetailUrl +  row.username)
+    const result = await axios.get(apiUrls.userUrl.ShowUserDetailUrl +  row.username);
     if (result.data.isValid == false) {
       setError({
         isValid: false,
@@ -219,6 +221,7 @@ function ClearForm(){
               <TableCell style={{ width: '80px' }} align='center'>وضعیت اکانت</TableCell>
               <TableCell style={{ width: '120px' }} align='center'>عملیات</TableCell>
               <TableCell style={{ width: '120px' }} align='center'>تبدیل</TableCell>
+              <TableCell style={{ width: '120px' }} align='center'>تغییر وضعیت</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -250,15 +253,16 @@ function ClearForm(){
                   </div>
                 </TableCell>
                 <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
-                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
-                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
-                  </div>
-                </TableCell>
-                <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnConvertUsersHandler}>
                     <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>تبدیل اکانت</span>
                   </div>
                 </TableCell>
+                <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
+                  <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
+                    <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
+                  </div>
+                </TableCell>
+
               </TableRow>
             ))}
           </TableBody>

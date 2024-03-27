@@ -6,6 +6,7 @@ import { GetAgentByUserCode } from '../agent/getagentinformation';
 import { GetWalletUser } from './getWalletUser';
 import { CalculateTotalPriceModifed } from '../tariffagent/calculateTotalPrice';
 import { IncreaseWallet } from './IncreaseWallet';
+import { TransferedWalletLog } from './CreateWallet';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -16,13 +17,14 @@ const client = new MongoClient(MONGO_URI, {
     }
 });
 
-async function  RecalculateForParentAgent(introducerEmail,introducerAgentCode,tariffPlans,type,boughtAmount){
+async function  RecalculateForParentAgent(introducerEmail,introducerAgentCode,tariffPlans,type,boughtAmount,subAgentEmail,subAgentCode){
     var IntroducerAgenttWallet = await GetWalletUser(introducerEmail);
     const IntroducerAgentCustomer = await GetCustomerAgentCode(introducerAgentCode);
     var CalculatedResult =await CalculateTotalPriceModifed(IntroducerAgentCustomer.agentcode,tariffPlans,type);
     const differPrice = boughtAmount - CalculatedResult.ownerPrice;//محاسبه ما به تفاوت قیمت فروش ما به ایجنت و قیمت فروش ایجنت به مشتری
     IntroducerAgenttWallet.cashAmount = IntroducerAgenttWallet.cashAmount + differPrice;
     IncreaseWallet(IntroducerAgenttWallet.cashAmount,IntroducerAgentCustomer.email);
+    TransferedWalletLog(subAgentEmail, subAgentCode, IntroducerAgentCustomer.email, differPrice, "برگشت مبلغ به ایجینت اصلی بابت فروش توسط زیرمجموعه")
 }
 
 export async function CalculateWallet(email, type, boughtAmount, usersBasketObj) {
@@ -35,6 +37,7 @@ export async function CalculateWallet(email, type, boughtAmount, usersBasketObj)
         const wallet = await collection.findOne({ email: { $regex: `^${email}$`, $options: "i" } });
         wallet.cashAmount = wallet.cashAmount - boughtAmount;
         IncreaseWallet(wallet.cashAmount,email);
+        TransferedWalletLog(email, wallet.agentcode, email, boughtAmount, "کسر مبلغ بابت خرید اکانت")
         //        console.log("Cash Amount", wallet.cashAmount,"Email:",email );
 
         //محاسبه مابه تفاوتی که باید به ایجنت اصلی ایجنت معرفی شده برگردد.
@@ -45,7 +48,10 @@ export async function CalculateWallet(email, type, boughtAmount, usersBasketObj)
                                           agent.agentInformation.introducerAgentCode,
                                           usersBasketObj.tariffPlans,
                                           usersBasketObj.type,
-                                          boughtAmount)
+                                          boughtAmount,
+                                          email,
+                                          agent.agentInformation,
+                                          agent.agentcode)
             }
         }
 
@@ -66,7 +72,9 @@ export async function CalculateWallet(email, type, boughtAmount, usersBasketObj)
                                               mainAgentCustomer.introducerAgentCode,
                                               usersBasketObj.tariffPlans,
                                               usersBasketObj.type,
-                                              CalculatedResult.ownerPrice)
+                                              CalculatedResult.ownerPrice,
+                                              mainAgentCustomer.email,
+                                              mainAgentCustomer.agentcode)
                 }
 
             }

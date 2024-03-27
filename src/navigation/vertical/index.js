@@ -9,6 +9,7 @@ import AccountMultiple from 'mdi-material-ui/AccountMultiple'
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
+import { GetAgentForServerAdmin } from 'src/configs/AgentsForServer';
 const navigation = () => {
   const {  data:session,status } = useSession(); 
   const [profileSelector,setProfileSelector] = useState({
@@ -45,6 +46,11 @@ const navigation = () => {
       icon: HomeOutline,
       path: '/cisco'
     });
+    tmpMenues.push({
+      title:'خرید اکانت Vpnhood',
+      icon: HomeOutline,
+      path:'/vpnhood'
+    });
     
     tmpMenues.push({
       title: 'تمدید اکانت',
@@ -52,7 +58,7 @@ const navigation = () => {
       path: '/cisco/revoke'
     });
     tmpMenues.push({
-      title: 'تغییر سرور اکانت',
+      title: ' مدیریت اکانت',
       icon: AccountPlusOutline,
       path: '/user/changeserver'
     })
@@ -67,6 +73,14 @@ const navigation = () => {
         icon: AccountCogOutline,
         path: '/agentprice'
       });
+
+      if(GetAgentForServerAdmin(profileSelector.email).isValid==true){
+        tmpMenues.push(    {
+          title: 'مدیریت سرور',
+          icon: AccountCogOutline,
+          path: '/admin/Servers'
+        });
+      }
     }
 
 

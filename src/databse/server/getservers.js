@@ -17,7 +17,7 @@ async function GetServers(type){
         const connectionState =  await client.connect();
         const db = client.db('SoftEther');
         const collection = db.collection('Servers');
-        const documents = await collection.find({type:type,isremoved: false,}).toArray();
+        const documents = await collection.find({type:type,isremoved: false}).toArray();
         return documents;
     }catch(erros){
         return Promise.reject(erros);
@@ -25,6 +25,39 @@ async function GetServers(type){
         client.close();
     }
 }
+
+export async function GetServersByRemoved(type,isRemoved){
+    if(type=='' || type == undefined)
+        type = apiUrls.types.SoftEther;
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Servers');
+        const documents = await collection.find({type:type}).toArray();
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
+export async function GetServersForTestVersion2(type){
+    if(type=='' || type == undefined)
+        type = apiUrls.types.SoftEther;
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Servers');
+        const documents = await collection.find({type:type,isremoved: false,activefortest:true}).toArray();
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
 
 export async function GetServersByTypeAndCode(type,code){
     if(type=='' || type == undefined)
@@ -34,6 +67,23 @@ export async function GetServersByTypeAndCode(type,code){
         const db = client.db('SoftEther');
         const collection = db.collection('Servers');
         const documents = await collection.find({type:type,isremoved: false,servercode:code}).toArray();
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
+
+export async function GetServerByTypeAndCode(type,code){
+    if(type=='' || type == undefined)
+        type = apiUrls.types.SoftEther;
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Servers');
+        const documents = await collection.findOne({type:type,isremoved: false,servercode:code});
         return documents;
     }catch(erros){
         return Promise.reject(erros);
@@ -56,6 +106,20 @@ export async function GetAllServers(){
     }
 }
 
+export async function GetAllEnabledServers(){
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Servers');
+        const documents = await collection.find({isremoved: false}).toArray();
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
 export async function GetServersForTest(type){
     if(type=='' || type == undefined)
         type = apiUrls.types.SoftEther;
@@ -64,6 +128,24 @@ export async function GetServersForTest(type){
         const db = client.db('SoftEther');
         const collection = db.collection('Servers');
         const documents = await collection.findOne({type:type,usedForTest:true,isremoved:false});
+        
+        return documents;
+    }catch(erros){
+        return Promise.reject(erros);
+    }finally{
+        client.close();
+    }
+}
+
+
+export async function GetServersForRestartServer(type){
+    if(type=='' || type == undefined)
+        type = apiUrls.types.SoftEther;
+    try{
+        const connectionState =  await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Servers');
+        const documents = await collection.find({type:type,isremoved:false}).toArray();
         
         return documents;
     }catch(erros){

@@ -16,109 +16,119 @@ import { useSession } from 'next-auth/react';
 const ChangeServer = () => {
 
   // const dispatch = useDispatch();
-  const [userServer,setUserServers] = useState([]);
-  const [isShowServerComponent,setShowServerComponent] = useState(false);
-  const [selectedUser,setSelectedUser]=useState();
-  const {  data:session,status } = useSession();
-  const [isWorking , setIsWorking] = useState(false);
-  const [profileSelector,setProfileSelector] = useState({
-    isLoggedIn:false
+  const [userServer, setUserServers] = useState([]);
+  const [isShowServerComponent, setShowServerComponent] = useState(false);
+  const [selectedUser, setSelectedUser] = useState();
+  const { data: session, status } = useSession();
+  const [isWorking, setIsWorking] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [profileSelector, setProfileSelector] = useState({
+    isLoggedIn: false
   });
 
-  const [erros,setErros] = useState({
-    hasErros:false,
-    erroMsg:''
+  const [erros, setErros] = useState({
+    hasErros: false,
+    erroMsg: ''
   });
 
-  useEffect(async()=>{
+  useEffect(async () => {
 
-    if(status ==="authenticated"){
+    if (status === "authenticated") {
       setProfileSelector({
-        email:session.user.email,
-        isLoggedIn:true
+        email: session.user.email,
+        isLoggedIn: true
       });
     }
-  },[status])
+  }, [status])
 
-  async function getUsersServerHandler(item){
+  async function getUsersServerHandler(item) {
     setErros({
-      hasErros:false,
-      erroMsg:''
+      hasErros: false,
+      erroMsg: ''
     })
     setShowServerComponent(false);
-    var getUsersServer =await axios.get(apiUrls.server.getUsersServerApi+item.username);
+    var getUsersServer = await axios.get(apiUrls.server.getUsersServerApi + item.username);
     setUserServers(getUsersServer.data.name);
     setShowServerComponent(true);
     setSelectedUser(item.username);
   }
 
-  async function ToggleActivateUserHandler(item){
+  async function ToggleActivateUserHandler(item) {
     setIsWorking(true);
     var obj = {
-      servercode:item.servercode,
-      username:selectedUser
+      servercode: item.servercode,
+      username: selectedUser
     }
-    
+
     setShowServerComponent(false);
-    const result = await axios.get(apiUrls.userUrl.DeactivatinUserConnectionUrl +  item.username)
-    setIsWorking(false);
-    setErros({
-      hasErros:true,
-      erroMsg:result.data.name.message
-    });
+    const result = await axios.get(apiUrls.userUrl.RestartUserConnectionUrl + item.username);
+    setTimeout(() => {
+      setIsWorking(false);
+      setErros({
+        hasErros: true,
+        erroMsg: result.data.name.message
+      });
+    }, 2000);
+
   }
 
-  async function changeServerHandler(item){
+  async function changeServerHandler(item) {
     setIsWorking(true);
     var obj = {
-      servercode:item.servercode,
-      username:selectedUser
+      servercode: item.servercode,
+      username: selectedUser
     }
-    
+
     setShowServerComponent(false);
-    var result =await axios.post(apiUrls.userUrl.changeUserServerUrl,{body:obj});
+    var result = await axios.post(apiUrls.userUrl.changeUserServerUrl, { body: obj });
+    setLoadingUsers(false);
     setIsWorking(false);
     setErros({
-      hasErros:true,
-      erroMsg:result.data.name
+      hasErros: true,
+      erroMsg: result.data.name
     });
+    setLoadingUsers(false);
   }
-  
+
+  async function RefreshUserDataHandler(e) {
+    setShowServerComponent(false);
+  }
+
   return (
     <Grid container spacing={6}>
-        <Grid item xs={12}>
-            <Card>
-                <CardHeader title='لیست اکانت ها برای تغییر سرور' titleTypographyProps={{ variant: 'h6' }} />
-                <ChanginServerTable getUsersServerHandler={getUsersServerHandler} ToggleActivateUserHandler={ToggleActivateUserHandler}></ChanginServerTable>
-                {
-                        isWorking==true &&
-                        <Alert severity="info">در حال لود اطلاعات. لطفا منتظر بمانید...</Alert>
-                }
-                {
-                  isShowServerComponent && (
-                    <>
-                       <div style={{paddingRight:'30px', paddingTop:'30px',paddingBottom: '30px'}}>
-                          <Alert severity="success">از سرورهای زیر یکی از سرورها را انتخاب نمایید.</Alert>
-                      </div>
+      <Grid item xs={12}>
+        <Card>
+          <CardHeader title='لیست اکانت ها برای تغییر سرور' titleTypographyProps={{ variant: 'h6' }} />
+          <ChanginServerTable RefreshUserDataHandler={RefreshUserDataHandler} LoadingUsers={loadingUsers} getUsersServerHandler={getUsersServerHandler} ToggleActivateUserHandler={ToggleActivateUserHandler}></ChanginServerTable>
+          {
+            isWorking == true &&
+            <Alert severity="info">در حال لود اطلاعات. لطفا منتظر بمانید...</Alert>
+          }
+          {
+            isShowServerComponent && (
+              <>
+                <div style={{ paddingRight: '30px', paddingTop: '30px', paddingBottom: '30px' }}>
+                  <Alert severity="success">از سرورهای زیر یکی از سرورها را انتخاب نمایید.</Alert>
+                </div>
 
-                      <LoadinServerForChange changeServerHandler={changeServerHandler} servers={userServer}></LoadinServerForChange>
-                    </>
-                  )
-                }
+                <LoadinServerForChange changeServerHandler={changeServerHandler} servers={userServer}></LoadinServerForChange>
+              </>
+            )
+          }
 
 
-              {
-                  erros.hasErros && (
-                    <>
-                       <div style={{paddingRight:'30px', paddingTop:'30px',paddingBottom: '30px'}}>
-                          <Alert severity="success">{erros.erroMsg}</Alert>
-                      </div>
-                    </>
-                  )
-                }
-            </Card>
-        </Grid>
-  </Grid>
+          {
+            erros.hasErros && (
+              <>
+                <div style={{ paddingRight: '30px', paddingTop: '30px', paddingBottom: '30px' }}>
+                  <Alert severity="success">{erros.erroMsg}</Alert>
+                </div>
+              </>
+            )
+          }
+        </Card>
+      </Grid>
+    </Grid>
   )
 }
 

@@ -16,7 +16,7 @@ const Dashboard = () => {
 
 
   useEffect(async()=>{
-    router.push('/cisco');
+    router.push('/OpenTunnel');
   })
 
   return (

@@ -1,4 +1,5 @@
 import { getToken } from "next-auth/jwt";
+import { SaveToCache } from "src/databse/Cache/CacheManager";
 import { IsAgentValid } from "src/databse/agent/getagentinformation";
 import { GetCustomerByEmail } from "src/databse/customers/getcustomer";
 import { CalculateTotalPriceModifed } from "src/databse/tariffagent/calculateTotalPrice";
@@ -38,7 +39,7 @@ export default async function handler(req,res){
         }
         
         var objJson = JSON.stringify(data);
-        await Redis_Set_Data(data.uuid, objJson);
+        await SaveToCache(data.uuid, objJson);
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(200).json({name:"OK"});
     }else {

@@ -9,7 +9,7 @@ import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 import axios from 'axios';
 import { apiUrls } from 'src/configs/apiurls';
-import { ContentToHTMLConverter } from './ContentToHTMLConverter';
+import ContentToHTMLConverter from './ContentToHTMLConverter';
 
 const DynamicEditor = dynamic(
     () => import('react-draft-wysiwyg').then(mod => mod.Editor),
@@ -46,8 +46,12 @@ function RichEditorComponent(props) {
         const contentState = editorState.getCurrentContent();
 
         const contentInRawFormat = convertToRaw(contentState);
-        setContent(contentInRawFormat);
-        localStorage.setItem('editorContent', JSON.stringify(contentInRawFormat))
+        if(contentInRawFormat!=undefined){
+            console.log(contentInRawFormat)
+            setContent(contentInRawFormat);
+            localStorage.setItem('editorContent', JSON.stringify(contentInRawFormat))
+        }
+
     };
 
     const btnSendEmail = (e) => {

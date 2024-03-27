@@ -22,8 +22,8 @@ import EditIcon from 'src/views/iconImages/editicon';
 import { useSession } from 'next-auth/react';
 import ConvertUsersComponent from 'src/pages/admin/Components/ConvertingUsersComponent';
 
-const createData = (username, typeTitle, expires, removedFromServer, servertitle, type, servercode) => {
-  return { username, typeTitle, expires, removedFromServer, servertitle, type, servercode }
+const createData = (username, typeTitle, expires, removedFromServer, servertitle, type, servercode, removedBySubAgent, removedByAgent, removedByAdmin) => {
+  return { username, typeTitle, expires, removedFromServer, servertitle, type, servercode, removedBySubAgent, removedByAgent, removedByAdmin }
 }
 
 
@@ -55,7 +55,7 @@ const AgentUsersTable = (props) => {
     var usersAccounts = await axios.get(apiUrls.userUrl.getsubagentpurchasedUrl + email);
     // getsubagentpurchasedUrl
     usersAccounts.data.name.map((item, index) => {
-      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer, item.servertitle, item.type, item.servercode));
+      tmp.push(createData(item.username, item.typeTitle, item.expires, item.removedFromServer, item.servertitle, item.type, item.servercode, item.removedBySubAgent, item.removedByAgent, item.removedByAdmin));
     })
     setRows(tmp);
     setMainRows(tmp)
@@ -88,6 +88,32 @@ const AgentUsersTable = (props) => {
     setRows([]);
     let row = JSON.parse(e.currentTarget.getAttribute('row'));
     const result = await axios.get(apiUrls.userUrl.TogglingUserConnectionUrl + email + "&username=" + row.username)
+    if (result.data.name.isValid == false) {
+      setRows(tmpRow);
+      setError({
+        isValid: false,
+        errosMsg: result.data.name.errosMsg,
+        severity: "error"
+      })
+    } else {
+      GetUsersData(email);
+    }
+    setLoading(false);
+  }
+
+  const btnDeleteUserHandler = async (e) => {
+    e.preventDefault();
+    setUserConvert(null);
+    setError({
+      isValid: true,
+      errosMsg: "",
+      severity: "success"
+    })
+    setLoading(true);
+    var tmpRow = rows;
+    setRows([]);
+    let row = JSON.parse(e.currentTarget.getAttribute('row'));
+    const result = await axios.get(apiUrls.AdminManagementUrls.DeletingAdminUserConnectionUrl + email + "&username=" + row.username)
     if (result.data.name.isValid == false) {
       setRows(tmpRow);
       setError({
@@ -211,6 +237,12 @@ const AgentUsersTable = (props) => {
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnManageUserHandler}>
                     <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>{row.removedFromServer == false ? "غیر فعال کردن" : "فعال کردن"}</span>
                   </div>
+                  {
+                    (row.removedBySubAgent==true || row.removedByAgent==true || row.removedByAdmin==true) && <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnDeleteUserHandler}>
+                      <span style={{ fontWeight: 'bolder', color: 'blue', cursor: 'pointer' }}>حذف ادمین</span>
+                    </div>
+                  }
+
                 </TableCell>
                 <TableCell style={{ width: '150px' }} align='center' component='th' scope='row'>
                   <div className="delete-img-con btn-for-select" style={{ cursor: 'pointer', minWidth: '80px' }} row={JSON.stringify(row)} onClick={btnConvertUserHandler}>

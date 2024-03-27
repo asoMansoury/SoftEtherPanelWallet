@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         } else {
             agentCode = isAgent.agentcode;
         }
-        var userBasket = await GetUserDetails(username,token.agentCode);
+        var userBasket = await GetUserDetails(username,token.agentCode,token.email);
 
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(200).json({ userBasket });

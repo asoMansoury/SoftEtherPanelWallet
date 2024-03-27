@@ -1,7 +1,7 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import { MONGO_URI } from 'src/lib/utils';
 import { GetWalletUser } from '../Wallet/getWalletUser';
-import { IncreaseWallet } from '../Wallet/IncreaseWallet';
+import { DecDebitAgentWalletByAdmin, IncreaseAgentWalletByAdmin, IncreaseWallet, IncreaseWalletV2 } from '../Wallet/IncreaseWallet';
 import { GetMoneyFromOtherWallet, TransferMoneyToOtherWallet } from '../Wallet/UpdateWallet';
 import { TransferedWalletLog } from '../Wallet/CreateWallet';
 
@@ -43,3 +43,60 @@ export async function RefundSubAgent(refundMoney, agentcode, subAgentEmail, emai
     }
 }
 
+
+
+export async function IncreaseAgentByAdmin(refundMoney, agentcode, email, isAdmin) {
+    try {
+        const connectionState = await client.connect();
+        const db = client.db('SoftEther');
+
+        const collection = db.collection('Agents');
+        const subAgent = await collection.findOne({ agentcode: agentcode });
+        if (subAgent == null)
+            return { isValid: false, errorMsg: "کد ایجنت وارد شده صحیح نمی باشد." };
+
+        if (isAdmin == false)
+            return { isValid: false, errorMsg: "داده وارد شده صحیح نمی باشد." };
+
+        await IncreaseAgentWalletByAdmin(email,refundMoney).then((response)=>{
+            if(response.isValid==true){
+                TransferedWalletLog("َAdmin@gmail.com", agentcode, email, refundMoney, "افزایش اعتبار ایجینت توسط ادمین")
+            }
+        });
+
+        return { isValid: true };
+    } catch (erros) {
+        return Promise.reject(erros);
+    } finally {
+        client.close();
+    }
+}
+
+
+
+export async function DecreaseAgentByAdmin(refundMoney, agentcode, email, isAdmin) {
+    try {
+        const connectionState = await client.connect();
+        const db = client.db('SoftEther');
+
+        const collection = db.collection('Agents');
+        const subAgent = await collection.findOne({ agentcode: agentcode });
+        if (subAgent == null)
+            return { isValid: false, errorMsg: "کد ایجنت وارد شده صحیح نمی باشد." };
+
+        if (isAdmin == false)
+            return { isValid: false, errorMsg: "داده وارد شده صحیح نمی باشد." };
+
+        await DecDebitAgentWalletByAdmin(email,refundMoney).then((response)=>{
+            if(response.isValid==true){
+                TransferedWalletLog("Admin@gmail.com", agentcode, email, refundMoney, "کاهش بدهی ایجینت بابت پرداخت بدهی قبلی")
+            }
+        });
+
+        return { isValid: true };
+    } catch (erros) {
+        return Promise.reject(erros);
+    } finally {
+        client.close();
+    }
+}

@@ -32,7 +32,7 @@ export async function getAgentTariff(agentcode){
                 tarrifcode:item.tarrifcode,
                 type:item.type,
                 tariffTitle : selectedTariff.title,
-                plantitle: selectedPlan.title
+                plantitle: selectedPlan.tariffplanTitle
 
             })
         });

@@ -27,6 +27,8 @@ import AgentUsersTable from './Components/AgentUsersTable';
 import SubAgentsTable from '../ManagingSubAgents/Components/SubAgentsTable';
 import AgentWalletComponent from '../ManagingSubAgents/AgentWalletComponents/AgentWalletComponent';
 import SubAgentDetails from '../ManagingSubAgents/Components/SubAgentDetails';
+import IncAgentWalletComponent from './Components/IncAgentWalletComponent';
+import DecAgentWalletComponent from './Components/DecAgentWalletComponent';
 
 const index = () => {
     const { data: session, status } = useSession();
@@ -38,6 +40,8 @@ const index = () => {
     const [isSubAgentSelected, setSubAgentSelected] = useState(false);
     const [usernameForSearch, setUserNameForSearch] = useState("");
     const [isSubAgentWallet, setIsSubAgentWallet] = useState(false);
+    const [isIncAgentWallet, setIsIncAgentWallet] = useState(false);
+    const [isDecAgentWallet,setIsDecAgentWallet] = useState(false);
 
     const [disableBtn, setDisableBtn] = useState(false)
     const [loading, setLoading] = useState(false);
@@ -78,13 +82,40 @@ const index = () => {
 
     async function btnManaginWalletHandler(row) {
         setSelectedRow(row);
-        setSubAgentSelected(false);
-        setIsSubAgentWallet(false);
-        setSubAgentInformation(null);
-        setAgentInformation(null);
+        clearForm(false);
         var getSubAgents = await axios.get(apiUrls.agentUrl.getAgentInformation + row.agentcode);
         setIsSubAgentWallet(true);
         setSubAgentInformation(getSubAgents.data.name);
+    }
+
+    async function btnIncreateAgentHandler(row){
+        setSelectedRow(row);
+        setLoading(true);
+        clearForm();
+        var getSubAgents = await axios.get(apiUrls.agentUrl.getAgentInformation + row.agentcode);
+        setIsIncAgentWallet(true);
+        setSubAgentInformation(getSubAgents.data.name);
+        setLoading(false); 
+    }
+
+    async function btnDecAgentHandler(row){
+        setSelectedRow(row);
+        setLoading(true);
+        clearForm();
+        var getSubAgents = await axios.get(apiUrls.agentUrl.getAgentInformation + row.agentcode);
+        setIsDecAgentWallet(true);
+        setSubAgentInformation(getSubAgents.data.name);
+        setLoading(false); 
+    }
+    
+    function clearForm(){
+        setIsIncAgentWallet(false);
+        setSubAgentSelected(false);
+        setSubAgentSelected(false);
+        setIsSubAgentWallet(false);
+        setIsDecAgentWallet(false);
+        setSubAgentInformation(null);
+        setAgentInformation(null);
     }
 
     return <div>
@@ -103,7 +134,7 @@ const index = () => {
                 </Grid>
                 <Divider></Divider>
                 <Card>
-                    <SubAgentsTable subAgents={agents} btnShowDetailHandler={btnShowDetailHandler} btnManaginWalletHandler={btnManaginWalletHandler}></SubAgentsTable>
+                    <SubAgentsTable btnDecAgentHandler={btnDecAgentHandler} btnIncreateAgentHandler={btnIncreateAgentHandler} subAgents={agents} btnShowDetailHandler={btnShowDetailHandler} btnManaginWalletHandler={btnManaginWalletHandler}></SubAgentsTable>
                 </Card>
             </Grid>
 
@@ -128,6 +159,14 @@ const index = () => {
                     {
                         isSubAgentWallet == true &&
                         <AgentWalletComponent selectedRow={selectedRow} btnManaginWalletHandler={btnManaginWalletHandler} subAgentInformation={subAgentInformation}></AgentWalletComponent>
+                    }
+                                        {
+                        isIncAgentWallet == true &&
+                        <IncAgentWalletComponent selectedRow={selectedRow} btnManaginWalletHandler={btnManaginWalletHandler} subAgentInformation={subAgentInformation}></IncAgentWalletComponent>
+                    }
+                    {
+                        isDecAgentWallet == true &&
+                        <DecAgentWalletComponent selectedRow={selectedRow} btnManaginWalletHandler={btnManaginWalletHandler} subAgentInformation={subAgentInformation}></DecAgentWalletComponent>
                     }
                 </Card>
             </Grid>

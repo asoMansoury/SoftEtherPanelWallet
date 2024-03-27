@@ -14,14 +14,24 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function SendEmailToTests(to, subject, content, telegram) {
-  console.log("Send Email Flag : ",process.env.SEND_EMAIL)
-  if(process.env.SEND_EMAIL == 'false' ){
+  console.log("Send Email Flag : ", process.env.SEND_EMAIL)
+  if (process.env.SEND_EMAIL == 'false') {
     return;
+  }
+  var botTelegram = "";
+  if(process.env.IsBotEnable==false){
+    botTelegram = `
+    <p style="font-size: 16px;font-weight: bold; line-height: 1.5; color: #333; text-align: center;">
+    ربات تلگرام پشتیبان(مخصوص کاربرانی که اکانت تهیه کرده اند)
+        <a href="${process.env.BotTelegram}" target="_blank" style="color: #007bff; text-decoration: none; font-weight: bold;">
+          اینجا کلیک کنید
+        </a>
+    </p>
+    `;
   }
   try {
     const table = `
         <div>
-
           ${telegram.hasTelegram == true ? `
                     <div>ّ
                           <a target="_blank" href="${telegram.telegramId}" style="cursor: pointer; font-weight: bold; color: blue; text-decoration: none;">
