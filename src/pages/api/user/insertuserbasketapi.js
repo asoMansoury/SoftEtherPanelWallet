@@ -1,4 +1,5 @@
 
+import { GetFromCache } from "src/databse/Cache/CacheManager";
 import { PAID_CUSTOMER_STATUS } from "src/databse/usersbasket/PaidEnum";
 import InsertUsersBasket from "src/databse/usersbasket/insertusersbasket";
 import { Redis_Delete_Key, Redis_Get_Data } from "src/redis/redisconnection";
@@ -20,11 +21,10 @@ export default async function handler(req, res) {
           const { UUID } = req.body;
     
           console.log("ready for connecting to redis .... ");
-          var getDataFromRedis = await Redis_Get_Data(UUID);
-          var parsedObject= JSON.parse(getDataFromRedis);
+          var getDataFromRedis = await GetFromCache(UUID);
+          var parsedObject= JSON.parse(getDataFromRedis.object);
           var result = await InsertUsersBasket(parsedObject,PAID_CUSTOMER_STATUS.WAITING);
-          await Redis_Delete_Key(UUID);
-          
+          console.log({result:result});
           res.status(200).json({ result});
           
         } else {

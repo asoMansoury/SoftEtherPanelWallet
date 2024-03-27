@@ -1,10 +1,11 @@
 import Redis from 'ioredis';
+import { SaveToCache } from 'src/databse/Cache/CacheManager';
 import { REDIS_URL } from 'src/lib/utils';
 
 const redis = new Redis(REDIS_URL);
 
 
-  export function Redis_Set_Data(key,data){
+  export async  function Redis_Set_Data(key,data){
         // Save data to "test" key
     redis.set(key, data, (err, reply) => {
       console.log("reply : ",reply);

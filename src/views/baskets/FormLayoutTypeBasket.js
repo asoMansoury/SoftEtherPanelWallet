@@ -468,7 +468,9 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
         if (typeVpn == apiUrls.types.Cisco)
           finalPath = "/cisco//finalstep";
         if (typeVpn == apiUrls.types.OpenVpn)
-          finalPath = "/OpenTunnel//finalstep"
+          finalPath = "/OpenTunnel//finalstep";
+          if (typeVpn == apiUrls.types.OpenVpn)
+          finalPath = "/vpnhood//finalstep";
         router.push({
           pathname: finalPath, query: {
             tariffPlans: JSON.stringify(redisResponse.tariffPlans),

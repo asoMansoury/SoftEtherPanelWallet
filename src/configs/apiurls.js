@@ -7,7 +7,12 @@ export const apiUrls = {
     "types":{
         "Cisco": "OC1",
         "SoftEther":"SF1",
-        "OpenVpn":"OP1"
+        "OpenVpn":"OP1",
+        "VpnHood":"VP1"
+    },
+    "telegramUrl":{
+        "changeserver":`/api/telegram/changeserver`,
+        "changeUserPasswordUrl":`/api/telegram/changeuserpassword`
     },
     "telegramUrl":{
         "changeserver":`/api/telegram/changeserver`,

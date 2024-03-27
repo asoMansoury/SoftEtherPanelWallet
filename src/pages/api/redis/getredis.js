@@ -1,6 +1,5 @@
-import { Redis } from "ioredis";
-import { REDIS_URL } from "src/lib/utils";
-import { Redis_Get_Data, Redis_Set_Data } from "src/redis/redisconnection";
+
+import { Redis_Get_Data } from "src/redis/redisconnection";
 
 export default async function handler(req,res){
     

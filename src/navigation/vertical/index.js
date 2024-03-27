@@ -46,6 +46,11 @@ const navigation = () => {
       icon: HomeOutline,
       path: '/cisco'
     });
+    tmpMenues.push({
+      title:'خرید اکانت Vpnhood',
+      icon: HomeOutline,
+      path:'/vpnhood'
+    });
     
     tmpMenues.push({
       title: 'تمدید اکانت',
