@@ -113,7 +113,6 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
   useEffect(async () => {
     if (typeVpn != undefined) {
       var servers = await axios.get(apiUrls.server.getServersByTypeApi + typeVpn);
-
       var tmp = [];
       servers.data.name.map((item) => {
         tmp.push(item);
@@ -471,7 +470,6 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
           finalPath = "/OpenTunnel/finalstep";
           if (typeVpn == apiUrls.types.VpnHood)
           finalPath = "/vpnhood/finalstep";
-        console.log({finalPath});
         router.push({
           pathname: finalPath, query: {
             tariffPlans: JSON.stringify(redisResponse.tariffPlans),

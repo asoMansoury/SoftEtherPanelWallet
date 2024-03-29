@@ -36,8 +36,7 @@ const FinalStep = ()=>{
 
     const createNewUser = async (objPlan) => {
         try {
-          console.log(objPlan);
-          var url =apiUrls.userUrl.createNewCiscoUserUrl;
+          var url =apiUrls.userUrl.CreateNewVpnHoodUserUrl;
           const response = await axios.post(url, { UUID: objPlan.uuid });
           if(response.data.name.isValid==false){
 

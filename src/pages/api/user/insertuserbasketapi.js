@@ -20,11 +20,9 @@ export default async function handler(req, res) {
 
           const { UUID } = req.body;
     
-          console.log("ready for connecting to redis .... ");
           var getDataFromRedis = await GetFromCache(UUID);
           var parsedObject= JSON.parse(getDataFromRedis.object);
           var result = await InsertUsersBasket(parsedObject,PAID_CUSTOMER_STATUS.WAITING);
-          console.log({result:result});
           res.status(200).json({ result});
           
         } else {

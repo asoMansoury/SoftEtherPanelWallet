@@ -15,6 +15,8 @@ import { GetCustomerByEmail } from "src/databse/customers/getcustomer";
 import { CreateUserOnOpenVpn } from "src/lib/OpenVpn/CreateUserOpenVpn";
 import { CreateUserOnCisco } from "src/lib/Cisco/createuser";
 import { sendEmailCiscoChanged } from "src/lib/Emails/CiscoEmails/ChangedTypeEmail";
+import { GetVpnHoodConfiguration } from "src/databse/VpnhoodConfiguration/getVpnHoodConfiguration";
+import { CreateNewUserVpnhood } from "src/lib/Vpnhood/CreateNewUserVpnhood";
 
 
 
@@ -41,7 +43,6 @@ export default async function handler(req, res) {
     return;
   }
   if (req.method === 'POST') {
-    const currentDomain = req.headers.host;
     const token = await getToken({ req });
     if (token == null) {
       res.status(200).json({
@@ -70,6 +71,8 @@ export default async function handler(req, res) {
     } else {
       agentCode = isAgent.agentcode;
     }
+    //Load configuration for VpnHood 
+    var vpnHoodConfiguration =await GetVpnHoodConfiguration(apiUrls.vpnhoodTypes.All);
     // Handle the POST request here
     const { UUID } = req.body;
 
@@ -83,7 +86,6 @@ export default async function handler(req, res) {
 
       //get all servers to make a user
       var servers = await GetServers(apiUrls.types.VpnHood);
-
       var selectedServer = servers.filter((item) => item.servercode == usersBasketObj.servercode ? item : null)[0];
 
       var newUsers = await CreateUser(usersBasketObj);
@@ -94,22 +96,21 @@ export default async function handler(req, res) {
 
       var userRegistered = [];
       await Promise.all(newUsers.map(async (userNew) => {
+        var resultID =await CreateNewUserVpnhood(selectedServer, 
+          userNew.expires, 
+          userNew.username,
+          vpnHoodConfiguration.bearerToken,
+          vpnHoodConfiguration.vpnhoodBaseUrl);
+          userNew.HubName = resultID.accessTokenId;
         var insertedUser = await RegisterUsersInDB(servers, userNew, apiUrls.types.VpnHood, selectedServer, agentCode);
         userRegistered.push(insertedUser);
       }));
 
-
-
-      userRegistered.map((userItem, userIndex) => {
-        CreateUserOnCisco(selectedServer,userItem.username,userItem.password,userItem.expires);
-      })
-
       await UpdateUsersBasket(UUID, PAID_CUSTOMER_STATUS.PAID, true, userRegistered);
+
 
       let activedUserForSendingEmail = [];
       userRegistered.map((userItem, userIndex) => {
-        userItem.expires = ConvertToPersianDateTime(userItem.expires);
-
         servers.map((server, index) => {
           if (server.servercode == selectedServer.servercode) {
             userItem.username = userItem.username;
@@ -118,22 +119,12 @@ export default async function handler(req, res) {
         });
       });
 
-      var wrappedUsers = SettinCiscoConfigForUsers(selectedServer, activedUserForSendingEmail)
-      sendEmailCiscoChanged(registerCustomer.email, wrappedUsers, selectedServer, "لطفا پاسخ ندهید. رسید اکانت خریداری شده");
-      if (usersBasketObj.isSendToOtherEmail == true) {
-        var otherObj = {
-          email: usersBasketObj.sendEmailToOther
-        };
-        var otherToEmailCustomer = await RegisterCustomersForOthers(otherObj, apiUrls.types.VpnHood, token.agentcode);
-        sendEmailCiscoChanged(otherToEmailCustomer.email, wrappedUsers, selectedServer, "لطفا پاسخ ندهید. رسید اکانت خریداری شده");
-      }
-      console.log({
-        wrappedUsers
-      })
+      
+      //Call And Create VpnHoodServer
       res.status(200).json({
         name: {
           basket: usersBasketObj,
-          users: wrappedUsers,
+          users: activedUserForSendingEmail,
           customer: registerCustomer,
           servers: servers,
           isValid: true

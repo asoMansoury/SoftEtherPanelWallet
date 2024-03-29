@@ -10,6 +10,9 @@ export const apiUrls = {
         "OpenVpn":"OP1",
         "VpnHood":"VP1"
     },
+    "vpnhoodTypes":{
+        "All":"all"
+    },
     "telegramUrl":{
         "changeserver":`/api/telegram/changeserver`,
         "changeUserPasswordUrl":`/api/telegram/changeuserpassword`
@@ -45,6 +48,7 @@ export const apiUrls = {
     "userUrl":{
         "OpenTunneleNewUserUrl":`/api/user/OpenTunnel/createnewuserOpenVpn/`,
         "createNewUserUrl":`/api/user/createnewuser/`,
+        "CreateNewVpnHoodUserUrl":`/api/user/VpnHood/CreateVpnhoodUser`,
         "insertuserbasketUrl":`/api/user/insertuserbasketapi/`,
         "getusersbasket":`/api/user/getuserbasket/?uuid=`,
         "getpurchasedUrl":`/api/user/getpurchasedaccounts/?email=`,
