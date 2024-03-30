@@ -3,7 +3,7 @@ import GetServers from "src/databse/server/getservers";
 import CreateUser from "src/databse/user/createuser";
 import RegisterUsersInDB from "src/databse/user/registerusers";
 import GetUsersBasketByUUID from "src/databse/usersbasket/getusersbasket";
-import { sendEmail } from "src/lib/emailsender";
+import { sendEmail, sendEmailCiscoClient, sendEmailVpnHoodClient } from "src/lib/emailsender";
 import { ConvertToPersianDateTime } from "src/lib/utils";
 import { UpdateUsersBasket } from "src/databse/usersbasket/insertusersbasket";
 import { PAID_CUSTOMER_STATUS } from "src/databse/usersbasket/PaidEnum";
@@ -16,19 +16,8 @@ import { CreateUserOnOpenVpn } from "src/lib/OpenVpn/CreateUserOpenVpn";
 import { CreateUserOnCisco } from "src/lib/Cisco/createuser";
 import { sendEmailCiscoChanged } from "src/lib/Emails/CiscoEmails/ChangedTypeEmail";
 import { GetVpnHoodConfiguration } from "src/databse/VpnhoodConfiguration/getVpnHoodConfiguration";
-import { CreateNewUserVpnhood } from "src/lib/Vpnhood/CreateNewUserVpnhood";
+import { CreateNewUserVpnhood, GetAccessTokenVpnHood } from "src/lib/Vpnhood/CreateNewUserVpnhood";
 
-
-
-const SettinCiscoConfigForUsers = (selectedServer, users) => {
-  var result = [];
-  users.map((userItem, userIndex) => {
-    userItem.ciscourl = selectedServer.ciscourl+":"+selectedServer.ciscoPort;
-    result.push(userItem);
-  });
-
-  return result;
-}
 
 export default async function handler(req, res) {
 
@@ -43,6 +32,7 @@ export default async function handler(req, res) {
     return;
   }
   if (req.method === 'POST') {
+    const currentDomain = req.headers.host;
     const token = await getToken({ req });
     if (token == null) {
       res.status(200).json({
@@ -95,6 +85,7 @@ export default async function handler(req, res) {
 
 
       var userRegistered = [];
+      var accessToken = {};
       await Promise.all(newUsers.map(async (userNew) => {
         var resultID =await CreateNewUserVpnhood(selectedServer, 
           userNew.expires, 
@@ -102,10 +93,15 @@ export default async function handler(req, res) {
           vpnHoodConfiguration.bearerToken,
           vpnHoodConfiguration.vpnhoodBaseUrl);
           userNew.HubName = resultID.accessTokenId;
+          accessToken= resultID;
         var insertedUser = await RegisterUsersInDB(servers, userNew, apiUrls.types.VpnHood, selectedServer, agentCode);
         userRegistered.push(insertedUser);
       }));
-
+      var generatedVpnHoodToken = await GetAccessTokenVpnHood(selectedServer,
+                                                              accessToken,
+                                                              vpnHoodConfiguration.bearerToken,
+                                                              vpnHoodConfiguration.vpnhoodBaseUrl);
+      accessToken.accessToken = generatedVpnHoodToken;
       await UpdateUsersBasket(UUID, PAID_CUSTOMER_STATUS.PAID, true, userRegistered);
 
 
@@ -114,12 +110,21 @@ export default async function handler(req, res) {
         servers.map((server, index) => {
           if (server.servercode == selectedServer.servercode) {
             userItem.username = userItem.username;
+            userItem.token = accessToken.accessToken;
             activedUserForSendingEmail.push(userItem);
           }
         });
       });
 
       
+      sendEmailVpnHoodClient(registerCustomer.email, newUsers, accessToken, "لطفا پاسخ ندهید. رسید اکانت خریداری شده", currentDomain, registerCustomer);
+      if (usersBasketObj.isSendToOtherEmail == true) {
+        var otherObj = {
+          email: usersBasketObj.sendEmailToOther
+        };
+        var otherToEmailCustomer = await RegisterCustomersForOthers(otherObj, apiUrls.types.VpnHood, token.agentcode);
+        sendEmailVpnHoodClient(otherToEmailCustomer.email, newUsers,accessToken, "لطفا پاسخ ندهید. رسید اکانت خریداری شده", currentDomain, otherToEmailCustomer);
+      }
       //Call And Create VpnHoodServer
       res.status(200).json({
         name: {

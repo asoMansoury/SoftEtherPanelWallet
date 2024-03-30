@@ -4,12 +4,13 @@ import {TableContainer,TableHead,Paper,TableRow ,TableCell ,TableBody,TableFoote
 import { useEffect,useState } from 'react'
 import { digitsEnToFa,addCommas } from "@persian-tools/persian-tools";
 import { ConvertToPersianDateTime } from 'src/lib/utils';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 
 const columns = [
   { id: 'username',    align: 'right', label: 'نام کاربری', minWidth: 100 },
   { id: 'password',    align: 'right', label: 'کلمه عبور', minWidth: 100 },
-  { id: 'ciscourl',    align: 'right', label: 'آدرس سرور', minWidth: 100 },
+  { id: 'token',    align: 'right', label: 'آدرس سرور', minWidth: 100 },
   {
     id: 'expires',
     label: 'تاریخ اعتبار',
@@ -66,13 +67,29 @@ const AccountsTable = (props) => {
               return (
                 <TableRow  hover role='checkbox' tabIndex={-1} key={row.code}>
                   {columns.map(column => {
-                    const value = row[column.id];
+                    if(column.id==="token"){
+                      const value = row[column.id];
 
-                    return ( 
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
-                    )
+                      return ( 
+                        <TableCell key={column.id} align={column.align}>
+                          <CopyToClipboard
+                                            text={value}
+                                            onCopy={() => alert("کپی شد")}>
+                                            <Alert severity='info'>کلیک کنید.</Alert>
+                                        </CopyToClipboard>
+                        </TableCell>
+                      )
+                    }
+                    else{
+                      const value = row[column.id];
+
+                      return ( 
+                        <TableCell key={column.id} align={column.align}>
+                          {column.format && typeof value === 'number' ? column.format(value) : value}
+                        </TableCell>
+                      )
+                    }
+
                   })}
                 </TableRow>
               )

@@ -21,7 +21,6 @@ export async function fetchVpnHoodApi(url, method, data = null,bearerToken) {
 
         const responseData = await response.json();
         return responseData;
-        console.log({responseData}); // You can handle the response data here
     } catch (error) {
         console.error('Error fetching data:', error);
     }
