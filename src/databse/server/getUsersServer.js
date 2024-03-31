@@ -19,7 +19,6 @@ async function GetUsersServer(username) {
 
         const usersCollection = db.collection('Users');
         const userDocs = await usersCollection.findOne({ username: username });
-
         const collection = db.collection('Servers');
         const documents = await collection.find({ type: userDocs.type,activeforchangeserver:true }).toArray();
         var tmpResult = [];
@@ -48,6 +47,18 @@ async function GetUsersServer(username) {
                     }
                 })
             } else if (userDocs.type == apiUrls.types.OpenVpn) {
+                var currentServerOfUser = documents.find(e => e.servercode == userDocs.currentservercode);
+                documents.map((item, index) => {
+                    if (item.isremoved == false
+                        && item.servercode != userDocs.currentservercode) {
+                        item.isCurrent = false;
+                        tmpResult.push(item);
+                    } else {
+                        item.isCurrent = true;
+                        tmpResult.push(item);
+                    }
+                })
+            }else if (userDocs.type == apiUrls.types.VpnHood) {
                 var currentServerOfUser = documents.find(e => e.servercode == userDocs.currentservercode);
                 documents.map((item, index) => {
                     if (item.isremoved == false

@@ -6,7 +6,6 @@ export default async function handler(req, res) {
         const { username } = req.query;
         var userServer = await GetUsersServer(username);
         var result = [];
-
         userServer.map((item, index) => {
             var obj = {
                 servercode: item.servercode,
@@ -20,6 +19,11 @@ export default async function handler(req, res) {
                 obj.port = item.ciscoPort;
             }
             else if (item.type == apiUrls.types.Cisco){
+                obj.url = item.ciscourl;
+                obj.port = item.ciscoPort;
+                
+            }
+            else if (item.type == apiUrls.types.VpnHood){
                 obj.url = item.ciscourl;
                 obj.port = item.ciscoPort;
                 

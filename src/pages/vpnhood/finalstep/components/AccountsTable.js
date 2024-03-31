@@ -75,7 +75,7 @@ const AccountsTable = (props) => {
                           <CopyToClipboard
                                             text={value}
                                             onCopy={() => alert("کپی شد")}>
-                                            <Alert severity='info'>کلیک کنید.</Alert>
+                            <Alert severity='info'>برای کپی کد کلیک کنید.</Alert>
                                         </CopyToClipboard>
                         </TableCell>
                       )

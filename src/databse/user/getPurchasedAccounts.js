@@ -24,6 +24,8 @@ function wrappUsers(data, servers) {
             typeTitle = "سیسکو"
         else if (item.type == apiUrls.types.OpenVpn)
             typeTitle = "اپن وی پی ان"
+        else if (item.type == apiUrls.types.VpnHood)
+            typeTitle = "Vpnhood"
 
         var selectedServer = servers.filter((z) => z.servercode == item.currentservercode)[0];
         if(selectedServer==null)

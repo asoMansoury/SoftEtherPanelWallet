@@ -33,7 +33,11 @@ export default function DownloadServerLink(props) {
                 onCopy={() => alert("کپی شد")}>
                 <Alert severity='info'>{row.url+":"+row.port}</Alert>
             </CopyToClipboard>
-        } else {
+        }  else if(row.type == apiUrls.types.VpnHood){
+            return <div></div>
+        }
+        
+        else {
             return <CopyToClipboard
                 text={row.url+":"+row.port}
                 onCopy={() => alert("کپی شد")}>

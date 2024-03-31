@@ -17,8 +17,10 @@ export const CreateNewUserVpnhood = async (selectedServer, expirationTime,userNa
         url: "string",
         isPublic: true
     };
+    
+    var createUrl = `${vpnhoodBaseUrl}projects/${projectId}/access-tokens`;
 
-    var result =  fetchVpnHoodApi(`${vpnhoodBaseUrl}projects/${projectId}/access-tokens`, 'POST', createTokenDto,bearerToken);
+    var result =await  fetchVpnHoodApi(createUrl, 'POST', createTokenDto,bearerToken);
     return result;
 }
 
@@ -31,4 +33,13 @@ export const GetAccessTokenVpnHood = async (selectedServer, createdToken,bearerT
     var token =await fetchVpnHoodApi(generatedUrl, 'GET',null,bearerToken);
     console.log({token})
     return token;
+}
+
+
+export const DeleteVpnhoodUserAccount = async (selectedServer, accessTokenId,bearerToken,vpnhoodBaseUrl) =>{  
+    // var convertedDate = expirationTime;//'2024/04/29 14:58:23' => "2024-03-23T22:58:30"
+    var projectId = selectedServer.password;
+    var serverFarmId = selectedServer.host;
+    var generatedUrl = `${vpnhoodBaseUrl}projects/${projectId}/access-tokens/${accessTokenId}`;
+    await fetchVpnHoodApi(generatedUrl, 'DELETE',null,bearerToken);
 }

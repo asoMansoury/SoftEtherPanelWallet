@@ -18,7 +18,6 @@ export async function fetchVpnHoodApi(url, method, data = null,bearerToken) {
         }
 
         const response = await fetch(url, options);
-
         const responseData = await response.json();
         return responseData;
     } catch (error) {
