@@ -31,7 +31,6 @@ export const GetAccessTokenVpnHood = async (selectedServer, createdToken,bearerT
     var generatedUrl = `${vpnhoodBaseUrl}projects/${projectId}/access-tokens/${createdToken.accessTokenId}/access-key`;
     console.log({ generatedUrl})
     var token =await fetchVpnHoodApi(generatedUrl, 'GET',null,bearerToken);
-    console.log({token})
     return token;
 }
 

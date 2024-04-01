@@ -36,6 +36,8 @@ async function ChangeUserVpnPassword(password,username){
                 ChangeOpenVPNUserPassword(selectedServer,user);
             }else if(user.type==apiUrls.types.Cisco||user.type==apiUrls.types.SoftEther){
                 ChangePasswordCisco(selectedServer,username,password);
+            }else if(user.type== apiUrls.types.VpnHood){
+                //Nothing should happens for vpn hood.
             }
             return {
                 isValid:true

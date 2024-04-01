@@ -208,6 +208,8 @@ export function ConvertCodeToTitle(typeCode) {
     return "وی پی ان ایران";
   else if (typeCode == apiUrls.types.OpenVpn)
     return "اپن وی پی ان"
+  else if (typeCode == apiUrls.types.VpnHood)
+    return "Vpnhood"
 }
 
 
