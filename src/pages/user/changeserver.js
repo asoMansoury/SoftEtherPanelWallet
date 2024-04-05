@@ -66,6 +66,7 @@ const ChangeServer = () => {
 
     setShowServerComponent(false);
     const result = await axios.get(apiUrls.userUrl.RestartUserConnectionUrl + item.username);
+    console.log(result);
     setTimeout(() => {
       setIsWorking(false);
       setErros({

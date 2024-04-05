@@ -29,7 +29,6 @@ export const GetAccessTokenVpnHood = async (selectedServer, createdToken,bearerT
     var projectId = selectedServer.password;
     var serverFarmId = selectedServer.host;
     var generatedUrl = `${vpnhoodBaseUrl}projects/${projectId}/access-tokens/${createdToken.accessTokenId}/access-key`;
-    console.log({ generatedUrl})
     var token =await fetchVpnHoodApi(generatedUrl, 'GET',null,bearerToken);
     return token;
 }
@@ -41,4 +40,43 @@ export const DeleteVpnhoodUserAccount = async (selectedServer, accessTokenId,bea
     var serverFarmId = selectedServer.host;
     var generatedUrl = `${vpnhoodBaseUrl}projects/${projectId}/access-tokens/${accessTokenId}`;
     await fetchVpnHoodApi(generatedUrl, 'DELETE',null,bearerToken);
+}
+
+
+export const RestartVpnhoodUserAccount = async (selectedServer, user,bearerToken,vpnhoodBaseUrl) =>{ 
+    const checkObject = {
+        TypeName: "NotExistsException",
+        TypeFullName: "VpnHood.Common.Exceptions.NotExistsException",
+        Message: "Sequence contains no elements."
+    };
+    
+
+    // var convertedDate = expirationTime;//'2024/04/29 14:58:23' => "2024-03-23T22:58:30";
+    var projectId = selectedServer.password;
+    var serverFarmId = selectedServer.host;
+    var createdToken = {
+        accessTokenId:user.currenthubname
+    };
+    
+    var generatedToken =await GetAccessTokenVpnHood(selectedServer,createdToken,bearerToken,vpnhoodBaseUrl);
+    var result = {
+        existed:true,
+        generatedToken:"",
+        accessTokenId:""
+    }
+    if(generatedToken.TypeName==undefined){
+        result.generatedToken =generatedToken;
+        result.accessTokenId = createdToken.accessTokenId;
+    }else{
+        var createNewToken = await CreateNewUserVpnhood(selectedServer,
+                                                        user.expires,
+                                                        user.username,
+                                                        bearerToken,
+                                                        vpnhoodBaseUrl);
+        var newGeneratedToken =await GetAccessTokenVpnHood(selectedServer,createNewToken,bearerToken,vpnhoodBaseUrl);
+        result.accessTokenId = createNewToken.accessTokenId;
+        result.existed = false;
+        result.generatedToken = newGeneratedToken;
+    }
+    return result;
 }

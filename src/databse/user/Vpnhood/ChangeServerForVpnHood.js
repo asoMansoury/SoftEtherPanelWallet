@@ -58,3 +58,13 @@ export async function ChangeServerForUserVpnHood(servers, currentServerOfUser, f
         //client.close();
     }
 }
+
+export async function UpdateVpnHoodInformation(User){
+    const db = client.db('SoftEther');
+    const userCollection = db.collection('Users');
+    var updated = await userCollection.updateOne({ username: User.username }, {
+        $set: {
+            currenthubname: User.currenthubname
+        }
+    });
+}
