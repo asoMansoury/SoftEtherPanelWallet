@@ -19,10 +19,13 @@ import { UpdateUsersBasketForRevoke } from 'src/databse/usersbasket/insertusersb
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { UpdateExpirationTimeSoftEther } from 'src/lib/createuser/UpdateExpirationTime';
-import { sendEmail, sendEmailCiscoClient } from 'src/lib/emailsender';
+import { sendEmail, sendEmailCiscoClient, sendEmailVpnHoodClient } from 'src/lib/emailsender';
 import { GenerateOneMonthExpiration, GenerateOneMonthExpirationStartDate, MONGO_URI, calculateEndDate, formatDate } from 'src/lib/utils';
 import UpdateRevokingUser from '../repository/RevokeUser';
 import { TransferedWalletLog } from 'src/databse/Wallet/CreateWallet';
+import { GetVpnHoodConfiguration } from 'src/databse/VpnhoodConfiguration/getVpnHoodConfiguration';
+import { RestartVpnhoodUserAccount, RevokeVpnhoodUserAccount } from 'src/lib/Vpnhood/CreateNewUserVpnhood';
+import { UpdateVpnHoodInformation } from '../Vpnhood/ChangeServerForVpnHood';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -68,7 +71,8 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
                 var totalPrice = await CalculateTotalPriceModifed(foundedUser.agentcode, agentPlans, foundedUser.type);
                 var months = await getTarrifPlans(foundedUser.type);
                 var selectedPlanType = months.filter((item) => item.code == tariffplancode)[0];
-    
+
+
                 //زمانی است که ایجنت لاگین کرده و می خواهد یک مشتری را تمدید کند و در این حالت از کیف پول مشتری کم خواهیم کرد.
                 if (isAgentValid.isAgent == true && isAgentValid.isSubAgent != true) {
                     var agentWallet = await GetWalletUserByCode(foundedUser.agentcode, foundedUser.type);
@@ -165,7 +169,7 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
             
             UpdateRevokingUser(username,nextExpirationDate,uuid);
             finalResult=foundedUser;
-            UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServer)
+            var vpnHoodResult= await UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServer)
     
             foundedUser.isValid = true;
             var selectedSever = await GetServerByCode(foundedUser.currentservercode);
@@ -181,6 +185,15 @@ async function RevokeUser(username, tariffplancode, tariffcode, type, uuid, toke
                 foundedUser.ovpnurl = selectedSever.ovpnurl;
                 tmpEmails.push(foundedUser);
                 sendEmail(foundedUser.email, tmpEmails, "اطلاعیه تمدیده اکانت", null, customerAccount);
+            }else if(foundedUser.type === apiUrls.types.VpnHood){
+                if(vpnHoodResult.existed==false) {
+                    foundedUser.currenthubname = vpnHoodResult.accessTokenId;
+                    UpdateVpnHoodInformation(foundedUser);
+                }
+                foundedUser.generatedToken = vpnHoodResult.generatedToken;
+                vpnHoodResult.accessToken = vpnHoodResult.generatedToken;
+                tmpEmails.push(foundedUser);
+                sendEmailVpnHoodClient(foundedUser.email,tmpEmails,vpnHoodResult,"اطلاعیه تمدید اکانت",null,customerAccount);
             }
             return foundedUser;
         });
@@ -204,8 +217,24 @@ async function UpdateUsersWhichRemovedFromServer(foundedUser, isRemovedFromServe
         }else if(foundedUser.type == apiUrls.types.SoftEther){
             var selectedServer = await GetServerByCode(foundedUser.currentservercode);
             CreateUserOnCisco(selectedServer, foundedUser.username, foundedUser.password);
+        }else if(foundedUser.type === apiUrls.types.VpnHood){
+            var generatedUserResult = await UpdateVpnHood(foundedUser)
+            return generatedUserResult;
         }
+    }else if(foundedUser.type === apiUrls.types.VpnHood){
+        var generatedUserResult = await UpdateVpnHood(foundedUser)
+        return generatedUserResult;
     }
+}
+
+async function UpdateVpnHood(foundedUser){
+    var vpnHoodConfiguration = await GetVpnHoodConfiguration(apiUrls.vpnhoodTypes.All);
+    var selectedServer = await GetServerByCode(foundedUser.currentservercode);
+    var generatedUserResult = await RevokeVpnhoodUserAccount(selectedServer,
+                                        foundedUser,
+                                        vpnHoodConfiguration.bearerToken,
+                                        vpnHoodConfiguration.vpnhoodBaseUrl);
+    return generatedUserResult;
 }
 
 export async function CalculatingForRevoke(username, tariffplancode, tariffcode, type) {

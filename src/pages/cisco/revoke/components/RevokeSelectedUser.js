@@ -135,10 +135,10 @@ const RevokeSelectedUser = (props) => {
         type:selectedUser.type,
         uuid:uuid
       });
+      console.log(result.data.result);
       setShowLoadingProgressForRevoke(false);
-      console.log(result);
       if(result.data.result.isValid==false){
-        setRevokeMessage(result.data.result.message);
+        setRevokeMessage(result.data.result);
         return;
       }
       GetUserInformation(userName);

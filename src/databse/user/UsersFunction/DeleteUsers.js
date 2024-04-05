@@ -70,6 +70,7 @@ export async function RestartUserConnection(username) {
         }
         if(requestedType===apiUrls.types.VpnHood)
         {
+            //todo
         }else{
             return allExpiredUsers;
         }
