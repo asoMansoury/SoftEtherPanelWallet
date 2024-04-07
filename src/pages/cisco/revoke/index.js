@@ -15,6 +15,7 @@ import UsersPurchasedTable from './components/usersPurchasedTable';
 import RevokeSelectedUser from './components/RevokeSelectedUser';
 import {Button,Alert} from '@mui/material/';
 import { useSession } from 'next-auth/react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 const index = () => {
 
@@ -22,6 +23,9 @@ const index = () => {
   const [isShowRevokePage,setIsShowRevokePage] = useState(false);
   const [isShowSuccess,setIsShowSuccess] = useState(false);
   const [selectedUser,setSelectedUser] = useState();
+  const [revokedUserResult,setRevokedUserResult] = useState({
+    type:apiUrls.types.Cisco
+  });
   const {  data:session,status } = useSession();
   const [profileSelector,setProfileSelector] = useState({
     isLoggedIn:false
@@ -43,9 +47,10 @@ const index = () => {
     setIsShowRevokePage(true);
   }
   
-  function FinishRevokingHandler(){
+  function FinishRevokingHandler(result){
     setIsShowRevokePage(false);
     setIsShowSuccess(true);
+    setRevokedUserResult(result);
   }
   return (
     <Grid container spacing={6}>
@@ -56,7 +61,14 @@ const index = () => {
                 {
                   isShowSuccess && 
                     <div style={{paddingRight:'30px', paddingTop:'30px',paddingBottom: '15px'}}>
-                      <Alert severity="success">عملیات با موفقیت انجام گردید.</Alert>
+                      {
+                        revokedUserResult.type != apiUrls.types.VpnHood ?<Alert severity="success">عملیات با موفقیت انجام گردید.</Alert>:
+                        <CopyToClipboard
+                            text={revokedUserResult.generatedToken}
+                           onCopy={() => alert("کپی شد")}>
+                          <Alert severity='success'>برای کپی کد کلیک کنید.</Alert>
+                    </CopyToClipboard>
+                      }
                     </div>
                 }
 
