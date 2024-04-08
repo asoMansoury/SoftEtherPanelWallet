@@ -30,7 +30,6 @@ export default async function handler(req, res) {
         return;
       }
       var result =await ConvertUsers(username,newType,servercode);
-      console.log({result});
       if(result==null){
         res.status(200).json({isValid:false, name: "عملیات با شکست مواجه شد، لطفا با پشتیبانی تماس بگیرید."});
         return;
@@ -39,7 +38,7 @@ export default async function handler(req, res) {
 
 
 
-      res.status(200).json({isValid:true, name: "عملیات با موفقیت انجام گردید."});
+      res.status(200).json({isValid:true, name: "عملیات با موفقیت انجام گردید.",token:result.token});
    }else {
         console.log("method not allow")
       res.status(405).json({ message: 'Method Not Allowed' });

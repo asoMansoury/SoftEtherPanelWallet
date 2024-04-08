@@ -15,7 +15,7 @@ export const CreateNewUserVpnhood = async (selectedServer, expirationTime,userNa
         maxDevice: 1,
         expirationTime:convertedDate,
         url: "string",
-        isPublic: true
+        isPublic: false
     };
     
     var createUrl = `${vpnhoodBaseUrl}projects/${projectId}/access-tokens`;
