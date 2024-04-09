@@ -112,6 +112,13 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                                                 insertTestAccount.username,
                                                 vpnHoodConfiguration.bearerToken,
                                                 vpnHoodConfiguration.vpnhoodBaseUrl);
+                const filter = { _id: selectedUser._id };
+                const updatedDoc = {
+                    $set: {
+                        password: token.accessTokenId
+                    }
+                };
+                collection.updateOne(filter,updatedDoc);
                 var generatedToken = await GetAccessTokenVpnHood(selectedServer,token,vpnHoodConfiguration.bearerToken,vpnHoodConfiguration.vpnhoodBaseUrl);
                 sendEmailVpnHoodClientTest(email,tmpUsers,generatedToken, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)",agent);
             }
