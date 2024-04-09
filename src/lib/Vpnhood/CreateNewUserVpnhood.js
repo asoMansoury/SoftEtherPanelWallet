@@ -19,7 +19,6 @@ export const CreateNewUserVpnhood = async (selectedServer, expirationTime,userNa
     };
     
     var createUrl = `${vpnhoodBaseUrl}projects/${projectId}/access-tokens`;
-
     var result =await  fetchVpnHoodApi(createUrl, 'POST', createTokenDto,bearerToken);
     return result;
 }
