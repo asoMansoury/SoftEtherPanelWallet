@@ -583,14 +583,14 @@ export async function sendEmailVpnHoodClientTest(to, users, accessTokenResult, s
             </tbody>
           </table>
           <div dir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-            <p style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: red;">زمان وارد کردن آدرس سرور به هیچ عنوان هیچ کلمه اضافی وارد نکنید(دقیقا عین آدرس بدون پیشوند http://) وارد گردد.</p>
+            <p style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: red;">کد دسترسی را کپی کنید و وارد نرم افزار شوید و داخل باکس سرورها رویه گزینه افزودن کلیک کنید و کد را وارد نمایید.</p>
             ${telegramLink}
           </div>
           <divdir="rtl" style=" margin-top: 8px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
           ${botTelegram}
         </div>
             <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به سیسکو اینجا کلیک کنید</a>
+              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان هود اینجا کلیک کنید</a>
             </div>
             <div dir="rtl" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
               <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>

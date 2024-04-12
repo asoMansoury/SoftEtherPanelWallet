@@ -162,6 +162,18 @@ const navigation = () => {
     icon: HomeOutline,
     path: '/testaccounts/iran'
   });
+
+  tmpMenues.push({
+    title: 'اکانت تست Cisco',
+    icon: HomeOutline,
+    path: '/testaccounts'
+  });
+
+  tmpMenues.push({
+    title: 'اکانت تست vpnhood',
+    icon: HomeOutline,
+    path: '/testaccounts/vpnhood'
+  });
   tmpMenues.push({
     sectionTitle: 'نرم افزار'
   })
