@@ -13,6 +13,7 @@ import { useState } from 'react';
 import LoadinServerForChange from './components/LoadinServerForChange';
 import { Alert } from '@mui/material';
 import { useSession } from 'next-auth/react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 const ChangeServer = () => {
 
   // const dispatch = useDispatch();
@@ -22,6 +23,8 @@ const ChangeServer = () => {
   const { data: session, status } = useSession();
   const [isWorking, setIsWorking] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
+
+  const [vpnType,setVpnType] = useState("");
   const [profileSelector, setProfileSelector] = useState({
     isLoggedIn: false
   });
@@ -48,6 +51,7 @@ const ChangeServer = () => {
     })
     setShowServerComponent(false);
     var getUsersServer = await axios.get(apiUrls.server.getUsersServerApi + item.username);
+    setVpnType(getUsersServer.data.name[0].type);
     setUserServers(getUsersServer.data.name);
     setShowServerComponent(true);
     setSelectedUser(item.username);
@@ -62,6 +66,7 @@ const ChangeServer = () => {
 
     setShowServerComponent(false);
     const result = await axios.get(apiUrls.userUrl.RestartUserConnectionUrl + item.username);
+    console.log(result);
     setTimeout(() => {
       setIsWorking(false);
       setErros({
@@ -121,7 +126,17 @@ const ChangeServer = () => {
             erros.hasErros && (
               <>
                 <div style={{ paddingRight: '30px', paddingTop: '30px', paddingBottom: '30px' }}>
-                  <Alert severity="success">{erros.erroMsg}</Alert>
+                  {
+                    vpnType!= apiUrls.types.VpnHood && <Alert severity="success">{vpnType} : {erros.erroMsg}</Alert>
+                  }
+                  {
+                    vpnType == apiUrls.types.VpnHood && <CopyToClipboard
+                                                          text={erros.erroMsg}
+                                                          onCopy={() => alert("کپی شد")}>
+                                                          <Alert severity='info'>برای کپی کد کلیک کنید.</Alert>
+                                                      </CopyToClipboard>
+                  }
+
                 </div>
               </>
             )

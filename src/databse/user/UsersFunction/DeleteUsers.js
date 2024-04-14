@@ -4,6 +4,9 @@ import { apiUrls } from 'src/configs/apiurls';
 import { RestartUserCisco } from 'src/lib/Cisco/restartuser';
 import { RestartOpenVPNUser } from 'src/lib/OpenVpn/RestartOpenVPNUser';
 import { GetServersByRemoved } from 'src/databse/server/getservers';
+import { GetVpnHoodConfiguration } from 'src/databse/VpnhoodConfiguration/getVpnHoodConfiguration';
+import { RestartVpnhoodUserAccount } from 'src/lib/Vpnhood/CreateNewUserVpnhood';
+import { UpdateVpnHoodInformation } from '../Vpnhood/ChangeServerForVpnHood';
 
 
 
@@ -14,34 +17,6 @@ const client = new MongoClient(MONGO_URI, {
         deprecationErrors: true,
     }
 });
-
-
-function IsValidateForActivatingUser(token,user){
-    if (token.isAgent == true && token.isSubAgent == false) {
-        if (user.removedByAdmin == true) {
-            return {
-                isValid: false,
-                errorMsg: "شما دسترسی انجام عملیات مورد نظر را ندارید."
-            }
-        }
-    } else if (token.isAgent == true && token.isSubAgent == true) {
-        if (user.removedByAdmin == true || user.removedByAgent == true) {
-            return {
-                isValid: false,
-                errorMsg: "شما دسترسی انجام عملیات مورد نظر را ندارید."
-            }
-        }
-    }else if(token.isAgent == false && token.isSubAgent == false){
-        return {
-            isValid: false,
-            errorMsg: "شما دسترسی انجام عملیات مورد نظر را ندارید."
-        }
-    }
-    return {
-        isValid: true,
-        errorMsg: ""
-    }
-}
 
 
 
@@ -58,6 +33,10 @@ export async function RestartUserConnection(username) {
         var CiscoServers = await GetServersByRemoved(apiUrls.types.Cisco,true);
         var SoftEtherServers = await GetServersByRemoved(apiUrls.types.SoftEther,true);
         var OpenVpnServers = await GetServersByRemoved(apiUrls.types.OpenVpn,true);
+        var VpnHoodServers = await GetServersByRemoved(apiUrls.types.VpnHood,true);
+        var vpnHoodConfiguration = await GetVpnHoodConfiguration(apiUrls.vpnhoodTypes.All);
+        var requestedType = apiUrls.types.Cisco;
+        var newGeneratedVpnHoodUser;
         for (const user of allExpiredUsers) {
             if (user.type === apiUrls.types.Cisco) {
                 var selectedServer = CiscoServers.filter(server => server.servercode == user.currentservercode)[0];
@@ -73,11 +52,29 @@ export async function RestartUserConnection(username) {
                 var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
 
                 RestartOpenVPNUser(selectedOpenVpnServer, user);
+            }else if(user.type===apiUrls.types.VpnHood){
+                requestedType=apiUrls.types.VpnHood;
+                var selectedVpnhoodServer = VpnHoodServers.filter(server => server.servercode == user.currentservercode)[0];
+                var resultToken =await  RestartVpnhoodUserAccount(selectedVpnhoodServer,
+                                          user,
+                                          vpnHoodConfiguration.bearerToken,
+                                          vpnHoodConfiguration.vpnhoodBaseUrl); 
+                if(resultToken.existed==false) {
+                    user.currenthubname = resultToken.accessTokenId;
+                    newGeneratedVpnHoodUser=user;
+                    UpdateVpnHoodInformation(user);
+                    return user;
+                }
             }
 
         }
+        if(requestedType===apiUrls.types.VpnHood)
+        {
+            //todo
+        }else{
+            return allExpiredUsers;
+        }
 
-        return allExpiredUsers;
     } catch (erros) {
         return Promise.reject(erros);
     } finally {

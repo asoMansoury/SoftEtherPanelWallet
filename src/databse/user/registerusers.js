@@ -18,6 +18,7 @@ async function RegisterUsersInDB(servers,user,type,selectedServer,agentcode){
         const db = client.db('SoftEther');
         const collection = db.collection('Users');
 
+        var accessToken = user.HubName;
         var serverIdArray =[];
         servers.map((item,index) =>{
             let serverIdObj ={}
@@ -45,7 +46,7 @@ async function RegisterUsersInDB(servers,user,type,selectedServer,agentcode){
             serverHubNames.push(item['HubName']);
         });
         user['HubName']= serverHubNames;
-
+        user.currenthubname = accessToken;
         const result = await collection.insertOne(user);
         user._id = result._id;
         

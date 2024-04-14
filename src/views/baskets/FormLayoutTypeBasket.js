@@ -113,7 +113,6 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
   useEffect(async () => {
     if (typeVpn != undefined) {
       var servers = await axios.get(apiUrls.server.getServersByTypeApi + typeVpn);
-
       var tmp = [];
       servers.data.name.map((item) => {
         tmp.push(item);
@@ -469,7 +468,7 @@ const FormLayoutTypeBasket = ({ tariffs, agent, agentData, typeVpn }) => {
           finalPath = "/cisco/finalstep";
         if (typeVpn == apiUrls.types.OpenVpn)
           finalPath = "/OpenTunnel/finalstep";
-          if (typeVpn == apiUrls.types.OpenVpn)
+          if (typeVpn == apiUrls.types.VpnHood)
           finalPath = "/vpnhood/finalstep";
         router.push({
           pathname: finalPath, query: {

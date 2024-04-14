@@ -1,6 +1,6 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
-import { sendEmailCiscoClientTest, sendEmailTest } from 'src/lib/emailsender';
+import { sendEmailCiscoClientTest, sendEmailTest, sendEmailVpnHoodClient, sendEmailVpnHoodClientTest } from 'src/lib/emailsender';
 import { GenerateTestExpiration, MONGO_URI, formatDate } from 'src/lib/utils';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
@@ -9,6 +9,8 @@ import { GetAgentByAgentCode } from '../agent/getagentinformation';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { sendOpenVpnEmailTest } from 'src/lib/Emails/OpenVpnEmails/OpenVpnCreated';
 import { GetAgentForExtraTests } from 'src/configs/GetAgentForExtraTests';
+import { GetVpnHoodConfiguration } from '../VpnhoodConfiguration/getVpnHoodConfiguration';
+import { CreateNewUserVpnhood, GetAccessTokenVpnHood } from 'src/lib/Vpnhood/CreateNewUserVpnhood';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -56,7 +58,6 @@ async function GenerateNewAccount(email, selectedServer, type, agentCode) {
 export async function GenerateNewAccountTest(email, type, currentDomain, servercode, agentCode) {
     if (type == '' || type == undefined)
         type = apiUrls.types.SoftEther;
-
     try {
         const connectionState = await client.connect();
         const db = client.db('SoftEther');
@@ -96,15 +97,30 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                 CreateUserOnCisco(selectedServer, customerAccount.username, customerAccount.password);
                 //-CreateUserOnSoftEther(selectedServer, customerAccount, "P1", selectedUser.expires);
                 var sendingEmailResult = await sendEmailCiscoClientTest(email, tmpUsers, selectedServer, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent);
-            } else {
+            } else if (type == apiUrls.types.OpenVpn){
                 var customerAccount = {
                     username: insertTestAccount.username,
                     password: selectedUser.password,
                     ovpnurl: selectedServer.ovpnurl
                 };
-                console.log({customerAccount});
                 CreateUserOnOpenVpn(selectedServer, customerAccount, selectedUser.expires);
                 var sendingEmailResult = await sendOpenVpnEmailTest(email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
+            }else if(type == apiUrls.types.VpnHood){
+                var vpnHoodConfiguration = await GetVpnHoodConfiguration(apiUrls.vpnhoodTypes.All);
+                var token =await CreateNewUserVpnhood(selectedServer,
+                                                insertTestAccount.expires,
+                                                insertTestAccount.username,
+                                                vpnHoodConfiguration.bearerToken,
+                                                vpnHoodConfiguration.vpnhoodBaseUrl);
+                const filter = { _id: selectedUser._id };
+                const updatedDoc = {
+                    $set: {
+                        password: token.accessTokenId
+                    }
+                };
+                collection.updateOne(filter,updatedDoc);
+                var generatedToken = await GetAccessTokenVpnHood(selectedServer,token,vpnHoodConfiguration.bearerToken,vpnHoodConfiguration.vpnhoodBaseUrl);
+                sendEmailVpnHoodClientTest(email,tmpUsers,generatedToken, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)",agent);
             }
 
             return {

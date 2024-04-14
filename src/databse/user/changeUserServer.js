@@ -7,6 +7,7 @@ import { ChangeServerForUserCisco, ChangeServerForUserOpenVPN } from './SoftEthe
 import GetUsersByUsernameAndPassword from './GetUsersByUsernameAndPassword';
 import { sendEmailCiscoClientTest, sendEmailTest } from 'src/lib/emailsender';
 import { GetAgentByAgentCode } from '../agent/getagentinformation';
+import { ChangeServerForUserVpnHood } from './Vpnhood/ChangeServerForVpnHood';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -46,23 +47,18 @@ async function ChangeUserServer(obj) {
 
             var servers = await GetServers(apiUrls.types.Cisco);
             ChangeServerForUserCisco(servers, currentServerOfUser, foundUser, obj);
-            var emailResult = await sendEmailCiscoClientTest(foundUser.email, tmpUsers, foundNewServer, "اطلاعات اکانت شما", agent)
-            var emailToAgent = await sendEmailCiscoClientTest(agent.agentInformation.email, tmpUsers, foundNewServer, "اطلاعات اکانت جدید کاربر", agent);
+            // var emailResult = await sendEmailCiscoClientTest(foundUser.email, tmpUsers, foundNewServer, "اطلاعات اکانت شما", agent)
+            // var emailToAgent = await sendEmailCiscoClientTest(agent.agentInformation.email, tmpUsers, foundNewServer, "اطلاعات اکانت جدید کاربر", agent);
         } else if (foundUser.type == apiUrls.types.OpenVpn) {
             var servers = await GetServers(apiUrls.types.OpenVpn);
             ChangeServerForUserOpenVPN(servers, currentServerOfUser, foundUser, obj);
-            var sendingEmailResult = await sendEmailTest(foundUser.email, tmpUsers, "اطلاعات اکانت شما", agent)
-            var sendingEmailResult = await sendEmailTest(agent.agentInformation.email, tmpUsers, "اطلاعات اکانت جدید کاربر", agent)
+            // var sendingEmailResult = await sendEmailTest(foundUser.email, tmpUsers, "اطلاعات اکانت شما", agent)
+            // var sendingEmailResult = await sendEmailTest(agent.agentInformation.email, tmpUsers, "اطلاعات اکانت جدید کاربر", agent)
+        } else if(foundUser.type === apiUrls.types.VpnHood){
+            var servers = await GetServers(apiUrls.types.VpnHood);
+            foundUser =   ChangeServerForUserVpnHood(servers,currentServerOfUser,foundUser,obj);
         }
         foundUser.currentservercode = obj.servercode;
-
-
-        // const filter = { _id: foundUser._id };
-        // const updateOperation = { $set: foundUser };
-        // var userUpdateOperation = await userCollection.updateOne(filter, updateOperation);
-        // console.log({userUpdateOperation});
-
-
         return foundUser;
     } catch (erros) {
         return Promise.reject(erros);

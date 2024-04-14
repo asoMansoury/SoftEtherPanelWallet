@@ -98,7 +98,7 @@ export async function GetFromCache(uuid) {
         const db = client.db('SoftEther');
 
         const cacheCollection = db.collection('CachCollection');
-        var cachData = await cacheCollection.findOne({uuid:"bf007f2e-746d-45a6-8231-6b01081c064b"});
+        var cachData = await cacheCollection.findOne({uuid:uuid});
         return cachData;
     } catch (erros) {
         return Promise.reject(erros);

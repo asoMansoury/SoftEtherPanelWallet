@@ -40,7 +40,6 @@ const RevokeSelectedUser = (props) => {
   const [selectedUser,setSelectedUser] = useState();
   const [selectedUserBasket,setSelectedUserBasket] = useState();
   const [selectedPlanType,setSelectedPlanType]= useState();
-  const [selectedPlaAgentnType,setSelectedAgentPlanType]= useState();
   const [showLoadingProgress,setShowLoadingProgress]= useState(false)
   const [showLoadingProgressForRevoke,setShowLoadingProgressForRevoke]= useState(false)
   const [revokeMessage,setRevokeMessage] = useState("");
@@ -136,13 +135,12 @@ const RevokeSelectedUser = (props) => {
         uuid:uuid
       });
       setShowLoadingProgressForRevoke(false);
-      console.log(result);
       if(result.data.result.isValid==false){
-        setRevokeMessage(result.data.result.message);
+        setRevokeMessage(result.data.result);
         return;
       }
       GetUserInformation(userName);
-      props.FinishRevokingHandler();
+      props.FinishRevokingHandler(result.data.result);
     }catch(ex){
       setRevokeMessage("اکانت تمدید شده است، اما برای بررسی وضعیت این اکانت حتما با مدیریت در تماس باشید.");
       props.FinishRevokingHandler();

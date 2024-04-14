@@ -23,10 +23,11 @@ import { isEmail } from 'validator';
 import Profilestatus from 'src/redux/actions/profileActions';
 import { useSession } from 'next-auth/react';
 import Select from '@mui/material/Select'
+import { useRouter } from 'next/router';
 
 const index = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isEnablePassword, setIsEnablePassword] = useState(false);
   const [isEnableEmail, setIsEnableEmail] = useState(false);
   const [isEnabledConfirm, setIsEnabledConfirm] = useState(false);
@@ -35,6 +36,7 @@ const index = () => {
   const { data: session, status } = useSession();
   const [selectedServer, setSelectedServer] = useState("");
   const [servers, setServers] = useState([]);
+  const [agentCode,setAgentCode] = useState("");
   const [profileSelector, setProfileSelector] = useState({
     isLoggedIn: false
   });
@@ -46,7 +48,9 @@ const index = () => {
 
 
   useEffect(async () => {
-
+    var agentCode = router.query['agent'];
+    if(agentCode!=undefined)
+        setAgentCode(agentCode);
     if (status === "authenticated") {
       setProfileSelector({
         email: session.user.email,
@@ -58,6 +62,7 @@ const index = () => {
 
   useEffect(async () => {
     await LoadServers();
+
     if (profileSelector.isLoggedIn == true) {
       var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + profileSelector.email + "&type=" + apiUrls.types.VpnHood)).data;
       if (isUserValid.name.isValid == false) {
@@ -80,7 +85,6 @@ const index = () => {
   async function LoadServers(){
     setIsEnabledConfirm(true);
     var servers = await axios.get(apiUrls.server.getServersForTestApi + apiUrls.types.VpnHood);
-    console.log({servers})
     var tmp = [];
     servers.data.name.map((item) => {
       tmp.push(item);
@@ -117,11 +121,12 @@ const index = () => {
     }
 
     setIsEnabledConfirm(true);
+
     var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + email + "&type=" + apiUrls.types.VpnHood+"&servercode="+selectedServer)).data;
 
     if (isUserValid.name.isValid == true) {
       //بعد از اعتبارسنجی هایه بالا برای کاربر یک اکانت تستی درست می کنیم و به ایمیل او ارسال می کنیم.
-      var generateAccount = (await axios.get(apiUrls.testAccountsUrls.gettestaccount + email + "&type=" + apiUrls.types.VpnHood+"&servercode="+selectedServer));
+      var generateAccount = (await axios.get(apiUrls.testAccountsUrls.gettestaccount + email + "&type=" + apiUrls.types.VpnHood+"&servercode="+selectedServer+"&agentcode="+agentCode));
       setError({
         isValid: generateAccount.data.name.isValid,
         isValidShow: generateAccount.data.name.isValid,
@@ -145,7 +150,7 @@ const index = () => {
           <CardContent>
             <Grid container spacing={5}>
               <Grid item xs={12} sm={12}>
-              <Alert severity="error">اطلاعات اکانت یک روزه به تست  به ایمیل شخصی شما به ازای هر سرور تنها برای یکبار ارسال میگردد. لطفا ایمیل معتبر و شخصی خود را وارد نمایید.</Alert>
+                <Alert severity="error">اطلاعات اکانت یک روزه به تست  به ایمیل شخصی شما به ازای هر سرور تنها برای یکبار ارسال میگردد. لطفا ایمیل معتبر و شخصی خود را وارد نمایید.</Alert>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField name="email"

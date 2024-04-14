@@ -27,15 +27,21 @@ import TableContainer from '@mui/material/TableContainer'
 import { GetAllTypes } from 'src/lib/utils';
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 const ConvertUsersComponent = (props) => {
     const [selectedUser, setSelectedUser] = useState();
     const [servers, setServers] = useState([]);
-    const { data: session, status } = useSession();
     const [types, setTypes] = useState([]);
     const [selectedType, setSelectedType] = useState();
     const [selectedServer, setSelectedServer] = useState();
     const [enableBtn, setEnableBtn] = useState(true);
+
+    const [result,setResult] = useState({
+        isValid:false,
+        token:"",
+        type:""
+    });
 
     useEffect(async () => {
         if (props != undefined) {
@@ -80,6 +86,7 @@ const ConvertUsersComponent = (props) => {
         }
         setEnableBtn(true);
         var result = await axios.post(apiUrls.userUrl.ConvertingUsersUrl, obj);
+        setResult(result.data);
         clearForm();
         props.refreshComponent(e);
     }
@@ -96,9 +103,11 @@ const ConvertUsersComponent = (props) => {
 
 
     return (
-        selectedUser != null && selectedUser != undefined &&
+
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <Grid container spacing={6}>
+            {
+                selectedUser != null && selectedUser != undefined &&            
+                <Grid container spacing={6}>
                 <Grid item xs={12} sm={3}>
                     {
                         types.length > 0 && selectedType != undefined &&
@@ -148,7 +157,16 @@ const ConvertUsersComponent = (props) => {
                         </Button>
                     }
                 </Grid>
-            </Grid>
+                </Grid>
+            }
+            {
+                result.type == apiUrls.types.VpnHood &&                           
+                <CopyToClipboard
+                    text={result.token}
+                    onCopy={() => alert("کپی شد")}>
+                    <Alert severity='info'>برای کپی کد کلیک کنید.</Alert>
+                </CopyToClipboard>
+            }
 
         </Paper>
     )

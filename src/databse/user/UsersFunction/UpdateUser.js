@@ -43,3 +43,30 @@ export async function UpdateUser(id,type, currentservercode) {
         client.close();
     }
 }
+
+
+export async function UpdateUserForVpnHood(id,type, currentservercode,token) {
+    try {
+        const connectionState = await client.connect();
+        const db = client.db('SoftEther');
+        const collection = db.collection('Users');
+
+        const filter = { _id: id };
+        const updatedDoc = {
+            $set: {
+                type: type,
+                currentservercode: currentservercode,
+                currenthubname:token
+            }
+        };
+        var resultUpdate =  await collection.updateOne(filter, updatedDoc);
+
+
+        return resultUpdate;
+    } catch (erros) {
+        console.log(erros)
+        return Promise.reject(erros);
+    } finally {
+        client.close();
+    }
+}

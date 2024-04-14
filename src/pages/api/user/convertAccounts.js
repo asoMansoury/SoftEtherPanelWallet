@@ -1,8 +1,5 @@
 import { getToken } from "next-auth/jwt";
-import { IsAgentValid } from "src/databse/agent/getagentinformation";
-import GetServerByCode from "src/databse/server/getServerByCode";
 import ConvertUsers from "src/databse/user/ConvertUsers";
-import ChangeUserServer from "src/databse/user/changeUserServer";
 
 
 
@@ -33,9 +30,7 @@ export default async function handler(req, res) {
       }
     
 
-
-
-      res.status(200).json({isValid:true, name: "عملیات با موفقیت انجام گردید."});
+      res.status(200).json({isValid:true, name: "عملیات با موفقیت انجام گردید.",type:newType,token:result.token});
    }else {
         console.log("method not allow")
       res.status(405).json({ message: 'Method Not Allowed' });
