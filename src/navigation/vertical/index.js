@@ -145,12 +145,12 @@ const navigation = () => {
   tmpMenues.push({
     sectionTitle: 'اکانت تستی'
   })
-  tmpMenues.push({
-    title: 'اکانت تست OpenVPN',
-    icon: HomeOutline,
-    path: '/testaccounts/OpenTunnel'
-  });
 
+  tmpMenues.push({
+    title: 'اکانت تست vpnhood',
+    icon: HomeOutline,
+    path: '/testaccounts/vpnhood'
+  });
   tmpMenues.push({
     title: 'اکانت تست Cisco',
     icon: HomeOutline,
@@ -162,18 +162,12 @@ const navigation = () => {
     icon: HomeOutline,
     path: '/testaccounts/iran'
   });
-
   tmpMenues.push({
-    title: 'اکانت تست Cisco',
+    title: 'اکانت تست OpenVPN',
     icon: HomeOutline,
-    path: '/testaccounts'
+    path: '/testaccounts/OpenTunnel'
   });
 
-  tmpMenues.push({
-    title: 'اکانت تست vpnhood',
-    icon: HomeOutline,
-    path: '/testaccounts/vpnhood'
-  });
   tmpMenues.push({
     sectionTitle: 'نرم افزار'
   })

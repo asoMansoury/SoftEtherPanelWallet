@@ -590,11 +590,11 @@ export async function sendEmailVpnHoodClientTest(to, users, accessTokenResult, s
           ${botTelegram}
         </div>
             <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Cisco/" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار مربوطه به وی پی ان هود اینجا کلیک کنید</a>
+              <a target="_blank" href="https://play.google.com/store/apps/details?id=com.vpnhood.client.android&hl=en_CA&gl=US&pli=1" style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار آندروید مربوطه به وی پی ان هود اینجا کلیک کنید</a>
             </div>
-            <div dir="rtl" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-              <a target="_blank" href="${process.env.NEXTAUTH_URL}/Tutorial/Learning" style="color: #007bff; text-decoration: none; font-weight: bold;cursor:pointer;">برای مشاهده آموزش راه اندازی اینجا کلیک کنید.</a>
-            </div>
+            <div dir="rtl" style="margin-top:8px;display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+            <a target="_blank" href="https://github.com/vpnhood/VpnHood/releases/latest/download/VpnHoodClient-Win-x64.msi " style="color: #007bff; text-decoration: none; font-weight: bold; cursor:pointer;">برای دانلود نرم افزار ویندوز مربوطه به وی پی ان هود اینجا کلیک کنید</a>
+          </div>
           </div>
 
         </div>

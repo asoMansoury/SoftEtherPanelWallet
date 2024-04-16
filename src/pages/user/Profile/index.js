@@ -30,6 +30,7 @@ export const index = () => {
     const [telegram, setTelegram] = useState("");
     const [ciscoUrl, setCiscoUrl] = useState("");
     const [openVpn, setOpenVpn] = useState("");
+    const [vpnhood, setVpnhood] = useState("");
     const [softEtherVpn, setEtherOpnVpn] = useState("");
     const [validChange, setValidChange] = useState({
         isValid: true,
@@ -42,6 +43,7 @@ export const index = () => {
                 cashAmount: session.user.cashAmount,
                 isLoggedIn: true
             });
+            setVpnHood(apiUrls.domains.DomainUrl + "/testaccounts/vpnhood/" + session.user.agentcode);
             setCiscoUrl(apiUrls.domains.DomainUrl + "/testaccounts/" + session.user.agentcode);
             setOpenVpn(apiUrls.domains.DomainUrl + "/testaccounts/OpenTunnel/" + session.user.agentcode);
             setEtherOpnVpn(apiUrls.domains.DomainUrl + "/testaccounts/iran/" + session.user.agentcode);
@@ -129,12 +131,11 @@ export const index = () => {
                                     <Divider></Divider>
                                     <Grid item xs={12} sm={12}>
                                         <CopyToClipboard
-                                            text={openVpn}
+                                            text={ciscoUrl}
                                             onCopy={() => alert("کپی شد")}>
-                                            <Alert severity='info'>برای کپی کردن آدرس اختصاصی OpenVpn اینجا کلیک کنید.</Alert>
+                                            <Alert severity='info'>برای کپی کردن آدرس اختصاصی وی پی ان هود اینجا کلیک کنید.</Alert>
                                         </CopyToClipboard>
                                     </Grid>
-
                                     <Grid item xs={12} sm={12}>
                                         <CopyToClipboard
                                             text={ciscoUrl}
@@ -142,7 +143,13 @@ export const index = () => {
                                             <Alert severity='info'>برای کپی کردن آدرس اختصاصی سیسکو اینجا کلیک کنید.</Alert>
                                         </CopyToClipboard>
                                     </Grid>
-
+                                    <Grid item xs={12} sm={12}>
+                                        <CopyToClipboard
+                                            text={openVpn}
+                                            onCopy={() => alert("کپی شد")}>
+                                            <Alert severity='info'>برای کپی کردن آدرس اختصاصی OpenVpn اینجا کلیک کنید.</Alert>
+                                        </CopyToClipboard>
+                                    </Grid>
                                     <Grid item xs={12} sm={12}>
                                         <CopyToClipboard
                                             text={softEtherVpn}
@@ -150,6 +157,7 @@ export const index = () => {
                                             <Alert severity='info'>برای کپی کردن آدرس اختصاصی وی پی ان ایران اینجا کلیک کنید.</Alert>
                                         </CopyToClipboard>
                                     </Grid>
+
                                     <Divider></Divider>
                                     <Grid item xs={12} sm={6}>
                                         <TextField fullWidth label=' وارد کردن آدرس کانال تلگرام' placeholder='carterLeonard' onChange={(e) => setTelegram(e.target.value)} value={telegram} />
