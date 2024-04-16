@@ -43,7 +43,8 @@ export const index = () => {
                 cashAmount: session.user.cashAmount,
                 isLoggedIn: true
             });
-            setVpnHood(apiUrls.domains.DomainUrl + "/testaccounts/vpnhood/" + session.user.agentcode);
+
+            setVpnhood(apiUrls.domains.DomainUrl + "/testaccounts/vpnhood/" + session.user.agentcode);
             setCiscoUrl(apiUrls.domains.DomainUrl + "/testaccounts/" + session.user.agentcode);
             setOpenVpn(apiUrls.domains.DomainUrl + "/testaccounts/OpenTunnel/" + session.user.agentcode);
             setEtherOpnVpn(apiUrls.domains.DomainUrl + "/testaccounts/iran/" + session.user.agentcode);
@@ -131,7 +132,7 @@ export const index = () => {
                                     <Divider></Divider>
                                     <Grid item xs={12} sm={12}>
                                         <CopyToClipboard
-                                            text={ciscoUrl}
+                                            text={vpnhood}
                                             onCopy={() => alert("کپی شد")}>
                                             <Alert severity='info'>برای کپی کردن آدرس اختصاصی وی پی ان هود اینجا کلیک کنید.</Alert>
                                         </CopyToClipboard>
