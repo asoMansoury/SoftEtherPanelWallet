@@ -320,10 +320,12 @@ export async function DeleteUserByAdmin(username) {
                 var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
                 var selectedOpenVpnServer = OpenVpnServers.filter(server => server.servercode == user.currentservercode)[0];
                 RemoveUserOpenVpn(selectedOpenVpnServer, user);
+            }else if(user.type== apiUrls.types.VpnHood){
+                var VpnHoodServers = await GetServers(apiUrls.types.OpenVpn);
+                var selectedVpnHoodServer = VpnHoodServers.filter(server => server.servercode == user.currentservercode)[0];
+                var vpnHoodConfiguration = await GetVpnHoodConfiguration(apiUrls.vpnhoodTypes.All);
+                DeleteVpnhoodUserAccount(selectedVpnHoodServer,user.password,vpnHoodConfiguration.bearerToken,vpnHoodConfiguration.vpnhoodBaseUrl);
             }
-            
-    
-    
         }
 
 
