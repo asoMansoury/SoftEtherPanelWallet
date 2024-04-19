@@ -59,7 +59,7 @@ const index = () => {
   useEffect(async () => {
     await LoadServers();
     if (profileSelector.isLoggedIn == true) {
-      var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + profileSelector.email + "&type=" + apiUrls.types.VpnHood)).data;
+      var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + profileSelector.email + "&type=" + apiUrls.types.Cisco)).data;
       if (isUserValid.name.isValid == false) {
         setError({
           isValid: false,
@@ -79,7 +79,7 @@ const index = () => {
 
   async function LoadServers(){
     setIsEnabledConfirm(true);
-    var servers = await axios.get(apiUrls.server.getServersForTestApi + apiUrls.types.VpnHood);
+    var servers = await axios.get(apiUrls.server.getServersForTestApi + apiUrls.types.Cisco);
     console.log({servers})
     var tmp = [];
     servers.data.name.map((item) => {
@@ -117,11 +117,11 @@ const index = () => {
     }
 
     setIsEnabledConfirm(true);
-    var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + email + "&type=" + apiUrls.types.VpnHood+"&servercode="+selectedServer)).data;
+    var isUserValid = (await axios.get(apiUrls.testAccountsUrls.isvalid + email + "&type=" + apiUrls.types.Cisco+"&servercode="+selectedServer)).data;
 
     if (isUserValid.name.isValid == true) {
       //بعد از اعتبارسنجی هایه بالا برای کاربر یک اکانت تستی درست می کنیم و به ایمیل او ارسال می کنیم.
-      var generateAccount = (await axios.get(apiUrls.testAccountsUrls.gettestaccount + email + "&type=" + apiUrls.types.VpnHood+"&servercode="+selectedServer));
+      var generateAccount = (await axios.get(apiUrls.testAccountsUrls.gettestaccount + email + "&type=" + apiUrls.types.Cisco+"&servercode="+selectedServer));
       setError({
         isValid: generateAccount.data.name.isValid,
         isValidShow: generateAccount.data.name.isValid,

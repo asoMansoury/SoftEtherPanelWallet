@@ -13,6 +13,8 @@ import {  IncreaseWalletV2 } from '../Wallet/IncreaseWallet';
 import { TransferedWalletLog } from '../Wallet/CreateWallet';
 import { GetAgentByAgentCode } from '../agent/getagentinformation';
 import { GetCustomerAgentCode } from '../customers/getcustomer';
+import { CreateNewUserVpnhood, DeleteVpnhoodUserAccount } from 'src/lib/Vpnhood/CreateNewUserVpnhood';
+import { GetVpnHoodConfiguration } from '../VpnhoodConfiguration/getVpnHoodConfiguration';
 
 
 const client = new MongoClient(MONGO_URI, {
@@ -65,6 +67,7 @@ export async function DeleteUserOfAgent(email, agentcode, username, token) {
         var CiscoServers = await GetServers(apiUrls.types.Cisco);
         var SoftEtherServers = await GetServers(apiUrls.types.SoftEther);
         var OpenVpnServers = await GetServers(apiUrls.types.OpenVpn);
+        var VpnHoodServers = await GetServers(apiUrls.types.VpnHood);
         for (const user of allExpiredUsers) {
             if (user.removedFromServer == false) {
                 user.removedByAgent = token.isAgent == true && token.isSubAgent == false ? true : false;
@@ -95,6 +98,18 @@ export async function DeleteUserOfAgent(email, agentcode, username, token) {
                     user.removedFromServer = true;
                     //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
                     RemoveUserOpenVpn(selectedOpenVpnServer, user);
+                    const filter = { _id: user._id };
+                    const updateOperation = { $set: user };
+                    await collection.updateOne(filter, updateOperation);
+                    //emailForDisconnectedUsers(user.email, "دلیل قطع شدن اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+                }
+                if (user.type === apiUrls.types.VpnHood) {
+                    var vpnHoodConfiguration = await GetVpnHoodConfiguration(apiUrls.vpnhoodTypes.All);
+                    var selectedServer = VpnHoodServers.filter(server => server.servercode == user.currentservercode)[0];
+                    DeleteVpnhoodUserAccount(selectedServer,user.password,vpnHoodConfiguration.bearerToken,vpnHoodConfiguration.vpnhoodBaseUrl)
+                    user.removedFromServer = true;
+
+                    //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
                     const filter = { _id: user._id };
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
@@ -140,6 +155,21 @@ export async function DeleteUserOfAgent(email, agentcode, username, token) {
                     const updateOperation = { $set: user };
                     await collection.updateOne(filter, updateOperation);
                     //emailForReconnectingUsers(user.email, "فعال شدن مجدد اکانت...(ایمیل اتوماتیک است)", email, selectedServer, user);
+                }else if(user.type=== apiUrls.types.VpnHood){
+                    var vpnHoodConfiguration = await GetVpnHoodConfiguration(apiUrls.vpnhoodTypes.All);
+                    var selectedServer = VpnHoodServers.filter(server => server.servercode == user.currentservercode)[0];
+                    var token =await CreateNewUserVpnhood(selectedServer,
+                                                    user.expires,
+                                                    user.username,
+                                                    vpnHoodConfiguration.bearerToken,
+                                                    vpnHoodConfiguration.vpnhoodBaseUrl);
+                    user.password= token.accessTokenId;
+                    user.removedFromServer = false;
+
+                    //after deleting account from server it's necessary to set removedFromServer flag to true and update it's doc
+                    const filter = { _id: user._id };
+                    const updateOperation = { $set: user };
+                    await collection.updateOne(filter, updateOperation);
                 }
 
             }
