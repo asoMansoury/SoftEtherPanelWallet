@@ -119,6 +119,7 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                     }
                 };
                 collection.updateOne(filter,updatedDoc);
+
                 var generatedToken = await GetAccessTokenVpnHood(selectedServer,token,vpnHoodConfiguration.bearerToken,vpnHoodConfiguration.vpnhoodBaseUrl);
                 sendEmailVpnHoodClientTest(email,tmpUsers,generatedToken, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)",agent);
             }
@@ -149,9 +150,11 @@ export async function IsValidForCreatingNewTestAccount(email, type, servercode) 
         type = apiUrls.types.Cisco;
     try {
         const connectionState = await client.connect();
+        console.log("started to check user is valid...")
         const db = client.db('SoftEther');
         const collection = db.collection('TestAccounts');
 
+        console.log("Checking to see is user valid to get a new account test...");
         if (GetAgentForExtraTests(email).isValid == true) {
             return {
                 isValid: true,

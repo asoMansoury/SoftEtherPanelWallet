@@ -15,9 +15,9 @@ export const CreateNewUserVpnhood = async (selectedServer, expirationTime,userNa
         maxDevice: 1,
         expirationTime:convertedDate,
         url: "string",
-        isPublic: false
+        isPublic: false,
+        accessTokenProfileId:"4191"
     };
-    
     var createUrl = `${vpnhoodBaseUrl}projects/${projectId}/access-tokens`;
     var result =await  fetchVpnHoodApi(createUrl, 'POST', createTokenDto,bearerToken);
     return result;
@@ -48,6 +48,7 @@ export const GetAccessTokenVpnHood = async (selectedServer, createdToken,bearerT
     var projectId = selectedServer.password;
     var serverFarmId = selectedServer.host;
     var generatedUrl = `${vpnhoodBaseUrl}projects/${projectId}/access-tokens/${createdToken.accessTokenId}/access-key`;
+    console.log({generatedUrl});
     var token =await fetchVpnHoodApi(generatedUrl, 'GET',null,bearerToken);
     return token;
 }

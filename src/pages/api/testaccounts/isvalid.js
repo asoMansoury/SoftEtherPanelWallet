@@ -7,7 +7,7 @@ import {  IsValidForCreatingNewTestAccount } from "src/databse/testaccounts/Gene
 export default async function handler(req,res){
     if(req.method === "GET"){
         const {email,type,servercode } = req.query;
-        const session = await getSession({ req });
+
         var tariffs = await IsValidForCreatingNewTestAccount(email,type,servercode );
 
         res.setHeader('Access-Control-Allow-Origin', '*');
