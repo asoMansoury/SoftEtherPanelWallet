@@ -33,7 +33,7 @@ export async function ChangeServerForUserVpnHood(servers, currentServerOfUser, f
             } else if (serverItem.servercode == obj.servercode) {
                 foundNewServer = serverItem;
                 // Generate username on selected server
-                const newToken = await CreateNewUserVpnhood(serverItem, foundUser.expires, username, bearerToken, vpnHoodBaseUrl);
+                const newToken = (await CreateNewUserVpnhood(serverItem, foundUser.expires, username, bearerToken, vpnHoodBaseUrl))[0];
                 accessTokenId = newToken.accessTokenId;
                 var createdToken = {
                     accessTokenId:accessTokenId
