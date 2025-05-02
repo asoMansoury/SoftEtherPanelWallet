@@ -4,10 +4,6 @@ const agentEmails = [{
     email:"mansouri.shasta@gmail.com"
 },{
     email:"mohsenmansouri.MM@gmail.com"
-},{
-    email:"Pishgamserver@gmail.com"
-},{
-    email:"iranfrp85@gmail.com"
 }]
 
 export function GetAgentForExtraTests(email){
