@@ -68,11 +68,11 @@ async function ConvertUsers(username, newType, newServerCode, Token) {
                 OpenVpnConvertedEmail(agent.agentInformation.email, users, "تغییر نوع اکانت به اپن وی پی ان")
             }else if (newType == apiUrls.types.VpnHood){
                 var vpnHoodConfiguration =await GetVpnHoodConfiguration(apiUrls.vpnhoodTypes.All);
-                var tokenResult =  await CreateNewUserVpnhood(selectedNewServer,
+                var tokenResult =  (await CreateNewUserVpnhood(selectedNewServer,
                                                 user.expires,
                                                 user.username,
                                                 vpnHoodConfiguration.bearerToken,
-                                                vpnHoodConfiguration.vpnhoodBaseUrl);
+                                                vpnHoodConfiguration.vpnhoodBaseUrl))[0];
                  var generatedVpnHoodToken = await GetAccessTokenVpnHood(selectedNewServer,
                     tokenResult,
                     vpnHoodConfiguration.bearerToken,
