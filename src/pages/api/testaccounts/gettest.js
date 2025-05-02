@@ -1,4 +1,3 @@
-import { getTariffs } from "src/databse/tariff/getTariff";
 import { GenerateNewAccountTest } from "src/databse/testaccounts/GenerateNewAccountTest";
 
 

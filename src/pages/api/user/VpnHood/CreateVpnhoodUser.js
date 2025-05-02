@@ -83,16 +83,17 @@ export default async function handler(req, res) {
       var userRegistered = [];
       var accessToken = {};
       await Promise.all(newUsers.map(async (userNew) => {
-        var resultID =await CreateNewUserVpnhood(selectedServer, 
+        var resultID =(await CreateNewUserVpnhood(selectedServer, 
           userNew.expires, 
           userNew.username,
           vpnHoodConfiguration.bearerToken,
-          vpnHoodConfiguration.vpnhoodBaseUrl);
+          vpnHoodConfiguration.vpnhoodBaseUrl))[0];
           userNew.HubName = resultID.accessTokenId;
           accessToken= resultID;
         var insertedUser = await RegisterUsersInDB(servers, userNew, apiUrls.types.VpnHood, selectedServer, agentCode);
         userRegistered.push(insertedUser);
       }));
+      console.log({accessToken})
       var generatedVpnHoodToken = await GetAccessTokenVpnHood(selectedServer,
                                                               accessToken,
                                                               vpnHoodConfiguration.bearerToken,

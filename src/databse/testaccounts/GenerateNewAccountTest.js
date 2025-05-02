@@ -107,11 +107,11 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                 var sendingEmailResult = await sendOpenVpnEmailTest(email, tmpUsers, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)", agent)
             }else if(type == apiUrls.types.VpnHood){
                 var vpnHoodConfiguration = await GetVpnHoodConfiguration(apiUrls.vpnhoodTypes.All);
-                var token =await CreateNewUserVpnhood(selectedServer,
+                var token =(await CreateNewUserVpnhood(selectedServer,
                                                 insertTestAccount.expires,
                                                 insertTestAccount.username,
                                                 vpnHoodConfiguration.bearerToken,
-                                                vpnHoodConfiguration.vpnhoodBaseUrl);
+                                                vpnHoodConfiguration.vpnhoodBaseUrl))[0];
                 const filter = { _id: selectedUser._id };
                 const updatedDoc = {
                     $set: {
@@ -119,8 +119,8 @@ export async function GenerateNewAccountTest(email, type, currentDomain, serverc
                     }
                 };
                 collection.updateOne(filter,updatedDoc);
-
                 var generatedToken = await GetAccessTokenVpnHood(selectedServer,token,vpnHoodConfiguration.bearerToken,vpnHoodConfiguration.vpnhoodBaseUrl);
+
                 sendEmailVpnHoodClientTest(email,tmpUsers,generatedToken, "لطفا پاسخ ندهید(اطلاعات اکانت تستی)",agent);
             }
 
