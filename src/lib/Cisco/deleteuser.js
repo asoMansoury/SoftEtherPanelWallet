@@ -16,7 +16,7 @@ export const DeleteUserCisco = async (config,username)=>{
     let fullCommand;
     if (config.isJump) {
     fullCommand =`sshpass -p '${config.jumpPassword}' sshpass -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
-        `"sshpass -p '${config.password}' sshpass -p ${config.port} ${config.username}@${config.host}` + " \\\""+ targetCommand+ `\\\""`;  
+        `" ssh -p ${config.port} ${config.username}@${config.host}` + " \\\""+ targetCommand+ `\\\""`;  
 
     } else {
         fullCommand = targetCommand;

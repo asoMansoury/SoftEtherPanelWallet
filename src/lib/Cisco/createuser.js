@@ -12,10 +12,10 @@ export const CreateUserOnCisco = async (config, username, password, expireDate) 
   // It SSH-es into the target server and runs the user creation command
     let fullCommand;
     if (config.isJump) {
-    fullCommand =
-        `sshpass -p '${config.jumpPassword}' sshpass -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
-        `"sshpass -p '${config.password}' sshpass -p ${config.port} ${config.username}@${config.host} ` +
-        `\\"${targetCommand}\\""`;  // <-- close the double quote here
+      fullCommand =
+        `sshpass -p '${config.jumpPassword}' ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
+        `"sshpass -p '${config.password}' ssh -p ${config.port} ${config.username}@${config.host} ` +
+        `\\"echo '${trimmedPassword}' | sudo -S ocpasswd -c /etc/ocserv/ocpasswd ${trimmedUsername}\\""`; 
     } else {
     fullCommand = targetCommand;
     }
@@ -29,9 +29,7 @@ export const CreateUserOnCisco = async (config, username, password, expireDate) 
         readyTimeout: 60000,
       };
 
-      console.log({serverConfig})
-  console.log({ config });
-  console.log({ fullCommand });
+    console.log("full command : ", fullCommand );
   const host = {
     server: serverConfig,
     commands: [
