@@ -12,12 +12,13 @@ export const DeleteUserCisco = async (config,username)=>{
       }
     
     var targetCommand = `sudo ocpasswd -c /etc/ocserv/ocpasswd -d  ${username}`;
+
     let fullCommand;
     if (config.isJump) {
     fullCommand =
         `sshpass -p '${config.jumpPassword}' ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
         `"sshpass -p '${config.password}' ssh -p ${config.port} ${config.username}@${config.host} ` +
-        `\"${targetCommand}\\"`; // Escape inner double quotes
+        `\\"${targetCommand}\\""`;  // <-- close the double quote here
     } else {
     fullCommand = targetCommand;
     }
