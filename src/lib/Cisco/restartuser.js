@@ -12,17 +12,18 @@ export const RestartUserCisco = async (config, username, password) => {
     }
 
     var DeleteUserCommand = `sudo ocpasswd -c /etc/ocserv/ocpasswd -d  ${username} && sudo echo "${password.trim()}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username.trim()}`;
-    const trimmedRemoveCommand = DeleteUserCommand.replace(/\r?\n|\r/g, '');
+    const targetCommand = DeleteUserCommand.replace(/\r?\n|\r/g, '');
 
     let fullCommand;
     if (config.isJump) {
-    fullCommand =
+        fullCommand =
         `sshpass -p '${config.jumpPassword}' ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
         `"sshpass -p '${config.password}' ssh -p ${config.port} ${config.username}@${config.host} ` +
         `\\"${targetCommand}\\""`;  // <-- close the double quote here
     } else {
-    fullCommand = targetCommand;
+        fullCommand = targetCommand;
     }
+
     var host = {
         server: serverConfig,
         commands: [

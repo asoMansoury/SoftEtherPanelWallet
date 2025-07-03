@@ -6,18 +6,19 @@ export const CreateUserOnCisco = async (config, username, password, expireDate) 
   const trimmedPassword = password.trim();
 
   // Command to run on target server (creating user)
- const targetCommand = `echo '${trimmedPassword}' | sudo -S ocpasswd -c /etc/ocserv/ocpasswd ${trimmedUsername}`;
+  const targetCommand = `echo "${trimmedPassword}" | sudo -S ocpasswd -c /etc/ocserv/ocpasswd ${trimmedUsername}`;
 
-let fullCommand;
-if (config.isJump) {
-  fullCommand =
-    `sshpass -p '${config.jumpPassword}' ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
-    `"sshpass -p '${config.password}' ssh -p ${config.port} ${config.username}@${config.host} ` +
-    `\\"${targetCommand}\\""`;  // <-- close the double quote here
-} else {
-  fullCommand = targetCommand;
-}
-
+  // Full command to run on jump server
+  // It SSH-es into the target server and runs the user creation command
+    let fullCommand;
+    if (config.isJump) {
+    fullCommand =
+        `sshpass -p '${config.jumpPassword}' ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
+        `"sshpass -p '${config.password}' ssh -p ${config.port} ${config.username}@${config.host} ` +
+        `\\"${targetCommand}\\""`;  // <-- close the double quote here
+    } else {
+    fullCommand = targetCommand;
+    }
 
   // Configure ssh2shell connection to either jump or target server
   const serverConfig = {
