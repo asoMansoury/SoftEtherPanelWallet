@@ -13,7 +13,7 @@ export const CreateUserOnCisco = async (config, username, password, expireDate) 
     let fullCommand;
     if (config.isJump) {
     fullCommand =
-        `ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
+        `sshpass -p '${config.jumpPassword}' sshpass -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
         `"sshpass -p '${config.password}' sshpass -p ${config.port} ${config.username}@${config.host} ` +
         `\\"${targetCommand}\\""`;  // <-- close the double quote here
     } else {
