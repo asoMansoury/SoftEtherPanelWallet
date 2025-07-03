@@ -1,15 +1,10 @@
 import {MongoClient,ServerApiVersion} from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
-import {  sendEmailCiscoClient } from 'src/lib/emailsender';
-import { GenerateOneMonthExpiration, GenerateRandomPassword, GenerateTestExpiration, MONGO_URI, formatDate } from 'src/lib/utils';
-import GetServerByCode from '../server/getServerByCode';
-import GetServers, { GetServersForTest } from '../server/getservers';
-import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
-import { GetCustomerByEmail } from '../customers/getcustomer';
+import {  MONGO_URI, formatDate } from 'src/lib/utils';
+
+import GetServers from '../server/getservers';
 import { DeleteUserCisco } from 'src/lib/Cisco/deleteuser';
-import { RemoveUserSoftEther } from 'src/lib/createuser/RemoveUserSoftEther';
 import { RemoveUserOpenVpn } from 'src/lib/OpenVpn/RemoveUserOpenVpn';
-import { RemoveUserVpnHood } from '../user/Vpnhood/RemoveUserVpnHood';
 import { DeleteVpnhoodUserAccount } from 'src/lib/Vpnhood/CreateNewUserVpnhood';
 import { GetVpnHoodConfiguration } from '../VpnhoodConfiguration/getVpnHoodConfiguration';
 

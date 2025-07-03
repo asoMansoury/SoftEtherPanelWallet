@@ -11,13 +11,23 @@ export const DeleteUserCisco = async (config,username)=>{
         readyTimeout: 60000
       }
     
-    var CreateUser = `sudo ocpasswd -c /etc/ocserv/ocpasswd -d  ${username}`;
-    
+    var targetCommand = `sudo ocpasswd -c /etc/ocserv/ocpasswd -d  ${username}`;
+    let fullCommand;
+    if (config.isJump) {
+    fullCommand =
+        `sshpass -p '${config.jumpPassword}' ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
+        `"sshpass -p '${config.password}' ssh -p ${config.port} ${config.username}@${config.host} ` +
+        `\"${targetCommand}\\"`; // Escape inner double quotes
+    } else {
+    fullCommand = targetCommand;
+    }
+
+    console.log({fullCommand});
     var host = {
         server:  serverConfig,
         commands:      [
          "`removing cisco user command`",
-         CreateUser,
+         fullCommand,
         ],
         onCommandComplete:   function( command, response, sshObj) {
             //handle just one command or do it for all of the each time

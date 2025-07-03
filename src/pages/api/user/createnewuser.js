@@ -3,7 +3,6 @@ import GetServers from "src/databse/server/getservers";
 import CreateUser from "src/databse/user/createuser";
 import RegisterUsersInDB from "src/databse/user/registerusers";
 import GetUsersBasketByUUID from "src/databse/usersbasket/getusersbasket";
-import { sendEmail } from "src/lib/emailsender";
 import { ConvertToPersianDateTime } from "src/lib/utils";
 import { UpdateUsersBasket } from "src/databse/usersbasket/insertusersbasket";
 import { PAID_CUSTOMER_STATUS } from "src/databse/usersbasket/PaidEnum";
@@ -12,7 +11,6 @@ import { getToken } from "next-auth/jwt";
 import { IsAgentValid } from "src/databse/agent/getagentinformation";
 import { CalculateWallet } from "src/databse/Wallet/UpdateWallet";
 import { GetCustomerByEmail } from "src/databse/customers/getcustomer";
-import { CreateUserOnOpenVpn } from "src/lib/OpenVpn/CreateUserOpenVpn";
 import { CreateUserOnCisco } from "src/lib/Cisco/createuser";
 import { sendEmailCiscoChanged } from "src/lib/Emails/CiscoEmails/ChangedTypeEmail";
 

@@ -1,42 +1,54 @@
-export const CreateUserOnCisco = async (config,username,password,expireDate)=>{
-    console.log("CREATE_CISCO Flag : ",process.env.CREATE_CISCO)
-    if(process.env.CREATE_CISCO == 'false' )
-      return;
+export const CreateUserOnCisco = async (config, username, password, expireDate) => {
+  console.log("CREATE_CISCO Flag :", process.env.CREATE_CISCO);
+  if (process.env.CREATE_CISCO === 'false') return;
 
-    var serverConfig = {
-        host:         config.host,
-        userName:     config.username,
-        password:   config.password,
-        port: config.port,
-        readyTimeout: 60000
-      }
-    console.log({serverConfig});
-    var CreateUser = `sudo echo "${password.trim()}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username.trim()}`;
-    const trimmedCommand = CreateUser.replace(/\r?\n|\r/g, '');
-    var host = {
-        server:  serverConfig,
-        commands:      [
-         `Generating new cisco User Command : ${trimmedCommand}`,
-         trimmedCommand,
-        ],
-        onCommandComplete:   function( command, response, sshObj) {
-            //handle just one command or do it for all of the each time
-            console.log("command completed with response" , response)
-        },
-        onCommandProcessing: function (command, response, sshObj, stream){
-            console.log ("onCommandProcessing is equal to : ", command, response, sshObj);
-        }
-       };
-    
-    var SSH2Shell = require ('ssh2shell'),
-        SSH       = new SSH2Shell(host);
-    
-    var callback = function (sessionText){
-            console.log (sessionText);
-        }
-    
-    SSH.connect(callback);
+  const trimmedUsername = username.trim();
+  const trimmedPassword = password.trim();
 
-    
+  // Command to run on target server (creating user)
+ const targetCommand = `echo '${trimmedPassword}' | sudo -S ocpasswd -c /etc/ocserv/ocpasswd ${trimmedUsername}`;
+
+let fullCommand;
+if (config.isJump) {
+  fullCommand =
+    `sshpass -p '${config.jumpPassword}' ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
+    `"sshpass -p '${config.password}' ssh -p ${config.port} ${config.username}@${config.host} ` +
+    `\\"${targetCommand}\\""`;  // <-- close the double quote here
+} else {
+  fullCommand = targetCommand;
 }
 
+
+  // Configure ssh2shell connection to either jump or target server
+  const serverConfig = {
+        host: config.host,
+        userName: config.username,
+        password: config.password,
+        port: config.port,
+        readyTimeout: 60000,
+      };
+
+      console.log({serverConfig})
+  console.log({ config });
+  console.log({ fullCommand });
+  const host = {
+    server: serverConfig,
+    commands: [
+      `Generating new Cisco User Command: ${fullCommand}`,
+      fullCommand,
+    ],
+    onCommandComplete: function (command, response, sshObj) {
+      console.log("Command completed with response:", response);
+    },
+    onCommandProcessing: function (command, response, sshObj, stream) {
+      console.log("onCommandProcessing:", command);
+    },
+  };
+
+  const SSH2Shell = require("ssh2shell");
+  const SSH = new SSH2Shell(host);
+
+  SSH.connect((sessionText) => {
+    console.log("Session output:", sessionText);
+  });
+};

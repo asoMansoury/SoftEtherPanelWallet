@@ -4,6 +4,10 @@ import { REDIS_URL } from 'src/lib/utils';
 
 const redis = new Redis(REDIS_URL);
 
+redis.on('error', (err) => {
+  // Suppress Redis error logs to stop repeated error messages
+  // You can add custom handling here if needed
+});
 
   export async  function Redis_Set_Data(key,data){
         // Save data to "test" key

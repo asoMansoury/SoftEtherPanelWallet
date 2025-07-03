@@ -11,7 +11,6 @@ import {  CalculateTotalPriceModifed } from '../tariffagent/calculateTotalPrice'
 import { getAgentTariff } from '../tariffagent/getAgentTariff';
 import {  IncreaseWalletV2 } from '../Wallet/IncreaseWallet';
 import { TransferedWalletLog } from '../Wallet/CreateWallet';
-import { GetAgentByAgentCode } from '../agent/getagentinformation';
 import { GetCustomerAgentCode } from '../customers/getcustomer';
 import { CreateNewUserVpnhood, DeleteVpnhoodUserAccount } from 'src/lib/Vpnhood/CreateNewUserVpnhood';
 import { GetVpnHoodConfiguration } from '../VpnhoodConfiguration/getVpnHoodConfiguration';

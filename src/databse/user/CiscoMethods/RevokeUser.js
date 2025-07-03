@@ -14,17 +14,16 @@ import { CalculateTotalPriceModifed } from 'src/databse/tariffagent/calculateTot
 import { getAgentPlans } from 'src/databse/tariffagent/getAgentPlans';
 import { getTarrifPlans } from 'src/databse/tarrifplans/getTarrifPlans';
 import { PAID_CUSTOMER_STATUS } from 'src/databse/usersbasket/PaidEnum';
-import GetUsersBasketByUUID from 'src/databse/usersbasket/getusersbasket';
 import { UpdateUsersBasketForRevoke } from 'src/databse/usersbasket/insertusersbasket';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
 import { UpdateExpirationTimeSoftEther } from 'src/lib/createuser/UpdateExpirationTime';
 import { sendEmail, sendEmailCiscoClient, sendEmailVpnHoodClient } from 'src/lib/emailsender';
-import { GenerateOneMonthExpiration, GenerateOneMonthExpirationStartDate, MONGO_URI, calculateEndDate, formatDate } from 'src/lib/utils';
+import {  MONGO_URI, calculateEndDate, formatDate } from 'src/lib/utils';
 import UpdateRevokingUser from '../repository/RevokeUser';
 import { TransferedWalletLog } from 'src/databse/Wallet/CreateWallet';
 import { GetVpnHoodConfiguration } from 'src/databse/VpnhoodConfiguration/getVpnHoodConfiguration';
-import { RestartVpnhoodUserAccount, RevokeVpnhoodUserAccount } from 'src/lib/Vpnhood/CreateNewUserVpnhood';
+import {RevokeVpnhoodUserAccount } from 'src/lib/Vpnhood/CreateNewUserVpnhood';
 import { UpdateVpnHoodInformation } from '../Vpnhood/ChangeServerForVpnHood';
 
 

@@ -1,9 +1,8 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import { apiUrls } from 'src/configs/apiurls';
-import { sendEmailCiscoClientTest, sendEmailTest, sendEmailVpnHoodClient, sendEmailVpnHoodClientTest } from 'src/lib/emailsender';
-import { GenerateTestExpiration, MONGO_URI, formatDate } from 'src/lib/utils';
+import { sendEmailCiscoClientTest,  sendEmailVpnHoodClientTest } from 'src/lib/emailsender';
+import { GenerateTestExpiration, MONGO_URI} from 'src/lib/utils';
 import { CreateUserOnCisco } from 'src/lib/Cisco/createuser';
-import { CreateUserOnSoftEther } from 'src/lib/createuser/createuser';
 import GetServerByCode from '../server/getServerByCode';
 import { GetAgentByAgentCode } from '../agent/getagentinformation';
 import { CreateUserOnOpenVpn } from 'src/lib/OpenVpn/CreateUserOpenVpn';
