@@ -32,7 +32,7 @@ export const RestartUserCisco = async (config, username, password) => {
     var host = {
         server: serverConfig,
         commands: [
-            `running this command ---->> : ${trimmedRemoveCommand}`,
+            `running this command ---->> : ${fullCommand}`,
             fullCommand,
         ],
         onCommandComplete: function (command, response, sshObj) {
