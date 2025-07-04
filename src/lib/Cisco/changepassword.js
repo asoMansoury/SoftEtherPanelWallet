@@ -17,13 +17,29 @@ export const ChangePasswordCisco = async (config, username, password) => {
     var CreateUser = `sudo echo "${password.trim()}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username.trim()}`;
     const trimmedCreateCommand = CreateUser.replace(/\r?\n|\r/g, '');
 
+    let fullCommandDelete;
+    let fullCommandCreate;
+    if (config.isJump) {
+        fullCommandDelete =
+        `ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
+        `"ssh -p ${config.port} ${config.username}@${config.host} ` +
+        `\\"${trimmedRemoveCommand}\\""`;  // <-- close the double quote here
+
+        fullCommandCreate =
+        `ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
+        `"ssh -p ${config.port} ${config.username}@${config.host} ` +
+        `\\"${trimmedCreateCommand}\\""`;  // <-- close the double quote here
+    } else {
+        fullCommandDelete = trimmedRemoveCommand;
+        fullCommandCreate = trimmedCreateCommand;
+    }
 
     var host = {
         server: serverConfig,
         commands: [
             `Generating new cisco User Command : ${trimmedCreateCommand}`,
-            trimmedRemoveCommand,
-            trimmedCreateCommand
+            fullCommandDelete,
+            fullCommandCreate
         ],
         onCommandComplete: function (command, response, sshObj) {
             //handle just one command or do it for all of the each time
