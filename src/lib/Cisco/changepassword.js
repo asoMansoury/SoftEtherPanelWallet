@@ -20,44 +20,75 @@ export const ChangePasswordCisco = async (config, username, password) => {
     let fullCommandDelete;
     let fullCommandCreate;
     if (config.isJump) {
-        fullCommandDelete =
-        `ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
-        `"ssh -p ${config.port} ${config.username}@${config.host} ` +
-        `\\"${trimmedRemoveCommand}\\""`;  // <-- close the double quote here
+        var firsServerSSH = `ssh -p ${config.port} ${config.username}@${config.host}`;
 
-        fullCommandCreate =
-        `ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
-        `"ssh -p ${config.port} ${config.username}@${config.host} ` +
-        `\\"${trimmedCreateCommand}\\""`;  // <-- close the double quote here
+         const serverConfig = {
+            host: config.jumpHost,
+            userName: config.jumpUsername,
+            password: config.jumpPassword,
+            port: config.jumpPort,
+            readyTimeout: 60000,
+          };
+
+        console.log(trimmedRemoveCommand);
+        var host = {
+            server:  serverConfig,
+            commands:      [
+            "`removing cisco user command`",
+            firsServerSSH,
+            trimmedRemoveCommand,
+            trimmedCreateCommand
+            ],
+            onCommandComplete:   function( command, response, sshObj) {
+                //handle just one command or do it for all of the each time
+                console.log("command completed with response" , response)
+            },
+            onCommandProcessing: function (command, response, sshObj, stream){
+                console.log ("onCommandProcessing is equal to : ", command, response, sshObj);
+            }
+        };
+        
+        var SSH2Shell = require ('ssh2shell'),
+            SSH       = new SSH2Shell(host);
+        
+        var callback = function (sessionText){
+                console.log (sessionText);
+            }
+        
+        SSH.connect(callback);
+
+
     } else {
         fullCommandDelete = trimmedRemoveCommand;
         fullCommandCreate = trimmedCreateCommand;
-    }
 
-    var host = {
-        server: serverConfig,
-        commands: [
-            `Generating new cisco User Command : ${trimmedCreateCommand}`,
-            fullCommandDelete,
-            fullCommandCreate
-        ],
-        onCommandComplete: function (command, response, sshObj) {
-            //handle just one command or do it for all of the each time
-            console.log("command completed with response", response)
-        },
-        onCommandProcessing: function (command, response, sshObj, stream) {
-            console.log("onCommandProcessing is equal to : ", command, response, sshObj);
+        var host = {
+            server: serverConfig,
+            commands: [
+                `Generating new cisco User Command : ${trimmedCreateCommand}`,
+                fullCommandDelete,
+                fullCommandCreate
+            ],
+            onCommandComplete: function (command, response, sshObj) {
+                //handle just one command or do it for all of the each time
+                console.log("command completed with response", response)
+            },
+            onCommandProcessing: function (command, response, sshObj, stream) {
+                console.log("onCommandProcessing is equal to : ", command, response, sshObj);
+            }
+        };
+
+        var SSH2Shell = require('ssh2shell'),
+            SSH = new SSH2Shell(host);
+
+        var callback = function (sessionText) {
+            console.log(sessionText);
         }
-    };
 
-    var SSH2Shell = require('ssh2shell'),
-        SSH = new SSH2Shell(host);
+        SSH.connect(callback);
 
-    var callback = function (sessionText) {
-        console.log(sessionText);
+
     }
-
-    SSH.connect(callback);
 
 
 }
