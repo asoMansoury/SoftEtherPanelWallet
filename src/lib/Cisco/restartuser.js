@@ -4,9 +4,55 @@
         // `"sshpass -p '${config.password}' ssh -p ${config.port} ${config.username}@${config.host} ` +
         // `\\"${targetCommand}\\""`;  // <-- close the double quote here
 export const RestartUserCisco = async (config, username, password) => {
-    console.log("CREATE_CISCO Flag : ", process.env.CREATE_CISCO)
+    console.log(" RestartUserCisco method : CREATE_CISCO Flag : ", process.env.CREATE_CISCO)
     if (process.env.CREATE_CISCO == 'false')
         return;
+
+
+
+    var DeleteUserCommand = `sudo ocpasswd -c /etc/ocserv/ocpasswd -d  ${username} && sudo echo "${password.trim()}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username.trim()}`;
+    const targetCommand = DeleteUserCommand.replace(/\r?\n|\r/g, '');
+
+    let fullCommand;
+    if (config.isJump) {
+      var firsServerSSH = `ssh -p ${config.port} ${config.username}@${config.host}`;
+
+      
+        const serverConfig = {
+            host: config.jumpHost,
+            userName: config.jumpUsername,
+            password: config.jumpPassword,
+            port: config.jumpPort,
+            readyTimeout: 60000,
+          };
+          
+        var host = {
+            server:  serverConfig,
+            commands:      [
+            "`removing cisco user command`",
+            firsServerSSH,
+            targetCommand,
+            ],
+            onCommandComplete:   function( command, response, sshObj) {
+                //handle just one command or do it for all of the each time
+                console.log("command completed with response" , response)
+            },
+            onCommandProcessing: function (command, response, sshObj, stream){
+                console.log ("onCommandProcessing is equal to : ", command, response, sshObj);
+            }
+        };
+        
+        var SSH2Shell = require ('ssh2shell'),
+            SSH       = new SSH2Shell(host);
+        
+        var callback = function (sessionText){
+                console.log (sessionText);
+            }
+        
+        SSH.connect(callback);
+
+    } else {
+        fullCommand = targetCommand;
 
     var serverConfig = {
         host: config.host,
@@ -14,19 +60,31 @@ export const RestartUserCisco = async (config, username, password) => {
         password: config.password,
         port: config.port,
         readyTimeout: 60000
+        }
+      var host = {
+        server: serverConfig,
+        commands: [
+            `running this command ---->> : ${fullCommand}`,
+            fullCommand,
+        ],
+        onCommandComplete: function (command, response, sshObj) {
+            //handle just one command or do it for all of the each time
+            console.log("command completed with response", response)
+        },
+        onCommandProcessing: function (command, response, sshObj, stream) {
+            console.log("onCommandProcessing is equal to : ", command, response, sshObj);
+        }
+    };
+
+    var SSH2Shell = require('ssh2shell'),
+        SSH = new SSH2Shell(host);
+
+    var callback = function (sessionText) {
+        console.log(sessionText);
     }
 
-    var DeleteUserCommand = `sudo ocpasswd -c /etc/ocserv/ocpasswd -d  ${username} && sudo echo "${password.trim()}" | sudo ocpasswd -c /etc/ocserv/ocpasswd ${username.trim()}`;
-    const targetCommand = DeleteUserCommand.replace(/\r?\n|\r/g, '');
+    SSH.connect(callback);
 
-    let fullCommand;
-    if (config.isJump) {
-        fullCommand =
-        `ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
-        `"ssh -p ${config.port} ${config.username}@${config.host} ` +
-        `\\"${targetCommand}\\""`;  // <-- close the double quote here
-    } else {
-        fullCommand = targetCommand;
     }
 
     var host = {
