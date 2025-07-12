@@ -3,6 +3,52 @@ export const DeleteUserCisco = async (config,username)=>{
     if(process.env.CREATE_CISCO == 'false' )
       return;
     
+
+    
+    const targetCommand = `sudo ocpasswd -c /etc/ocserv/ocpasswd -d  ${username}`;
+
+    let fullCommand;
+    if (config.isJump) {
+
+      var firsServerSSH = `ssh -p ${config.port} ${config.username}@${config.host}`;
+
+        const serverConfig = {
+            host: config.jumpHost,
+            userName: config.jumpUsername,
+            password: config.jumpPassword,
+            port: config.jumpPort,
+            readyTimeout: 60000,
+          };
+
+        console.log(targetCommand);
+        var host = {
+            server:  serverConfig,
+            commands:      [
+            "`removing cisco user command`",
+            firsServerSSH,
+            targetCommand,
+            ],
+            onCommandComplete:   function( command, response, sshObj) {
+                //handle just one command or do it for all of the each time
+                console.log("command completed with response" , response)
+            },
+            onCommandProcessing: function (command, response, sshObj, stream){
+                console.log ("onCommandProcessing is equal to : ", command, response, sshObj);
+            }
+        };
+        
+        var SSH2Shell = require ('ssh2shell'),
+            SSH       = new SSH2Shell(host);
+        
+        var callback = function (sessionText){
+                console.log (sessionText);
+            }
+        
+        SSH.connect(callback);
+
+    } else {
+        fullCommand = targetCommand;
+
     var serverConfig = {
         host:         config.host,
         userName:     config.username,
@@ -10,18 +56,6 @@ export const DeleteUserCisco = async (config,username)=>{
         port: config.port,
         readyTimeout: 60000
       }
-    
-    const targetCommand = `sudo ocpasswd -c /etc/ocserv/ocpasswd -d  ${username}`;
-
-    let fullCommand;
-    if (config.isJump) {
-    fullCommand =`ssh -p ${config.jumpPort} ${config.jumpUsername}@${config.jumpHost} ` +
-        `"ssh -p ${config.port} ${config.username}@${config.host}` + " \\\""+ targetCommand+ `\\\""`;  
-
-    } else {
-        fullCommand = targetCommand;
-    }
-
     console.log(fullCommand);
     var host = {
         server:  serverConfig,
@@ -48,5 +82,7 @@ export const DeleteUserCisco = async (config,username)=>{
     SSH.connect(callback);
 
     
+    }
+
 }
 
